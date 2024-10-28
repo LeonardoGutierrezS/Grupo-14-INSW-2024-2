@@ -39,7 +39,7 @@ export async function loginService(user) {
     const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
       expiresIn: "1d",
     });
-
+ 
     return [accessToken, null];
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
