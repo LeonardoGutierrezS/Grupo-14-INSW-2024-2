@@ -27,6 +27,7 @@ export const crearComentario = async (req, res) => {
       tarea,
       usuario: { id: userId },
     });
+    
 
     await comentarioRepository.save(nuevoComentario);
 
