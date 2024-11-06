@@ -2,7 +2,7 @@
 import { EntitySchema } from "typeorm";
 
 
-const inventarioSchema = new EntitySchema({
+const InventarioSchema = new EntitySchema({
     name: "Inventario",
     tableName: "inventario",
     columns: {
@@ -35,7 +35,7 @@ const inventarioSchema = new EntitySchema({
     }
 });
 
-export default inventarioSchema;
+export default InventarioSchema;
 
 // Example of a JSON object that would be sent to the API to create a new inventory item:
 /*
