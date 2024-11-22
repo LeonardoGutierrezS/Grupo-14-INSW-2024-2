@@ -16,7 +16,7 @@ const WorkHoursSchema = new EntitySchema({
     },
     check_out: {
       type: "timestamp with time zone",
-      nullable: true, // puede ser nulo
+      nullable: true, 
     },
     total_hours: {
       type: "decimal",
