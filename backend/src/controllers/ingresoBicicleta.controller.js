@@ -41,7 +41,6 @@ export const createIngresoBicicleta = async (req, res) => {
 
 // Obtener todas las reparaciones (visualizar todos los ingresos)
 export const getAllIngresos = async (req, res) => {
-    console.log("Hola")
   try {
     const reparacionRepository = AppDataSource.getRepository(ReparacionSchema);
     const reparaciones = await reparacionRepository.find({

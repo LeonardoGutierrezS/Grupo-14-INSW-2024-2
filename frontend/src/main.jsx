@@ -5,6 +5,8 @@ import Home from '@pages/Home';
 import Users from '@pages/Users';
 import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
+import BikeEntry from '@pages/BikeEntry'; //Leo
+import ShowWorks from '@pages/ShowWorks'; //Leo
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
@@ -26,7 +28,24 @@ const router = createBrowserRouter([
           <Users />
         </ProtectedRoute>
         ),
-    }
+    },
+    {//leo
+      path: '/BikeEntry', // Nueva ruta
+      element: (
+        <ProtectedRoute allowedRoles={['administrador', 'usuario']}>
+          <BikeEntry />
+        </ProtectedRoute>
+      )
+    },//leo
+    {//leo
+      path: '/ShowWorks',
+      element: (
+        <ProtectedRoute allowedRoles={['administrador', 'usuario']}>
+          <ShowWorks />
+        </ProtectedRoute>
+      )
+    }//leo
+    
     ]
   },
   {
