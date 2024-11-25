@@ -13,7 +13,7 @@ const Navbar = () => {
     const logoutSubmit = () => {
         try {
             logout();
-            navigate('/auth'); 
+            navigate('/auth');   
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         }
