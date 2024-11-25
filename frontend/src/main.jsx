@@ -8,7 +8,8 @@ import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
-
+import AddMechanic from '@pages/AddMechanic';
+import WorkHours from '@pages/WorkHours';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -26,7 +27,24 @@ const router = createBrowserRouter([
           <Users />
         </ProtectedRoute>
         ),
-    }
+    },
+    {
+      path: '/add-mechanic',
+      element: (
+      <ProtectedRoute allowedRoles={['administrador']}>
+          <AddMechanic />
+      </ProtectedRoute>
+      ),
+    },
+    { 
+      path: '/work-hours/:userId', 
+      element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+              <WorkHours />
+          </ProtectedRoute>
+      )
+  },
+  
     ]
   },
   {
