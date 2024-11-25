@@ -16,7 +16,7 @@ const router = Router();
 
 router
   .use(authenticateJwt)
-  //.use(isAdmin); comente esto pq no me funcionaba el registro de hora :/
+  .use(isAdmin); //comente esto pq no me funcionaba el registro de hora :/
 
 router
   .get("/", getUsers)

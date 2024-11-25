@@ -72,6 +72,39 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     )}
+
+
+                    {userRole === 'administrador' && (
+                    <li>
+                        <NavLink 
+                            to="/BikeEntry" 
+                            onClick={() => { 
+                                setMenuOpen(false); 
+                                addActiveClass();
+                            }} 
+                            activeClassName="active"
+                        >
+                            Ingresar Bicicleta
+                        </NavLink>
+                    </li>
+                    )}
+
+                    {userRole === 'administrador' && (
+                    <li>
+                        <NavLink 
+                        to="/ShowWorks" 
+                        onClick={() => { 
+                            setMenuOpen(false); 
+                            addActiveClass();
+                        }} 
+                        activeClassName="active"
+                        >
+                        Mostrar Trabajos
+                        </NavLink>
+                    </li>
+                    )}
+
+
                     <li>
                         <NavLink 
                             to="/auth" 
@@ -81,6 +114,7 @@ const Navbar = () => {
                             }} 
                             activeClassName="active"
                         >
+                            
                             Cerrar sesión
                         </NavLink>
                     </li>

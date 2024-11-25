@@ -15,11 +15,10 @@ router
     .use("/auth", authRoutes)
     .use("/user", userRoutes)
 
-    .use("/bicicleta", biciRoutes)
+
     .use("/inventario", inventarioRoutes)
     .use("/comentario", comentarioRoutes)
-    .use("/tareas", tareasRoutes);
-
+    .use("/tareas", tareasRoutes)
     .use("/bicicleta", biciRoutes);
 
 
