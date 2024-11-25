@@ -19,6 +19,15 @@ export const createIngresoBicicletaService = async (bicicletaData, clienteData, 
     const newBicicleta = bicicletaRepository.create(bicicletaData);
     await bicicletaRepository.save(newBicicleta);
 
+    // Procesar fecha_est_entrega si existe
+    if (reparacionData.fecha_est_entrega) {
+      const parsedDate = parse(reparacionData.fecha_est_entrega, "dd/MM/yyyy", new Date());
+      if (!isValid(parsedDate)) {
+        throw new Error("La fecha_est_entrega no tiene un formato válido. Use dd/MM/yyyy.");
+      }
+      reparacionData.fecha_est_entrega = format(parsedDate, "yyyy-MM-dd");
+    }
+
     // Crear nueva reparación vinculando la bicicleta y el cliente
     const newReparacion = reparacionRepository.create({
       ...reparacionData,
