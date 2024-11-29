@@ -12,6 +12,9 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 import AddMechanic from '@pages/AddMechanic';
 import WorkHours from '@pages/WorkHours';
+import AddMarca from '@pages/AddMarca';
+import Inventario from './pages/Inventario';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -64,7 +67,25 @@ const router = createBrowserRouter([
           <ShowWorks />
         </ProtectedRoute>
       )
-    }//leo
+    },//leo
+
+    {
+      path: '/AddMarca',
+      element: (
+        <ProtectedRoute allowedRoles={['administrador']}>
+          <AddMarca />
+        </ProtectedRoute>
+      )
+    },
+      
+      {
+        path: '/Inventario',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Inventario />
+          </ProtectedRoute>
+        )
+      },
     
 
     ]

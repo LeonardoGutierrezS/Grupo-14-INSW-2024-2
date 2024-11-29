@@ -1,71 +1,115 @@
 "use strict"
-import { AppDataSource } from "../config/configDb.js";
-import { handleErrorClient, handleErrorServer, handleSuccess, } from "../handlers/responseHandlers.js";
-import { crearInventarioService, getInventarioTotalService } from "../services/inventario.service.js";
-import { inventarioBodyValidation } from "../validations/inventario.validation.js";
+import { 
+    crearInventarioService,
+    getInventarioTotalService,
+    getInventarioByIdService,
+    getInventarioBynombreDeMarcaService,
+    deleteInventarioService, 
+} from "../services/inventario.service.js";
 
+import { 
+    inventarioBodyValidation
+} from "../validations/inventario.validation.js";
 
-export async function crearInventario (req , res) {
+import { 
+    handleErrorServer,
+    handleErrorClient,
+    handleSuccess
+ } from '../handlers/responseHandlers.js';
+
+export async function crearInventario (req, res) {
     try {
-        const inventario = req.body;
+        const {body} = req;
+        const {error} = inventarioBodyValidation.validate(body);
 
-        const { value, error } = inventarioBodyValidation.validate(inventario);
+        if (error) {
+            return handleErrorClient(res, 400, "Error de validación", error.message);
+        }
 
-        if (error)  
-            return res.status(400).json({
-            message: error.message 
-        })
+        const [crearInventario, errorCrearInventario] = await crearInventarioService(body);
 
-        const inventarioGuardado = await crearInventarioService(inventario);
-        res.status(201).json({
-            message: "Inventario creado exitosamente.",
-            data: inventarioGuardado
-        });
-    } catch (error) {
-        console.error("Error al crear el inventario:", error);
+        if (errorCrearInventario) {
+            return handleErrorClient(res, 400, "Error al registrar Inventario", errorCrearInventario);
+        }
+        handleSuccess(res, 201, "Inventario creado exitosamente", crearInventario);
     }
+    catch (error) {
+        handleErrorServer(res, 500,"Error del Servidor", error.message);
+    }    
 }
-
-
 
 export async function getInventarioTotal (req, res) {
     try {
-        const inventarioTotal = await getInventarioTotalService();
+        const [inventario, errorInventario] = await getInventarioTotalService();
 
-        if (inventarioTotal.length === 0) {
-            return res.status(404).json({
-                message: "No se encontraron objetos en el inventario.",
-                data: null
-            });
+        if (errorInventario) {
+            return handleErrorClient(res, 404, "Error al obtener inventarios", errorInventario);
         }
-
-        res.status(200).json({
-            message: "Inventario obtenido exitosamente.",
-            data: inventarioTotal
-        });
-    } catch (error) {
-        console.error("Error al obtener el inventario:", error);
+        inventario.length === 0
+        ? handleSuccess(res, 204)
+        : handleSuccess(res, 200, "Inventarios encontrados", inventario);
+    }
+    catch (error) {
+        handleErrorServer(res, 500, "Error del Servidor", error.message);
     }
 }
 
 export async function getInventarioById (req, res) {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
 
-        const inventario = await getInventarioByIdService(id);
-
-        if (!inventario) {
-            return res.status(404).json({
-                message: "No se encontró el objeto en el inventario.",
-                data: null
-            });
+        if (!id) {
+            return handleErrorClient(res, 400, "Error de validación", "El id es requerido");
         }
 
-        res.status(200).json({
-            message: "Inventario obtenido exitosamente.",
-            data: inventario
-        });
-    } catch (error) {
-        console.error("Error al obtener el inventario:", error);
+        const [inventario, errorInventario] = await getInventarioByIdService(id);
+
+        if (errorInventario) {
+            return handleErrorClient(res, 404, "Error al obtener inventario", errorInventario);
+        }
+        handleSuccess(res, 200, "Inventario encontrado", inventario);
+    }
+    catch (error) {
+        handleErrorServer(res, 500, "Error del Servidor", error.message);
+    }
+}
+
+export async function getInventarioBynombreDeMarca (req, res) {
+    try {
+        const {nombre} = req.params;
+
+        if (!nombre) {
+            return handleErrorClient(res, 400, "Error de validación", "El nombre es requerido");
+        }
+
+        const [inventario, errorInventario] = await getInventarioBynombreDeMarcaService(nombre);
+
+        if (errorInventario) {
+            return handleErrorClient(res, 404, "Error al obtener inventario", errorInventario);
+        }
+        handleSuccess(res, 200, "Inventario encontrado", inventario);
+    }
+    catch (error) {
+        handleErrorServer(res, 500, "Error del Servidor", error.message);
+    }
+}
+
+export async function deleteInventario (req, res) {
+    try {
+        const {id} = req.params;
+
+        if (!id) {
+            return handleErrorClient(res, 400, "Error de validación", "El id es requerido");
+        }
+
+        const [inventario, errorInventario] = await deleteInventarioService(id);
+
+        if (errorInventario) {
+            return handleErrorClient(res, 404, "Error al eliminar inventario", errorInventario);
+        }
+        handleSuccess(res, 200, "Inventario eliminado", inventario);
+    }
+    catch (error) {
+        handleErrorServer(res, 500, "Error del Servidor", error.message);
     }
 }

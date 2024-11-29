@@ -1,6 +1,6 @@
 "use strict";
-import { EntitySchema } from "typeorm";
 
+import { EntitySchema } from "typeorm";
 
 const InventarioSchema = new EntitySchema({
     name: "Inventario",
@@ -12,10 +12,6 @@ const InventarioSchema = new EntitySchema({
             generated: true
         },
         nombre: {
-            type: "varchar",
-            length: 100
-        },
-        marca: {
             type: "varchar",
             length: 100
         },
@@ -31,20 +27,20 @@ const InventarioSchema = new EntitySchema({
         },
         descripcion: {
             type: "text"
+        },
+        id_marca: {
+            type: "int",
+            nullable: false
+        }
+    },
+    relations: {
+        marca: {
+            target: "Marca",
+            type: "many-to-one",
+            joinColumn: { name: "id_marca" },
+            nullable: false
         }
     }
 });
 
 export default InventarioSchema;
-
-// Example of a JSON object that would be sent to the API to create a new inventory item:
-/*
-{
-    "nombre": "Frenoacv",
-    "marca": "ACME",
-    "tipo_objeto": "Repuesto",
-    "cantidad": 10,
-    "precio": 240000,
-    "descripcion": "Frenos mas o menos"
-}
-*/

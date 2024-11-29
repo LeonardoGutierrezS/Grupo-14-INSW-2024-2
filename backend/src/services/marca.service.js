@@ -1,0 +1,116 @@
+"use strict";
+
+import Marca from "../entity/marca.entity.js";
+
+import { AppDataSource } from "../config/configDb.js";
+
+export async function crearMarcaService(marcaData) {
+    try {
+        const marcaRepository = AppDataSource.getRepository(Marca);
+        const { nombre } = marcaData;
+        const createErrorMessage = (dataInfo, message) => ({ dataInfo, message });
+
+        const marcaExistente = await marcaRepository.findOne({
+            where: {nombre}, 
+        });
+        if (marcaExistente) {
+            return [null, createErrorMessage(null, "La marca ya existe")];
+        }
+
+        const newMarca = marcaRepository.create({
+            nombre
+        });
+        const marcaGuardada = await marcaRepository.save(newMarca);
+        return [marcaGuardada, null];
+
+    } catch (error) {
+        console.error("Error al crear la marca:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+export async function getMarcasService() {
+    try {
+        const marcaRepository = AppDataSource.getRepository(Marca);
+        const marcas = await marcaRepository.find();
+        if (!marcas || marcas.length === 0) return [null, "No hay marcas"];
+        return [marcas, null];
+    } catch (error) {
+        console.error("Error al obtener las marcas:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+export async function getMarcaNombreService(nombre) {
+    try {
+        const marcaRepository = AppDataSource.getRepository(Marca);
+        const marca = await marcaRepository.findOne({
+            where: { nombre },
+        });
+        if (!marca) return [null, "Marca no encontrada"];
+        return [marca, null];
+    } catch (error) {
+        console.error("Error al obtener la marca:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+export async function getMarcaIdService(id) {
+    try {
+        const marcaRepository = AppDataSource.getRepository(Marca);
+        const marca = await marcaRepository.findOne({
+            where: { id },
+        });
+        if (!marca) return [null, "Marca no encontrada"];
+        return [marca, null];
+    } catch (error) {
+        console.error("Error al obtener la marca:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+export async function deleteMarcaService(id_marca) {
+    try {
+        const marcaRepository = AppDataSource.getRepository(Marca);
+        const marca = await marcaRepository.findOne({
+            where: { id_marca },
+        });
+        if (!marca) return [null, "Marca no encontrada"];
+
+
+
+        await marcaRepository.remove(marca);
+        return [marca, null];
+    } catch (error) {
+        console.error("Error al eliminar la marca:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+export async function updateMarcaService(query) {
+    try {
+        const { id, nombre } = query;
+        const marcaRepository = AppDataSource.getRepository(Marca);
+        const marca = await marcaRepository.findOne({
+            where: { id },
+        });
+        if (!marca) return [null, "Marca no encontrada"];
+
+        const marcaExistente = await marcaRepository.findOne({
+            where: { nombre },
+            
+        });
+
+        if (marcaExistente && marcaExistente.id !== marca.id) {
+            //muestra en el mensaje l nombre de la marca que ya existe en el mensaje
+            return [null, `Una marca con " ${nombre} " por nombre ya existe`];
+        }
+
+        marca.nombre = nombre;
+        const marcaActualizada = await marcaRepository.save(marca);
+        return [marcaActualizada, null];
+    } catch (error) {
+        console.error("Error al actualizar la marca:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
