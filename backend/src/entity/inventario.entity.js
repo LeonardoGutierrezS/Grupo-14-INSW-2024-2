@@ -30,7 +30,6 @@ const InventarioSchema = new EntitySchema({
         },
         id_marca: {
             type: "int",
-            nullable: false
         }
     },
     relations: {
