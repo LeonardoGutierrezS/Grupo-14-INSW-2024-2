@@ -84,19 +84,6 @@ const AddMarca = () => {
 
                 <button type="submit">Agregar Marca</button>
 
-                <h2>Marcas Agregadas</h2>
-            <ul>
-                {marcas.length > 0 ? (
-                    marcas.map((marca) => (
-                        <li key={marca.id}>
-                            {marca.nombre} 
-                            <button onClick={() => handleDelete(marca.id_marca)}>Eliminar</button>
-                        </li>
-                    ))
-                ) : (
-                    <li>No hay marcas registradas</li>
-                )}
-            </ul>
             </form>
 
             {/* Sección Listado de Marcas */}
