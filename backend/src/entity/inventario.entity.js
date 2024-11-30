@@ -37,7 +37,6 @@ const InventarioSchema = new EntitySchema({
             target: "Marca",
             type: "many-to-one",
             joinColumn: { name: "id_marca" },
-            nullable: false
         }
     }
 });
