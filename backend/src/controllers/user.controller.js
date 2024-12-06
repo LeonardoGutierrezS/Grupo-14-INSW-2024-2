@@ -4,6 +4,7 @@ import {
   getUserService,
   getUsersService,
   registerEmployeeService,
+  registerSellerService,
   updateEmployeeStatusService,
   updateUserService,
   
@@ -137,6 +138,26 @@ export async function registerEmployee(req, res) {
     }
 
     const [newEmployee, errorEmployee] = await registerEmployeeService(body);
+
+    if (errorEmployee) {
+      return handleErrorClient(res, 400, "Error al registrar empleado", errorEmployee);
+    }
+
+    handleSuccess(res, 201, "Empleado registrado exitosamente", newEmployee);
+  } catch (error) {
+    handleErrorServer(res, 500, "Error del servidor al registrar empleado");
+  }
+}
+export async function registerSeller(req, res) {
+  try {
+    const { body } = req;
+    const { error } = userBodyValidation.validate(body);
+
+    if (error) {
+      return handleErrorClient(res, 400, "Error de validación", error.message);
+    }
+
+    const [newEmployee, errorEmployee] = await registerSellerService(body);
 
     if (errorEmployee) {
       return handleErrorClient(res, 400, "Error al registrar empleado", errorEmployee);
