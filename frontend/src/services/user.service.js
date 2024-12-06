@@ -33,7 +33,15 @@ export async function deleteUser(rut) {
 }
 export async function createMechanic(data) {
     try {
-        const response = await axios.post('/user/register-employee', data);
+        const response = await axios.post('/user/register-mechanic', data);
+        return response.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
+export async function createSeller(data) {
+    try {
+        const response = await axios.post('/user/register-seller', data);
         return response.data;
     } catch (error) {
         return error.response.data;
@@ -46,6 +54,16 @@ export async function getWorkHours(userId) {
     } catch (error) {
         console.error('Error al obtener los turnos:', error);
         throw error.response.data;
+    }
+}
+
+export async function updateWorkHour(id, data) {
+    try {
+        const response = await axios.patch(`/user/update-check-time/${id}`, data);
+        return response.data;
+    } catch (error) {
+        console.error('Error al actualizar el horario:', error);
+        return error.response.data;
     }
 }
 

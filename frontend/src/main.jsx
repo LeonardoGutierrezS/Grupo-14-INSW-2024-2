@@ -14,6 +14,7 @@ import AddMechanic from '@pages/AddMechanic';
 import WorkHours from '@pages/WorkHours';
 import AddMarca from '@pages/AddMarca';
 import Inventario from './pages/Inventario';
+import AddSeller from '@pages/AddSeller';
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,14 @@ const router = createBrowserRouter([
       element: (
       <ProtectedRoute allowedRoles={['administrador']}>
           <AddMechanic />
+      </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/add-seller',
+      element: (
+      <ProtectedRoute allowedRoles={['administrador']}>
+          <AddSeller />
       </ProtectedRoute>
       ),
     },

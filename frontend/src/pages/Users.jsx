@@ -47,10 +47,10 @@ const Users = () => {
     { title: "Creado", field: "createdAt", width: 110, responsive: 2 },
     { title: "Estado", field: "estado", width: 100, responsive: 2 },
     { 
-      title: "Acciones", 
+      title: "Turnos", 
       field: "actions", 
       width: 100, 
-      formatter: () => '<button class="view-work-hours-btn">Ver Turnos</button>',
+      formatter: () => '<button>Ver Turnos</button>',
       cellClick: (e, cell) => {
           const userId = cell.getRow().getData().id; // Obtiene el ID del usuario
           console.log('datos de la celda:', cell.getRow().getData());
@@ -64,8 +64,9 @@ const Users = () => {
     <div className='main-container'>
       <div className='table-container'>
         <div className='top-table'>
-          <h1 className='title-table'>Usuarios</h1>
+          <h1 className='title-table'>Todo el personal</h1>
           <button onClick={() => navigate('/add-mechanic')}>Agregar Mecánico</button>
+          <button onClick={() => navigate('/add-seller')}>Agregar Vendedor</button>
 
             <div className='filter-actions'>
               <Search value={filterRut} onChange={handleRutFilterChange} placeholder={'Filtrar por rut'} />

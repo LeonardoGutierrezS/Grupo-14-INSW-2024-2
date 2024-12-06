@@ -68,7 +68,7 @@ const Navbar = () => {
                             }} 
                             activeClassName="active"
                         >
-                            Usuarios
+                            Personal
                         </NavLink>
                     </li>
                     )}
