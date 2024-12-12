@@ -180,12 +180,16 @@
 }
 
 .container {
-	height: 100vh;	
-	background: linear-gradient(90deg, #003366, #001a33); /*Color principal para login (gradiente)*/
+	height: auto; /* Permitir que el contenedor se ajuste al contenido */
+	min-height: 100vh; /* Asegurar que ocupe al menos toda la altura de la ventana */
+	background: linear-gradient(90deg, #003366, #001a33); /* Mantén tu fondo */
 	display: flex;
 	justify-content: center;
-	align-items: center;
-}
+	align-items: flex-start; /* Ajusta los elementos desde el inicio */
+	padding: 20px; /* Espaciado alrededor del contenido */
+	overflow-y: auto; /* Habilitar desplazamiento vertical si es necesario */
+  }
+  
 
 input[type='email'] {
 	background-image: url('../assets/MentionIcon.svg');
