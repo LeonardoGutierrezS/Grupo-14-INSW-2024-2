@@ -10,6 +10,10 @@ import ShowWorks from '@pages/ShowWorks'; //Leo
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
+import AddMechanic from '@pages/AddMechanic';
+import WorkHours from '@pages/WorkHours';
+import AddMarca from '@pages/AddMarca';
+import Inventario from './pages/Inventario';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +33,25 @@ const router = createBrowserRouter([
         </ProtectedRoute>
         ),
     },
+
+    {
+      path: '/add-mechanic',
+      element: (
+      <ProtectedRoute allowedRoles={['administrador']}>
+          <AddMechanic />
+      </ProtectedRoute>
+      ),
+    },
+    { 
+      path: '/work-hours/:userId', 
+      element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+              <WorkHours />
+          </ProtectedRoute>
+      )
+  },
+  
+
     {//leo
       path: '/BikeEntry', // Nueva ruta
       element: (
@@ -44,8 +67,27 @@ const router = createBrowserRouter([
           <ShowWorks />
         </ProtectedRoute>
       )
-    }//leo
+    },//leo
+
+    {
+      path: '/AddMarca',
+      element: (
+        <ProtectedRoute allowedRoles={['administrador']}>
+          <AddMarca />
+        </ProtectedRoute>
+      )
+    },
+      
+      {
+        path: '/Inventario',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Inventario />
+          </ProtectedRoute>
+        )
+      },
     
+
     ]
   },
   {

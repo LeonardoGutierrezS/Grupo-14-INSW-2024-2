@@ -4,6 +4,7 @@ import {
   getUserService,
   getUsersService,
   registerEmployeeService,
+  updateEmployeeStatusService,
   updateUserService,
   
 } from "../services/user.service.js";
@@ -16,6 +17,7 @@ import {
   handleErrorServer,
   handleSuccess,
 } from "../handlers/responseHandlers.js";
+import { registerPaidHoursService } from "../services/paid_hours.service.js";
 
 export async function getUser(req, res) {
   try {
@@ -143,5 +145,61 @@ export async function registerEmployee(req, res) {
     handleSuccess(res, 201, "Empleado registrado exitosamente", newEmployee);
   } catch (error) {
     handleErrorServer(res, 500, "Error del servidor al registrar empleado");
+  }
+}
+export async function approvePayment(req, res) {
+  try {
+    const { userId } = req.params; // ID del empleado para el que se aprobarán las horas
+    const { paymentType } = req.body; // Tipo de pago: diario, semanal o mensual
+    const approvedById = req.user.id; // ID del admin que aprueba el pago
+    const userRole = req.user.rol;
+
+    // Verificar que el usuario autenticado sea un admin
+    if (userRole !== "administrador") {
+      return handleErrorClient(res, 403, "No tienes permiso para aprobar pagos de horas trabajadas");
+    }
+
+    // Validar el tipo de pago
+    if (!["diario", "semanal", "mensual"].includes(paymentType)) {
+      return handleErrorClient(res, 400, "Tipo de pago inválido. Debe ser 'diario', 'semanal' o 'mensual'");
+    }
+
+    // Llamar al servicio para registrar el pago
+    const [paidRecord, error] = await registerPaidHoursService(userId, paymentType, approvedById);
+
+    if (error) {
+      return handleErrorClient(res, 400, error);
+    }
+
+    // Respuesta exitosa
+    handleSuccess(res, 201, "Horas pagadas registradas exitosamente", paidRecord);
+  } catch (error) {
+    console.error("Error en approvePayment:", error);
+    handleErrorServer(res, 500, "Error interno del servidor");
+  }
+}
+export async function updateEmployeeStatus(req, res) {
+  try {
+    const { userId } = req.params; // ID del empleado a actualizar
+    const { newStatus } = req.body; // Nuevo estado (activo/inactivo)
+    const userRole = req.user.rol;
+
+    // Verificar que el usuario autenticado sea un administrador
+    if (userRole !== "administrador") {
+      return handleErrorClient(res, 403, "No tienes permiso para actualizar el estado de los empleados");
+    }
+
+    // Llamar al servicio para actualizar el estado del empleado
+    const [updatedEmployee, error] = await updateEmployeeStatusService(userId, newStatus);
+
+    if (error) {
+      return handleErrorClient(res, 400, error);
+    }
+
+    // Respuesta exitosa
+    handleSuccess(res, 200, "Estado del empleado actualizado exitosamente", updatedEmployee);
+  } catch (error) {
+    console.error("Error en updateEmployeeStatus:", error);
+    handleErrorServer(res, 500, "Error interno del servidor");
   }
 }

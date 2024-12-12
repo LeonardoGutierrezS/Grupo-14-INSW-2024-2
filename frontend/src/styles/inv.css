@@ -1,0 +1,89 @@
+/* Estilos generales para la vista de inventarios */
+
+.inv-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* Espacio entre las secciones */
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 70px;
+}
+
+.inv-form-section {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 40px;
+}
+
+.inv-table-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1000px;
+}
+
+.inv-form-group {
+    margin-bottom: 15px;
+}
+
+.inv-form-group label {
+    font-weight: bold;
+}
+
+.inv-form-group input {
+    display: flex;
+    border: 3px solid #003366; /*Color del borde de inputs del formulario*/
+    border-radius: 12px;
+    padding: 8px 5px;
+    background-repeat: no-repeat;
+    margin-bottom: 0.8vh;
+    background-color: #eef7ff;
+    font-weight: regular;
+    font-size: 16px;
+    color: #003366;
+    border-radius: 12px;
+    background-position: right 10px center;
+    background-size: 25px 25px;
+    box-sizing: border-box;
+}
+
+.inv-container {
+    background-color: #003366; /*Color del boton del formulario*/
+}
+
+button:disabled {
+    background-color: #ccc;
+}
+
+/* Estilos para los títulos */
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+/* Ajustes en la tabla */
+.inv-table-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inv-table-section th, .inv-table-section td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.inv-table-section th {
+    background-color: #f2f2f2;
+}
+
+.inv-table-section tr:hover {
+    background-color: #f9f9f9;
+}

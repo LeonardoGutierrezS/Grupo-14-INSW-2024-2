@@ -47,6 +47,13 @@ const UserSchema = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: false,
     },
+    estado: {
+      type: "varchar",
+      length: 10,
+      default: "activo",
+      nullable: false,
+    },
+    
   },
   indices: [
     {
