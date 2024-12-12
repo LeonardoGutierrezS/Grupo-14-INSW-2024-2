@@ -13,7 +13,7 @@ import '@styles/styles.css';
 import AddMechanic from '@pages/AddMechanic';
 import WorkHours from '@pages/WorkHours';
 import AddMarca from '@pages/AddMarca';
-import Inventario from './pages/Inventario';
+import Inventario from '@pages/Inventario';
 
 const router = createBrowserRouter([
   {

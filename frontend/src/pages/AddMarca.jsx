@@ -64,7 +64,7 @@ const AddMarca = () => {
     };
 
     return (
-        <div className="container">
+        <div className="container" style={{ paddingTop: '200px' }}>
             <form className="form" onSubmit={handleSubmit}>
                 <h1>Agregar Marca</h1>
 
