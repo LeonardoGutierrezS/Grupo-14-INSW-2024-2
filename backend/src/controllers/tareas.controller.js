@@ -3,7 +3,8 @@ import TareaSchema from "../entity/tareas.entity.js";
 import UserSchema from "../entity/user.entity.js";
 import { handleErrorClient, handleErrorServer } from "../handlers/responseHandlers.js";
 import { validateTarea } from "../validations/tareas.validation.js";
-import { createTareaService, getAllTareasService, updateTareaService } from "../services/tareas.service.js";
+import { createTareaService, getAllTareasService }  from"../services/tareas.service.js";
+import { deleteTareaService, updateTareaService } from "../services/tareas.service.js";
 
 export const crearTarea = async (req, res) => {
   const errors = validateTarea(req.body);
@@ -21,32 +22,32 @@ export const crearTarea = async (req, res) => {
     return res.status(500).json({ message: `Error al crear la tarea: ${error.message}` });
   }
 };
-export const asignarTarea = async (req, res) => {
-  try {
-    const { comentario, prioridad, id } = req.body;
+
+//export const asignarTarea = async (req, res) => {
+//  try {
+//    const { prioridad, id } = req.body;
 
     // verificar si el usuario existe y es un mecánico
-    const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOneBy({ id:id });
+//    const userRepository = AppDataSource.getRepository(User);
+//    const user = await userRepository.findOneBy({ id:id });
 
-    if (!user || user.rol !== "mecánico") {
-      return handleErrorClient(res, 400, "Usuario no válido o no es un mecánico");
-    }
+//    if (!user || user.rol !== "mecánico") {
+//      return handleErrorClient(res, 400, "Usuario no válido o no es un mecánico");
+//    }
 
-    const tareaRepository = AppDataSource.getRepository(Tarea);
-    const nuevaTarea = tareaRepository.create({
-      comentario,
-      prioridad,
-      usuario: user,
-      estado: "pendiente",
-    });
+//    const tareaRepository = AppDataSource.getRepository(Tarea);
+//    const nuevaTarea = tareaRepository.create({
+//      prioridad,
+//      usuario: user,
+//      estado: "pendiente",
+//    });
 
-    await tareaRepository.save(nuevaTarea);
-    res.status(201).json({ mensaje: "Tarea asignada con éxito", tarea: nuevaTarea });
-  } catch (error) {
-    handleErrorServer(res, 500, "Error al asignar tarea", error.message);
-  }
-};
+//    await tareaRepository.save(nuevaTarea);
+//    res.status(201).json({ mensaje: "Tarea asignada con éxito", tarea: nuevaTarea });
+//   catch (error) {
+//    handleErrorServer(res, 500, "Error al asignar tarea", error.message);
+//  }
+//};
 
 export const obtenerTodasTareas = async (req, res) => {
   try {
@@ -69,5 +70,16 @@ export const actualizarEstado = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ message: `Error al actualizar la tarea: ${error.message}` });
+  }
+};
+
+export const eliminarTarea = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const resultado = await deleteTareaService(id);
+    return res.status(200).json({ message: resultado.message });
+  } catch (error) {
+    return res.status(500).json({ message: `Error al eliminar la tarea: ${error.message}` });
   }
 };

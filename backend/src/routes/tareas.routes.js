@@ -1,12 +1,13 @@
 "use strict"
 import express from "express";
-import { actualizarEstado, asignarTarea, crearTarea, obtenerTodasTareas  } from "../controllers/tareas.controller.js";
+import { actualizarEstado, crearTarea } from "../controllers/tareas.controller.js";
+import { eliminarTarea, obtenerTodasTareas } from "../controllers/tareas.controller.js"
 
 const router = express.Router();
 
 router.post("/crear", crearTarea);
-router.post("/asignar", asignarTarea);
 router.get("/", obtenerTodasTareas);
 router.put("/estado/:id", actualizarEstado);
+router.delete("/eliminar/:id", eliminarTarea)
 
 export default router;
