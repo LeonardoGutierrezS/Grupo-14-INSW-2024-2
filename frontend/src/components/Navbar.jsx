@@ -13,7 +13,7 @@ const Navbar = () => {
     const logoutSubmit = () => {
         try {
             logout();
-            navigate('/auth'); 
+            navigate('/auth');   
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         }
@@ -72,6 +72,70 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     )}
+
+                    {userRole === 'administrador' && (
+                        <li>
+                            <NavLink
+                                to="/AddMarca"
+                                onClick={() => {
+                                    setMenuOpen(false);
+                                    addActiveClass();
+
+                                }}
+                                activeClassName="active"
+                            >
+                                Agregar Marca
+                            </NavLink>
+                        </li>
+                    )}
+
+                    {userRole === 'administrador' && (
+                        <li>
+                            <NavLink
+                                to="/Inventario"
+                                onClick={() => {
+                                    setMenuOpen(false);
+                                    addActiveClass();
+                                }}
+                                activeClassName="active"
+                            >
+                                Inventario
+                            </NavLink>
+                        </li>
+                    )}
+
+
+                    {userRole === 'administrador' && (
+                    <li>
+                        <NavLink 
+                            to="/BikeEntry" 
+                            onClick={() => { 
+                                setMenuOpen(false); 
+                                addActiveClass();
+                            }} 
+                            activeClassName="active"
+                        >
+                            Ingresar Bicicleta
+                        </NavLink>
+                    </li>
+                    )}
+
+                    {userRole === 'administrador' && (
+                    <li>
+                        <NavLink 
+                        to="/ShowWorks" 
+                        onClick={() => { 
+                            setMenuOpen(false); 
+                            addActiveClass();
+                        }} 
+                        activeClassName="active"
+                        >
+                        Mostrar Trabajos
+                        </NavLink>
+                    </li>
+                    )}
+
+
                     <li>
                         <NavLink 
                             to="/auth" 
@@ -81,6 +145,7 @@ const Navbar = () => {
                             }} 
                             activeClassName="active"
                         >
+                            
                             Cerrar sesión
                         </NavLink>
                     </li>

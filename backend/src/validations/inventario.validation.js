@@ -14,18 +14,6 @@ export const inventarioBodyValidation = Joi.object({
         "string.max": "El nombre debe tener como máximo {#limit} caracteres.",
         "string.pattern.base": "El nombre solo debe contener letras y números."
     }),
-    marca: Joi.string()
-    .min(2)
-    .max(100)
-    .pattern(new RegExp("^[a-zA-Z0-9 ]+$"))
-    .required()
-    .messages({
-        "string.base": "La marca debe ser de tipo texto.",
-        "string.empty": "La marca no debe estar vacía.",
-        "string.min": "La marca debe tener al menos {#limit} caracteres.",
-        "string.max": "La marca debe tener como máximo {#limit} caracteres.",
-        "string.pattern.base": "La marca solo debe contener letras y números."
-    }),
     tipo_objeto: Joi.string()
     .min(3)
     .max(100)
@@ -40,7 +28,24 @@ export const inventarioBodyValidation = Joi.object({
     }),
     cantidad: Joi.number()
     .min(1)
+    .max(999999)
     .required(),
-    precio: Joi.number().required(),
-    descripcion: Joi.string().required()
+    precio: Joi.number()
+    .min(1)
+    .max(999999)
+    .required(),
+    descripcion: Joi.string()
+    .min(3)
+    .max(1000)
+    .pattern(new RegExp("^[a-zA-Z0-9 ]+$"))
+    .required()
+    .messages({
+        "string.base": "La descripción debe ser de tipo texto.",
+        "string.empty": "La descripción no debe estar vacía.",
+        "string.min": "La descripción debe tener al menos {#limit} caracteres.",
+        "string.max": "La descripción debe tener como máximo {#limit} caracteres.",
+        "string.pattern.base": "La descripción solo debe contener letras y números."
+    }),
+    id_marca: Joi.number().required()
+
 });

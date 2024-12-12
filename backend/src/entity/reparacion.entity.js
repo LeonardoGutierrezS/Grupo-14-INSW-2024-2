@@ -56,6 +56,7 @@ const ReparacionSchema = new EntitySchema({
       type: "varchar",
       length: 50,
       nullable: false,
+      default: "pendiente",
     },
   },
   indices: [

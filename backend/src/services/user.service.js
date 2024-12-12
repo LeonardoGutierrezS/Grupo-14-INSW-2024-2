@@ -159,7 +159,7 @@ export async function registerEmployeeService(user) {
       email,
       rut,
       password: await encryptPassword(user.password),
-      rol: rol || "mecanico",  // Usamos el rol proporcionado o por defecto "mecanico"
+      rol: rol || "mecanico",  // Usamos el rol proporcionado o por defecto mecanico
     });
 
     await userRepository.save(newEmployee);
@@ -169,6 +169,32 @@ export async function registerEmployeeService(user) {
     return [dataEmployee, null];
   } catch (error) {
     console.error("Error al registrar un empleado", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+export async function updateEmployeeStatusService(userId, newStatus) {
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+
+    // Verificar que el empleado exista
+    const employee = await userRepository.findOneBy({ id: userId });
+    if (!employee) {
+      return [null, "Empleado no encontrado"];
+    }
+
+    // Validar el nuevo estado
+    if (!["activo", "inactivo"].includes(newStatus)) {
+      return [null, "Estado inválido. Debe ser 'activo' o 'inactivo'"];
+    }
+
+    // Actualizar el estado del empleado
+    employee.estado = newStatus;
+    await userRepository.save(employee);
+
+    return [employee, null];
+  } catch (error) {
+    console.error("Error al actualizar el estado del empleado:", error);
     return [null, "Error interno del servidor"];
   }
 }
