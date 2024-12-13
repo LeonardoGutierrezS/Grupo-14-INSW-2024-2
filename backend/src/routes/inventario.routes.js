@@ -8,6 +8,7 @@ import {
     getInventarioBynombreDeMarca,
     getInventarioBynombreDeCategoria,
     deleteInventario,
+    updateInventario
 
 } from "../controllers/inventario.controller.js";
 
@@ -24,7 +25,8 @@ post("/crearInventario", authenticateJwt, isAdmin, crearInventario)             
 .get("/getInventarioById/:id", getInventarioById)                                   //  http://localhost:3000/api/inventario/getInventarioById/:id
 .get("/getInventarioBynombreDeMarca/:nombre", getInventarioBynombreDeMarca)         //  http://localhost:3000/api/inventario/getInventarioBynombreDeMarca/:nombre
 .get("/getInventarioBynombreDeCategoria/:nombre", getInventarioBynombreDeCategoria) //  http://localhost:3000/api/inventario/getInventarioBynombreDeCategoria/:nombre
-.delete("/deleteInventario/:id", authenticateJwt, isAdmin, deleteInventario);       //  http://localhost:3000/api/inventario/deleteInventario/:id
+.delete("/deleteInventario/:id", authenticateJwt, isAdmin, deleteInventario)       //  http://localhost:3000/api/inventario/deleteInventario/:id
+.put("/updateInventario/:id", authenticateJwt, isAdmin, updateInventario);           //  http://localhost:3000/api/inventario/updateInventario/:id
 
 
 

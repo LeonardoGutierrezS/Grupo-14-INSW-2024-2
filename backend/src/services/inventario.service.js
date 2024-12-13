@@ -13,10 +13,19 @@ export async function crearInventarioService(inventarioData) {
 
     const createErrorMessage = (dataInfo, message) => ({ dataInfo, message });
 
+    //verificar si el inventario ya existe al tener el nombre, id_tipo, id_marca, id_categoria
+    //iguales a uno ya existente
+    
     const inventarioExistente = await inventarioRepository.findOne({
-      where: { nombre },
+      where: {
+        nombre,
+        id_tipo,
+        id_marca,
+        id_categoria,
+      },
     });
-    if (inventarioExistente) {
+    
+    if (inventarioExistente && inventarioExistente.id !== id) {
       return [null, createErrorMessage(null, "El inventario ya existe")];
     }
     //verificar la marca
@@ -131,6 +140,47 @@ export async function deleteInventarioService(id) {
     return [inventario, null];
   } catch (error) {
     console.error("Error al eliminar el inventario:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+
+export async function updateInventarioService(id, inventarioData) {
+  try {
+    const inventarioRepository = AppDataSource.getRepository(Inventario);
+
+    // Buscar el inventario por ID
+    const inventario = await inventarioRepository.findOne({ where: { id } });
+
+    if (!inventario) {
+      return [null, "El inventario no existe"];
+    }
+
+    const { nombre, cantidad, precio, descripcion, id_marca, id_categoria, id_tipo } = inventarioData;
+
+    // Verificar si ya existe un inventario con los mismos atributos
+    const inventarioExistente = await inventarioRepository.findOne({
+      where: {
+        nombre,
+        id_tipo,
+        id_marca,
+        id_categoria,
+      },
+    });
+
+    if (inventarioExistente && inventarioExistente.id !== id) {
+      return [null, "El inventario ya existe con esos atributos"];
+    }
+
+    // Actualizar los campos del inventario encontrado
+    Object.assign(inventario, { nombre, cantidad, precio, descripcion, id_marca, id_categoria, id_tipo });
+
+    // Guardar los cambios en la base de datos
+    await inventarioRepository.save(inventario);
+
+    return [inventario, null];
+  } catch (error) {
+    console.error("Error al actualizar el inventario:", error.message || error);
     return [null, "Error interno del servidor"];
   }
 }

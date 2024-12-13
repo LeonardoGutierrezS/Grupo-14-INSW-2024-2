@@ -6,6 +6,8 @@ import {
     getInventarioBynombreDeMarcaService,
     getInventarioBynombreDeCategoriaService,
     deleteInventarioService, 
+    updateInventarioService,
+    
 } from "../services/inventario.service.js";
 
 import { 
@@ -129,6 +131,27 @@ export async function deleteInventario (req, res) {
             return handleErrorClient(res, 404, "Error al eliminar inventario", errorInventario);
         }
         handleSuccess(res, 200, "Inventario eliminado", inventario);
+    }
+    catch (error) {
+        handleErrorServer(res, 500, "Error del Servidor", error.message);
+    }
+}
+
+export async function updateInventario (req, res) {
+    try {
+        const {id} = req.params;
+        const {body} = req;
+
+        if (!id) {
+            return handleErrorClient(res, 400, "Error de validación", "El id es requerido");
+        }
+
+        const [inventario, errorInventario] = await updateInventarioService(id, body);
+
+        if (errorInventario) {
+            return handleErrorClient(res, 404, "Error al actualizar inventario", errorInventario);
+        }
+        handleSuccess(res, 200, "Inventario actualizado", inventario);
     }
     catch (error) {
         handleErrorServer(res, 500, "Error del Servidor", error.message);
