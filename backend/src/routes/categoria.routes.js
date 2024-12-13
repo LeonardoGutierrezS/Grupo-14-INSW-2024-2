@@ -18,12 +18,12 @@ import {authenticateJwt} from "../middlewares/authentication.middleware.js";
 
 const router = Router();
 
-router.post("/crearCategoria", authenticateJwt, isAdmin, crearCategoria); // http://localhost:3000/api/marca/crearMarca  POST
-router.get("/getCategorias", getCategorias); // http://localhost:3000/api/marca/getMarcas  GET
-router.get("/getCategoriaNombre/:nombre", getCategoriaNombre); 
-router.get("/getCategoriaId/:id", getCategoriaId); 
-router.delete("/deleteCategoria/:id", authenticateJwt, isAdmin ,deleteCategoria); 
-router.patch("/updateCategoria/:id", updateCategoria); 
+router.post("/crearCategoria", authenticateJwt, isAdmin, crearCategoria);           // http://localhost:3000/api/categoria/crearCategoria  POST
+router.get("/getCategorias", getCategorias);                                        // http://localhost:3000/api/categoria/getCategorias  GET
+router.get("/getCategoriaNombre/:nombre", getCategoriaNombre);                      // http://localhost:3000/api/categoria/getCategoriaNombre/:nombre
+router.get("/getCategoriaId/:id", getCategoriaId);                                  // http://localhost:3000/api/categoria/getCategoriaId/:id
+router.delete("/deleteCategoria/:id", authenticateJwt, isAdmin ,deleteCategoria);   // http://localhost:3000/api/categoria/deleteCategoria/:id
+router.patch("/updateCategoria/:id", updateCategoria);                              // http://localhost:3000/api/categoria/updateCategoria/:id
 
 
 export default router;

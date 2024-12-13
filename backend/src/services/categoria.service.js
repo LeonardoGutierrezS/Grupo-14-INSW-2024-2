@@ -87,10 +87,10 @@ export async function deleteCategoriaService(id_categoria) {
 export async function updateCategoriaService(query) {
 
     try {
-        const { id, nombre } = query;
+        const { id_categoria, nombre } = query;
         const categoriaRepository = AppDataSource.getRepository(Categoria);
         const categoria = await categoriaRepository.findOne({
-            where: { id },
+            where: { id_categoria },
         });
         if (!categoria) return [null, "Categoria no encontrada"];
 

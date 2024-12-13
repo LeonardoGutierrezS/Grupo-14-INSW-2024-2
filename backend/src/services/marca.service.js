@@ -89,10 +89,10 @@ export async function deleteMarcaService(id_marca) {
 
 export async function updateMarcaService(query) {
     try {
-        const { id, nombre } = query;
+        const { id_marca, nombre } = query;
         const marcaRepository = AppDataSource.getRepository(Marca);
         const marca = await marcaRepository.findOne({
-            where: { id },
+            where: { id_marca },
         });
         if (!marca) return [null, "Marca no encontrada"];
 

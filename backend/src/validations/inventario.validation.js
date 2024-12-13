@@ -46,6 +46,10 @@ export const inventarioBodyValidation = Joi.object({
         "string.max": "La descripción debe tener como máximo {#limit} caracteres.",
         "string.pattern.base": "La descripción solo debe contener letras y números."
     }),
-    id_marca: Joi.number().required()
+    id_marca: Joi.number()
+    .required(),
+    id_categoria: Joi.number()
+    .required()
+
 
 });
