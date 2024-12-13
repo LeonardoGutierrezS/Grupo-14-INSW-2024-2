@@ -5,35 +5,27 @@ export const inventarioBodyValidation = Joi.object({
     nombre: Joi.string()
     .min(3)
     .max(100)
-    .pattern(new RegExp("^[a-zA-Z0-9 ]+$"))
+    .pattern(/^[A-ZÁÉÍÓÚÑ0-9]+(?:\s[A-ZÁÉÍÓÚÑ0-9]+)*$/)
     .required()
     .messages({
-        "string.base": "El nombre debe ser de tipo texto.",
-        "string.empty": "El nombre no debe estar vacío.",
-        "string.min": "El nombre debe tener al menos {#limit} caracteres.",
-        "string.max": "El nombre debe tener como máximo {#limit} caracteres.",
-        "string.pattern.base": "El nombre solo debe contener letras y números."
+      "string.empty": "El nombre no puede estar vacío.",
+      "string.base": "El nombre debe ser de tipo string.",
+      "string.min": "El nombre debe tener como mínimo 3 caracteres.",
+      "string.max": "El nombre debe tener como máximo 100 caracteres.",
+      "string.pattern.base":
+        "El nombre solo puede contener letras mayúsculas, números y un solo espacio entre palabras.",
     }),
-    tipo_objeto: Joi.string()
-    .min(3)
-    .max(100)
-    .pattern(new RegExp("^[a-zA-Z0-9 ]+$"))
-    .required()
-    .messages({
-        "string.base": "El tipo de objeto debe ser de tipo texto.",
-        "string.empty": "El tipo de objeto no debe estar vacío.",
-        "string.min": "El tipo de objeto debe tener al menos {#limit} caracteres.",
-        "string.max": "El tipo de objeto debe tener como máximo {#limit} caracteres.",
-        "string.pattern.base": "El tipo de objeto solo debe contener letras y números."
-    }),
+
     cantidad: Joi.number()
     .min(1)
     .max(999999)
     .required(),
+
     precio: Joi.number()
     .min(1)
     .max(999999)
     .required(),
+
     descripcion: Joi.string()
     .min(3)
     .max(1000)
@@ -46,10 +38,15 @@ export const inventarioBodyValidation = Joi.object({
         "string.max": "La descripción debe tener como máximo {#limit} caracteres.",
         "string.pattern.base": "La descripción solo debe contener letras y números."
     }),
+
     id_marca: Joi.number()
     .required(),
+
     id_categoria: Joi.number()
-    .required()
+    .required(),
+
+    id_tipo: Joi.number()
+    .required()    
 
 
 });

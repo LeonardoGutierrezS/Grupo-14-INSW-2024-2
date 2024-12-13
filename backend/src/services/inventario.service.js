@@ -9,7 +9,7 @@ export async function crearInventarioService(inventarioData) {
   try {
     const inventarioRepository = AppDataSource.getRepository(Inventario);
 
-    const { nombre, tipo_objeto, cantidad, precio, descripcion, id_marca, id_categoria, } = inventarioData;
+    const { nombre, cantidad, precio, descripcion, id_marca, id_categoria, id_tipo, } = inventarioData;
 
     const createErrorMessage = (dataInfo, message) => ({ dataInfo, message });
 
@@ -38,12 +38,12 @@ export async function crearInventarioService(inventarioData) {
     
     const newInventario = inventarioRepository.create({
       nombre,
-      tipo_objeto,
       cantidad,
       precio,
       descripcion,
       id_marca,
       id_categoria,
+      id_tipo,
     });
     const inventarioGuardado = await inventarioRepository.save(newInventario);
     return [inventarioGuardado, null];

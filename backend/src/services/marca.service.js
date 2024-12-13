@@ -55,11 +55,11 @@ export async function getMarcaNombreService(nombre) {
     }
 }
 
-export async function getMarcaIdService(id) {
+export async function getMarcaIdService(id_marca) {
     try {
         const marcaRepository = AppDataSource.getRepository(Marca);
         const marca = await marcaRepository.findOne({
-            where: { id },
+            where: { id_marca },
         });
         if (!marca) return [null, "Marca no encontrada"];
         return [marca, null];

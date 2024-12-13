@@ -15,10 +15,6 @@ const InventarioSchema = new EntitySchema({
             type: "varchar",
             length: 100
         },
-        tipo_objeto: {
-            type: "varchar",
-            length: 100
-        },
         cantidad: {
             type: "int"
         },
@@ -33,6 +29,9 @@ const InventarioSchema = new EntitySchema({
         },
         id_categoria: {
             type: "int"
+        },
+        id_tipo: {
+            type: "int"
         }
     },
     relations: {
@@ -45,7 +44,13 @@ const InventarioSchema = new EntitySchema({
             target: "Categoria",
             type: "many-to-one",
             joinColumn: { name: "id_categoria" }
+        },
+        tipo: {
+            target: "Tipo",
+            type: "many-to-one",
+            joinColumn: { name: "id_tipo" }
         }
+
     }
 });
 
@@ -60,5 +65,6 @@ export default InventarioSchema;
     "descripcion": "Monitor de 24 pulgadas",
     "id_marca": 1,
     "id_categoria": 1
+    "id_tipo": 1
 }
 */
