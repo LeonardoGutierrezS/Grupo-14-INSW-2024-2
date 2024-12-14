@@ -184,3 +184,30 @@ export async function updateInventarioService(id, inventarioData) {
     return [null, "Error interno del servidor"];
   }
 }
+// ahora un update que modifique solo la cantidad de un inventario
+
+export async function updateInventarioCantidadService(id, inventarioData) {
+  try {
+    const inventarioRepository = AppDataSource.getRepository(Inventario);
+
+    // Buscar el inventario por ID
+    const inventario = await inventarioRepository.findOne({ where: { id } });
+
+    if (!inventario) {
+      return [null, "El inventario no existe"];
+    }
+
+    const { cantidad } = inventarioData;
+
+    // Actualizar los campos del inventario encontrado
+    Object.assign(inventario, { cantidad });
+
+    // Guardar los cambios en la base de datos
+    await inventarioRepository.save(inventario);
+
+    return [inventario, null];
+  } catch (error) {
+    console.error("Error al actualizar el inventario:", error.message || error);
+    return [null, "Error interno del servidor"];
+  }
+}

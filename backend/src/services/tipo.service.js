@@ -76,10 +76,11 @@ export async function deleteTipoService(id_tipo) {
             where: { id_tipo },
         });
         if (!tipo) return [null, "Tipo no encontrado"];
+
         await tipoRepository.remove(tipo);
         return [tipo, null];
     } catch (error) {
-        console.error("Error al eliminar el tipo:", error);
+        console.error("Error al eliminar el tipo:", error.message);
         return [null, "Error interno del servidor"];
     }
 }

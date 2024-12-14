@@ -71,43 +71,61 @@ export async function getCategoriaIdService(id) {
 
 export async function deleteCategoriaService(id_categoria) {
     try {
-        const categoriaRepository = AppDataSource.getRepository(Categoria);
-        const categoria = await categoriaRepository.findOne({
-            where: { id_categoria },
-        });
-        if (!categoria) return [null, "Categoria no encontrada"];
-        await categoriaRepository.remove(categoria);
-        return [categoria, null];
+      const categoriaRepository = AppDataSource.getRepository(Categoria);
+  
+      // Buscar la categoría por ID
+      const categoria = await categoriaRepository.findOne({
+        where: { id_categoria },
+      });
+  
+      if (!categoria) {
+        return [null, "Categoría no encontrada"];
+      }
+  
+      // Eliminar la categoría de la base de datos
+      await categoriaRepository.remove(categoria);
+  
+      return [categoria, null];
     } catch (error) {
-        console.error("Error al eliminar la categoria:", error);
-        return [null, "Error interno del servidor"];
+      console.error("Error al eliminar la categoría:", error.message || error);
+      return [null, "Error interno del servidor"];
     }
-}
+  }
 
-export async function updateCategoriaService(query) {
-
+export async function updateCategoriaService(id_categoria, categoriaData) {
     try {
-        const { id_categoria, nombre } = query;
-        const categoriaRepository = AppDataSource.getRepository(Categoria);
-        const categoria = await categoriaRepository.findOne({
-            where: { id_categoria },
-        });
-        if (!categoria) return [null, "Categoria no encontrada"];
-
-        const categoriaExistente = await categoriaRepository.findOne({
-            where: { nombre },
-        });
-        if (categoriaExistente && categoriaExistente.id !== categoria.id) {
-            return [null, "La categoria ya existe"];
-        }
-
-        categoria.nombre = nombre;
-        const categoriaActualziada = await categoriaRepository.save(categoria);
-        return [categoriaActualziada, null];
-        
+      const categoriaRepository = AppDataSource.getRepository(Categoria);
+  
+      // Buscar la categoría por ID
+      const categoria = await categoriaRepository.findOne({
+        where: { id_categoria },
+      });
+  
+      if (!categoria) {
+        return [null, "Categoría no encontrada"];
+      }
+  
+      const { nombre } = categoriaData;
+  
+      // Verificar si ya existe otra categoría con el mismo nombre
+      const categoriaExistente = await categoriaRepository.findOne({
+        where: { nombre },
+      });
+  
+      if (categoriaExistente && categoriaExistente.id_categoria !== id_categoria) {
+        return [null, "La categoría ya existe"];
+      }
+  
+      // Actualizar el campo de nombre
+      categoria.nombre = nombre;
+  
+      // Guardar los cambios en la base de datos
+      const categoriaActualizada = await categoriaRepository.save(categoria);
+  
+      return [categoriaActualizada, null];
     } catch (error) {
-        console.error("Error al actualizar la categoria:", error);
-        return [null, "Error interno del servidor"];
+      console.error("Error al actualizar la categoría:", error.message || error);
+      return [null, "Error interno del servidor"];
     }
-}
+  }
 

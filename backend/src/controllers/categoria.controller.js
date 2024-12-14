@@ -88,8 +88,14 @@ export async function getCategoriaId(req, res) {
 
 export async function deleteCategoria(req, res) {
     try {
-        const {id_categoria} = req.params;
-        const [categoria, errorCategoria] = await deleteCategoriaService(id_categoria);
+        const {id} = req.params;
+        
+        if (!id) {
+            return handleErrorClient(res, 400, "Error de validación", "Id de la categoria es requerido");
+        }
+
+        const [categoria, errorCategoria] = await deleteCategoriaService(id);
+
 
         if (errorCategoria) {
             return handleErrorClient(res, 404, "Error al eliminar categoria", errorCategoria);

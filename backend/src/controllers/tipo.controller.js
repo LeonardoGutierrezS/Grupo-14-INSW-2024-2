@@ -94,12 +94,12 @@ export async function getTipoId(req, res) {
 
 export async function deleteTipo(req, res) {
     try {
-        const { id_tipo } = req.params;
-        if (!id_tipo) {
+        const { id } = req.params;
+        if (!id ) {
             return handleErrorClient(res, 400, "Error de validación", "Id de tipo requerido");
         }
 
-        const [tipo, errorTipo] = await deleteTipoService(id_tipo);
+        const [tipo, errorTipo] = await deleteTipoService(id);
 
         if (errorTipo) {
             return handleErrorClient(res, 404, "Error al eliminar tipo", errorTipo);
