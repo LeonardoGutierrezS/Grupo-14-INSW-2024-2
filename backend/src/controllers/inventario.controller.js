@@ -5,6 +5,7 @@ import {
     getInventarioByIdService,
     getInventarioBynombreDeMarcaService,
     getInventarioBynombreDeCategoriaService,
+    getInventarioBynombreDeTipoService,
     deleteInventarioService, 
     updateInventarioService,
     updateInventarioCantidadService
@@ -107,6 +108,25 @@ export async function getInventarioBynombreDeCategoria (req, res) {
         }
 
         const [inventario, errorInventario] = await getInventarioBynombreDeCategoriaService(nombre);
+
+        if (errorInventario) {
+            return handleErrorClient(res, 404, "Error al obtener inventario", errorInventario);
+        }
+        handleSuccess(res, 200, "Inventario encontrado", inventario);
+    }
+    catch (error) {
+        handleErrorServer(res, 500, "Error del Servidor", error.message);
+    }
+}
+
+export async function getInventarioBynombreDeTipo (req, res) {
+    try {
+        const {nombre} = req.params;
+        if (!nombre) {
+            return handleErrorClient(res, 400, "Error de validación", "El nombre es requerido");
+        }
+
+        const [inventario, errorInventario] = await getInventarioBynombreDeTipoService(nombre);
 
         if (errorInventario) {
             return handleErrorClient(res, 404, "Error al obtener inventario", errorInventario);

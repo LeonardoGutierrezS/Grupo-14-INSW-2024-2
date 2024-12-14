@@ -98,6 +98,10 @@ export async function getInventarioBynombreDeMarcaService(nombre) {
        },
        relations: ["marca"] 
     });
+    if (inventario.length === 0) {
+      return [null, `No se encontraron inventarios para la marca: ${nombre}`];
+    }
+
 
     return [inventario, null];
   } catch (error) {
@@ -116,7 +120,31 @@ export async function getInventarioBynombreDeCategoriaService(nombre) {
        },
        relations: ["categoria"] 
     });
+    if (inventario.length === 0) {
+      return [null, `No se encontraron inventarios para la categoria: ${nombre}`];
+    }
 
+
+    return [inventario, null];
+  } catch (error) {
+    console.error("Error al obtener el inventario:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+export async function getInventarioBynombreDeTipoService(nombre) {
+  try {
+    const inventarioRepository = AppDataSource.getRepository(Inventario);
+    const inventario = await inventarioRepository.find({
+      where: { 
+        tipo: { 
+          nombre: nombre 
+        }
+       },
+       relations: ["tipo"] 
+    });
+    if (inventario.length === 0) {
+      return [null, `No se encontraron inventarios para el tipo: ${nombre}`];
+    }
     return [inventario, null];
   } catch (error) {
     console.error("Error al obtener el inventario:", error);
