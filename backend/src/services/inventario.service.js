@@ -190,6 +190,9 @@ export async function updateInventarioService(id, inventarioData) {
     const inventarioExistente = await inventarioRepository.findOne({
       where: {
         nombre,
+        cantidad,
+        precio,
+        descripcion,
         id_tipo,
         id_marca,
         id_categoria,

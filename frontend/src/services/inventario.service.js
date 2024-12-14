@@ -28,13 +28,26 @@ export async function createInventario(inventarioData) {
 
 export async function updateInventario(id, inventarioData) {
   try {
-    const { data } = await axios.patch(`/inventario/${id}/`, inventarioData);
+    const { data } = await axios.put(`/inventario/updateInventario/${id}/`, inventarioData);
     return data; // Devuelve los datos actualizados
   } catch (error) {
     console.error('Error al actualizar el inventario:', error);
     return error.response.data;
   }
 }
+
+// Actualizar la cantidad de un inventario
+
+export async function updateInventarioCantidad(id, inventarioData) {
+  try {
+    const { data } = await axios.put(`/inventario/updateInventarioCantidad/${id}/`, inventarioData);
+    return data; // Devuelve los datos actualizados
+  } catch (error) {
+    console.error('Error al actualizar la cantidad del inventario:', error);
+    return error.response.data;
+  }
+}
+
 
 // Eliminar un inventario
 

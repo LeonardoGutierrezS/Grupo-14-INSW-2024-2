@@ -3,6 +3,7 @@ import {
     createInventario,
     getAllInventarios,
     deleteInventario,
+    updateInventario,
 } from '@services/inventario.service.js';
 import {
     getAllMarcas,
@@ -44,7 +45,9 @@ const Inventario = () => {
     const [isCategoriaModalOpen, setCategoriaModalOpen] = useState(false);
     const [isTipoModalOpen, setTipoModalOpen] = useState(false);
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
+    const [editTarget, setEditTarget] = useState(null);
 
     const [inventarioData, setInventarioData] = useState({
         nombre: '',
@@ -105,6 +108,30 @@ const Inventario = () => {
             setFormVisible(false);
         } catch (error) {
             console.error('Error al crear el inventario:', error);
+        }
+    };
+
+    const handleEdit = async (e) => {
+        e.preventDefault();
+        if (editTarget) {
+            try {
+                await updateInventario(editTarget.id, inventarioData);
+                alert(`Inventario "${inventarioData.nombre}" actualizado con éxito`);
+                fetchInventarios();
+                setEditModalOpen(false);
+                setEditTarget(null);
+                setInventarioData({
+                    nombre: '',
+                    cantidad: '',
+                    precio: '',
+                    descripcion: '',
+                    id_marca: '',
+                    id_categoria: '',
+                    id_tipo: '',
+                });
+            } catch (error) {
+                console.error('Error al actualizar el inventario:', error);
+            }
         }
     };
 
@@ -187,6 +214,24 @@ const Inventario = () => {
                             <td className="inv-td">{inv.precio}</td>
                             <td className="inv-td">{inv.descripcion}</td>
                             <td className="inv-td">
+                                <button
+                                    className="inv-edit-button"
+                                    onClick={() => {
+                                        setEditTarget(inv);
+                                        setInventarioData({
+                                            nombre: inv.nombre,
+                                            cantidad: inv.cantidad,
+                                            precio: inv.precio,
+                                            descripcion: inv.descripcion,
+                                            id_marca: inv.id_marca,
+                                            id_categoria: inv.id_categoria,
+                                            id_tipo: inv.id_tipo,
+                                        });
+                                        setEditModalOpen(true);
+                                    }}
+                                >
+                                    Editar
+                                </button>
                                 <button
                                     className="inv-delete-button"
                                     onClick={() => {
@@ -306,6 +351,95 @@ const Inventario = () => {
                     <button className="inv-modal-save-button" onClick={handleDelete}>Confirmar</button>
                     <button className="inv-modal-close-btn" onClick={() => setDeleteModalOpen(false)}>Cancelar</button>
                 </div>
+            </Modal>
+
+            {/* Modal para editar inventario */}
+            <Modal isOpen={isEditModalOpen} onClose={() => setEditModalOpen(false)} title="Editar Inventario">
+                <form onSubmit={handleEdit} className="inv-form">
+                    <div className="inv-form-group">
+                        <label className="inv-label">Nombre</label>
+                        <input
+                            type="text"
+                            className="inv-input"
+                            value={inventarioData.nombre}
+                            onChange={(e) => setInventarioData({ ...inventarioData, nombre: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div className="inv-form-group">
+                        <label className="inv-label">Marca</label>
+                        <select
+                            className="inv-select"
+                            value={inventarioData.id_marca}
+                            onChange={(e) => setInventarioData({ ...inventarioData, id_marca: e.target.value })}
+                            required
+                        >
+                            <option value="">Seleccionar marca</option>
+                            {marcas.map((m) => (
+                                <option key={m.id} value={m.id_marca}>{m.nombre}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="inv-form-group">
+                        <label className="inv-label">Categoría</label>
+                        <select
+                            className="inv-select"
+                            value={inventarioData.id_categoria}
+                            onChange={(e) => setInventarioData({ ...inventarioData, id_categoria: e.target.value })}
+                            required
+                        >
+                            <option value="">Seleccionar categoría</option>
+                            {categorias.map((c) => (
+                                <option key={c.id} value={c.id_categoria}>{c.nombre}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="inv-form-group">
+                        <label className="inv-label">Tipo</label>
+                        <select
+                            className="inv-select"
+                            value={inventarioData.id_tipo}
+                            onChange={(e) => setInventarioData({ ...inventarioData, id_tipo: e.target.value })}
+                            required
+                        >
+                            <option value="">Seleccionar tipo</option>
+                            {tipos.map((t) => (
+                                <option key={t.id} value={t.id_tipo}>{t.nombre}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="inv-form-group">
+                        <label className="inv-label">Cantidad</label>
+                        <input
+                            type="number"
+                            className="inv-input"
+                            value={inventarioData.cantidad}
+                            onChange={(e) => setInventarioData({ ...inventarioData, cantidad: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div className="inv-form-group">
+                        <label className="inv-label">Precio</label>
+                        <input
+                            type="number"
+                            className="inv-input"
+                            value={inventarioData.precio}
+                            onChange={(e) => setInventarioData({ ...inventarioData, precio: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <div className="inv-form-group">
+                        <label className="inv-label">Descripción</label>
+                        <input
+                            type="text"
+                            className="inv-input"
+                            value={inventarioData.descripcion}
+                            onChange={(e) => setInventarioData({ ...inventarioData, descripcion: e.target.value })}
+                            required
+                        />
+                    </div>
+                    <button type="submit" className="inv-submit-button">Actualizar</button>
+                </form>
             </Modal>
 
             {/* Modal para añadir marca */}
