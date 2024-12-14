@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     createInventario,
     getAllInventarios,
+    deleteInventario,
 } from '@services/inventario.service.js';
 import {
     getAllMarcas,
@@ -17,14 +18,16 @@ import {
 } from '@services/tipo.service.js';
 import '@styles/inv.css';
 
-const Modal = ({ isOpen, onClose, title, children }) => {
+const Modal = ({ isOpen, onClose, title, children, showCloseButton = true }) => {
     if (!isOpen) return null;
     return (
         <div className="inv-modal-overlay">
             <div className="inv-modal-content">
                 <h3 className="inv-modal-title">{title}</h3>
                 {children}
-                <button className="inv-modal-close-btn" onClick={onClose}>Cerrar</button>
+                {showCloseButton && (
+                    <button className="inv-modal-close-btn" onClick={onClose}>Cerrar</button>
+                )}
             </div>
         </div>
     );
@@ -40,6 +43,8 @@ const Inventario = () => {
     const [isMarcaModalOpen, setMarcaModalOpen] = useState(false);
     const [isCategoriaModalOpen, setCategoriaModalOpen] = useState(false);
     const [isTipoModalOpen, setTipoModalOpen] = useState(false);
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState(null);
 
     const [inventarioData, setInventarioData] = useState({
         nombre: '',
@@ -103,6 +108,20 @@ const Inventario = () => {
         }
     };
 
+    const handleDelete = async () => {
+        if (deleteTarget) {
+            try {
+                await deleteInventario(deleteTarget.id);
+                alert(`Inventario "${deleteTarget.nombre}" eliminado con éxito`);
+                fetchInventarios();
+                setDeleteModalOpen(false);
+                setDeleteTarget(null);
+            } catch (error) {
+                console.error('Error al eliminar el inventario:', error);
+            }
+        }
+    };
+
     const handleCreateMarca = async () => {
         try {
             await createMarca({ nombre: newMarca });
@@ -154,6 +173,7 @@ const Inventario = () => {
                         <th className="inv-th">Cantidad</th>
                         <th className="inv-th">Precio</th>
                         <th className="inv-th">Descripción</th>
+                        <th className="inv-th">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -166,6 +186,17 @@ const Inventario = () => {
                             <td className="inv-td">{inv.cantidad}</td>
                             <td className="inv-td">{inv.precio}</td>
                             <td className="inv-td">{inv.descripcion}</td>
+                            <td className="inv-td">
+                                <button
+                                    className="inv-delete-button"
+                                    onClick={() => {
+                                        setDeleteTarget(inv);
+                                        setDeleteModalOpen(true);
+                                    }}
+                                >
+                                    Eliminar
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -267,6 +298,15 @@ const Inventario = () => {
                     <button type="submit" className="inv-submit-button">Registrar</button>
                 </form>
             )}
+
+            {/* Modal para confirmar eliminación */}
+            <Modal isOpen={isDeleteModalOpen} onClose={() => setDeleteModalOpen(false)} title="Confirmar Eliminación" showCloseButton={false}>
+                <p>¿Estás seguro que quieres eliminar "{deleteTarget?.nombre}"?</p>
+                <div className="inv-modal-actions">
+                    <button className="inv-modal-save-button" onClick={handleDelete}>Confirmar</button>
+                    <button className="inv-modal-close-btn" onClick={() => setDeleteModalOpen(false)}>Cancelar</button>
+                </div>
+            </Modal>
 
             {/* Modal para añadir marca */}
             <Modal isOpen={isMarcaModalOpen} onClose={() => setMarcaModalOpen(false)} title="Añadir Marca">
