@@ -19,7 +19,7 @@ export async function createInventario(inventarioData) {
     const { data } = await axios.post('/inventario/crearInventario/', inventarioData);
     return data; // Devuelve los datos del inventario creado
   } catch (error) {
-    console.error('Error al crear el inventario:', error);
+    console.error('Error al crear el inventario:', error.message);
     return error.response.data;
   }
 }

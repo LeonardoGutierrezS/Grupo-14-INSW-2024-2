@@ -1,215 +1,310 @@
 import React, { useState, useEffect } from 'react';
-import Table from '@components/Table';
-import DeleteIcon from '../assets/deleteIcon.svg';
-import UpdateIcon from '../assets/updateIcon.svg';
 import {
     createInventario,
     getAllInventarios,
-    deleteInventario,
-    updateInventario,
 } from '@services/inventario.service.js';
-
-import { getAllMarcas } from '@services/marca.service.js';
-
+import {
+    getAllMarcas,
+    createMarca,
+} from '@services/marca.service.js';
+import {
+    getAllCategorias,
+    createCategoria,
+} from '@services/categoria.service.js';
+import {
+    getAllTipos,
+    createTipo,
+} from '@services/tipo.service.js';
 import '@styles/inv.css';
 
+const Modal = ({ isOpen, onClose, title, children }) => {
+    if (!isOpen) return null;
+    return (
+        <div className="inv-modal-overlay">
+            <div className="inv-modal-content">
+                <h3 className="inv-modal-title">{title}</h3>
+                {children}
+                <button className="inv-modal-close-btn" onClick={onClose}>Cerrar</button>
+            </div>
+        </div>
+    );
+};
+
 const Inventario = () => {
+    const [inventarios, setInventarios] = useState([]);
+    const [marcas, setMarcas] = useState([]);
+    const [categorias, setCategorias] = useState([]);
+    const [tipos, setTipos] = useState([]);
+
+    const [isFormVisible, setFormVisible] = useState(false);
+    const [isMarcaModalOpen, setMarcaModalOpen] = useState(false);
+    const [isCategoriaModalOpen, setCategoriaModalOpen] = useState(false);
+    const [isTipoModalOpen, setTipoModalOpen] = useState(false);
+
     const [inventarioData, setInventarioData] = useState({
         nombre: '',
-        tipo_objeto: '',
         cantidad: '',
         precio: '',
         descripcion: '',
         id_marca: '',
+        id_categoria: '',
+        id_tipo: '',
     });
 
-    const [inventarios, setInventarios] = useState([]);
-    const [filterNombre, setFilterNombre] = useState(''); // Filtro por nombre
+    const [newMarca, setNewMarca] = useState('');
+    const [newCategoria, setNewCategoria] = useState('');
+    const [newTipo, setNewTipo] = useState('');
 
-    const [marcas, setMarcas] = useState([]);
+    useEffect(() => {
+        fetchInventarios();
+        fetchMarcas();
+        fetchCategorias();
+        fetchTipos();
+    }, []);
 
-    // Función para obtener todos los inventarios
     const fetchInventarios = async () => {
-        try {
-            const response = await getAllInventarios();
-            setInventarios(response.data);  // Asumiendo que la respuesta es un array de inventarios
-        } catch (error) {
-            console.error('Error al obtener los inventarios:', error.response?.data || error.message);
-            setInventarios([]);
-        }
+        const response = await getAllInventarios();
+        setInventarios(response.data || []);
     };
 
     const fetchMarcas = async () => {
-        try {
-            const response = await getAllMarcas(); // Llamada al backend
-            setMarcas(response.data); // Asume que el backend devuelve [{ id, nombre }]
-        } catch (error) {
-            console.error('Error al obtener las marcas:', error.response?.data || error.message);
-        }
+        const response = await getAllMarcas();
+        setMarcas(response.data || []);
     };
 
-    const getMarcaNombre = (id_marca) => {
-        const marca = marcas.find((m) => m.id_marca === id_marca);
-        return marca ? marca.nombre : "Sin marca";
+    const fetchCategorias = async () => {
+        const response = await getAllCategorias();
+        setCategorias(response.data || []);
     };
 
-    useEffect(() => {
-        fetchInventarios();  // Cargar inventarios al montar el componente
-        fetchMarcas();  // Cargar marcas al montar el componente
-    }, []);
-
-    // Crear un nuevo array con nombres de marcas
-    const inventariosConMarcas = inventarios.map((inventario) => ({
-        ...inventario,
-        id_marca: getMarcaNombre(inventario.id_marca), // Cambiar id_marca por el nombre
-    }));
+    const fetchTipos = async () => {
+        const response = await getAllTipos();
+        setTipos(response.data || []);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
-            // Enviar los datos al backend en el formato esperado
-            const response = await createInventario(inventarioData);
-            alert('Inventario registrado con éxito');
-            console.log('Respuesta del backend:', response);
-
-            // Limpiar los datos del formulario
-            setInventarioData({ nombre: '', cantidad: '', precio: '' });
-
-            // Recargar la lista de inventarios después de agregar una nueva
+            await createInventario(inventarioData);
+            alert('Inventario creado con éxito');
             fetchInventarios();
+            setInventarioData({
+                nombre: '',
+                cantidad: '',
+                precio: '',
+                descripcion: '',
+                id_marca: '',
+                id_categoria: '',
+                id_tipo: '',
+            });
+            setFormVisible(false);
         } catch (error) {
-            alert('Error al registrar el inventario');
-            console.error('Error:', error.response?.data || error.message);
+            console.error('Error al crear el inventario:', error);
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleCreateMarca = async () => {
         try {
-            await deleteInventario(id);
-            alert('Inventario eliminado con éxito');
-            fetchInventarios();  // Recargar la lista después de eliminar
+            await createMarca({ nombre: newMarca });
+            alert('Marca creada con éxito');
+            setMarcaModalOpen(false);
+            setNewMarca('');
+            fetchMarcas();
         } catch (error) {
-            alert('Error al eliminar el inventario');
-            console.error('Error:', error.response?.data || error.message);
+            console.error('Error al crear la marca:', error);
         }
     };
 
-    const handleUpdate = (id) => {
-        // Lógica para actualizar inventarios (abrir popup, etc.)
-        alert('Actualizar inventario con ID: ' + id);
+    const handleCreateCategoria = async () => {
+        try {
+            await createCategoria({ nombre: newCategoria });
+            alert('Categoría creada con éxito');
+            setCategoriaModalOpen(false);
+            setNewCategoria('');
+            fetchCategorias();
+        } catch (error) {
+            console.error('Error al crear la categoría:', error);
+        }
     };
 
-    const columns = [
-        { title: "Nombre", field: "nombre", width: 150, responsive: 0 },
-        { title: "Marca", field: "id_marca", width: 100, responsive: 2 },
-        { title: "Tipo de objeto", field: "tipo_objeto", width: 150, responsive: 0 },
-        { title: "Cantidad", field: "cantidad", width: 150, responsive: 1 },
-        { title: "Precio", field: "precio", width: 100, responsive: 2 },
-        { title: "Descripción", field: "descripcion", width: 200, responsive: 3 },
-    ];
+    const handleCreateTipo = async () => {
+        try {
+            await createTipo({ nombre: newTipo });
+            alert('Tipo creado con éxito');
+            setTipoModalOpen(false);
+            setNewTipo('');
+            fetchTipos();
+        } catch (error) {
+            console.error('Error al crear el tipo:', error);
+        }
+    };
 
     return (
-        <div className="inv-container" style={{ paddingTop: '100px' }}>
-            <div className="inv-form-section">
-                <h2>Registrar Inventario</h2>
-                <form onSubmit={handleSubmit}>
+        <div className="inv-container">
+            <h2 className="inv-title">Inventario</h2>
+
+            {/* Tabla de inventarios */}
+            <table className="inv-table">
+                <thead>
+                    <tr>
+                        <th className="inv-th">Nombre</th>
+                        <th className="inv-th">Marca</th>
+                        <th className="inv-th">Categoría</th>
+                        <th className="inv-th">Tipo</th>
+                        <th className="inv-th">Cantidad</th>
+                        <th className="inv-th">Precio</th>
+                        <th className="inv-th">Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {inventarios.map((inv) => (
+                        <tr key={inv.id} className="inv-tr">
+                            <td className="inv-td">{inv.nombre}</td>
+                            <td className="inv-td">{marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca'}</td>
+                            <td className="inv-td">{categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría'}</td>
+                            <td className="inv-td">{tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo'}</td>
+                            <td className="inv-td">{inv.cantidad}</td>
+                            <td className="inv-td">{inv.precio}</td>
+                            <td className="inv-td">{inv.descripcion}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {/* Botón para mostrar el formulario */}
+            <button className="inv-button" onClick={() => setFormVisible(!isFormVisible)}>
+                {isFormVisible ? 'Ocultar Formulario' : 'Agregar Inventario'}
+            </button>
+
+            {/* Formulario para agregar inventario */}
+            {isFormVisible && (
+                <form onSubmit={handleSubmit} className="inv-form">
                     <div className="inv-form-group">
-                        <label htmlFor="nombre">Nombre</label>
+                        <label className="inv-label">Nombre</label>
                         <input
                             type="text"
-                            id="nombre"
-                            name="nombre"
+                            className="inv-input"
                             value={inventarioData.nombre}
                             onChange={(e) => setInventarioData({ ...inventarioData, nombre: e.target.value })}
                             required
                         />
                     </div>
-
                     <div className="inv-form-group">
-                        <label htmlFor="tipo_objeto">Tipo de objeto</label>
-                        <input
-                            type="text"
-                            id="tipo_objeto"
-                            name="tipo_objeto"
-                            value={inventarioData.tipo_objeto}
-                            onChange={(e) => setInventarioData({ ...inventarioData, tipo_objeto: e.target.value })}
+                        <label className="inv-label">Marca</label>
+                        <select
+                            className="inv-select"
+                            value={inventarioData.id_marca}
+                            onChange={(e) => setInventarioData({ ...inventarioData, id_marca: e.target.value })}
                             required
-                        />
+                        >
+                            <option value="">Seleccionar marca</option>
+                            {marcas.map((m) => (
+                                <option key={m.id} value={m.id_marca}>{m.nombre}</option>
+                            ))}
+                        </select>
+                        <button className="inv-add-button" type="button" onClick={() => setMarcaModalOpen(true)}>+ Añadir Marca</button>
                     </div>
                     <div className="inv-form-group">
-                        <label htmlFor="cantidad">Cantidad</label>
+                        <label className="inv-label">Categoría</label>
+                        <select
+                            className="inv-select"
+                            value={inventarioData.id_categoria}
+                            onChange={(e) => setInventarioData({ ...inventarioData, id_categoria: e.target.value })}
+                            required
+                        >
+                            <option value="">Seleccionar categoría</option>
+                            {categorias.map((c) => (
+                                <option key={c.id} value={c.id_categoria}>{c.nombre}</option>
+                            ))}
+                        </select>
+                        <button className="inv-add-button" type="button" onClick={() => setCategoriaModalOpen(true)}>+ Añadir Categoría</button>
+                    </div>
+                    <div className="inv-form-group">
+                        <label className="inv-label">Tipo</label>
+                        <select
+                            className="inv-select"
+                            value={inventarioData.id_tipo}
+                            onChange={(e) => setInventarioData({ ...inventarioData, id_tipo: e.target.value })}
+                            required
+                        >
+                            <option value="">Seleccionar tipo</option>
+                            {tipos.map((t) => (
+                                <option key={t.id} value={t.id_tipo}>{t.nombre}</option>
+                            ))}
+                        </select>
+                        <button className="inv-add-button" type="button" onClick={() => setTipoModalOpen(true)}>+ Añadir Tipo</button>
+                    </div>
+                    <div className="inv-form-group">
+                        <label className="inv-label">Cantidad</label>
                         <input
                             type="number"
-                            id="cantidad"
-                            name="cantidad"
+                            className="inv-input"
                             value={inventarioData.cantidad}
                             onChange={(e) => setInventarioData({ ...inventarioData, cantidad: e.target.value })}
                             required
                         />
                     </div>
                     <div className="inv-form-group">
-                        <label htmlFor="precio">Precio</label>
+                        <label className="inv-label">Precio</label>
                         <input
                             type="number"
-                            id="precio"
-                            name="precio"
+                            className="inv-input"
                             value={inventarioData.precio}
                             onChange={(e) => setInventarioData({ ...inventarioData, precio: e.target.value })}
                             required
                         />
                     </div>
                     <div className="inv-form-group">
-                        <label htmlFor="descripcion">Descripción</label>
+                        <label className="inv-label">Descripción</label>
                         <input
                             type="text"
-                            id="descripcion"
-                            name="descripcion"
+                            className="inv-input"
                             value={inventarioData.descripcion}
                             onChange={(e) => setInventarioData({ ...inventarioData, descripcion: e.target.value })}
                             required
                         />
                     </div>
-                    <div className="inv-form-group">
-                        <label htmlFor="id_marca">Marca</label>
-                        <select
-                            id="id_marca"
-                            name="id_marca"
-                            value={inventarioData.id_marca}
-                            onChange={(e) => setInventarioData({ ...inventarioData, id_marca: e.target.value })}
-                            required
-                        >
-                            <option value="">Seleccionar marca</option>
-                            {marcas.map((marca) => (
-                                <option key={marca.id_marca} value={marca.id_marca}>{marca.nombre}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <button type="submit">Registrar</button>
+                    <button type="submit" className="inv-submit-button">Registrar</button>
                 </form>
-            </div>
+            )}
 
-            <div className="inv-table-section">
-                <h2>Listado de inventarios</h2>
-                
+            {/* Modal para añadir marca */}
+            <Modal isOpen={isMarcaModalOpen} onClose={() => setMarcaModalOpen(false)} title="Añadir Marca">
                 <input
                     type="text"
-                    placeholder="Filtrar por nombre"
-                    value={filterNombre}
-                    onChange={(e) => setFilterNombre(e.target.value)}
+                    className="inv-modal-input"
+                    value={newMarca}
+                    onChange={(e) => setNewMarca(e.target.value)}
+                    placeholder="Nombre de la marca"
                 />
+                <button className="inv-modal-save-button" onClick={handleCreateMarca}>Guardar</button>
+            </Modal>
 
-                <Table
-                    columns={columns}
-                    data={inventariosConMarcas}
-                    filterNombre={filterNombre}
-                    onDelete={handleDelete}
-                    onUpdate={handleUpdate}
+            {/* Modal para añadir categoría */}
+            <Modal isOpen={isCategoriaModalOpen} onClose={() => setCategoriaModalOpen(false)} title="Añadir Categoría">
+                <input
+                    type="text"
+                    className="inv-modal-input"
+                    value={newCategoria}
+                    onChange={(e) => setNewCategoria(e.target.value)}
+                    placeholder="Nombre de la categoría"
                 />
-            </div>
-            
+                <button className="inv-modal-save-button" onClick={handleCreateCategoria}>Guardar</button>
+            </Modal>
+
+            {/* Modal para añadir tipo */}
+            <Modal isOpen={isTipoModalOpen} onClose={() => setTipoModalOpen(false)} title="Añadir Tipo">
+                <input
+                    type="text"
+                    className="inv-modal-input"
+                    value={newTipo}
+                    onChange={(e) => setNewTipo(e.target.value)}
+                    placeholder="Nombre del tipo"
+                />
+                <button className="inv-modal-save-button" onClick={handleCreateTipo}>Guardar</button>
+            </Modal>
         </div>
     );
-}
+};
 
 export default Inventario;
