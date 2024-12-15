@@ -1,0 +1,23 @@
+
+.button {
+    padding: 3px 8px;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  /* Colores específicos */
+  .button-primary {
+    background-color: #003366; 
+  }
+  
+  .button-secondary {
+    background-color: #507687; 
+  }
+  
+ 
+  

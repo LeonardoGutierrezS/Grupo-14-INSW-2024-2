@@ -36,14 +36,14 @@
 
 
 .form {
-	background-color: #eef7ff; /*Color del formulario*/
+	background-color: #384B70; /*Color del formulario*/
 	padding: 7vh;
 	display: flex;
 	flex-direction: column;
 	border-radius: 24px;
 	align-items: center;
 	h1 {
-		color: #003366; /*Color del titulo del formulario*/
+		color: #FCFAEE; /*Color del titulo del formulario*/
 		font-size: 30px;
 		font-weight: bold;
 		margin: 0;
@@ -54,13 +54,13 @@
 		display: flex;
 	}
 	label {
-		color: #003366; /*Color label de inputs del formulario*/
+		color: #FCFAEE; /*Color label de inputs del formulario*/
 		font-weight: bold;
 		margin-bottom: 0.7vh;
 	}
 	input {
 		display: flex;
-		border: 3px solid #003366; /*Color del borde de inputs del formulario*/
+		border: 3px solid #384B70; /*Color del borde de inputs del formulario*/
 		border-radius: 12px;
 		padding: 8px 5px;
 		background-repeat: no-repeat;
@@ -79,12 +79,12 @@
 		font-weight: light;
 	}
 	input:focus {
-		background-color: rgba(0, 110, 223, 0.14);
+		background-color: rgba(253, 254, 255, 0.593);
 		font-weight: regular;
 	}
 	select {
 		display: flex;
-		border: 3px solid #003366; /*Color del borde de selects del formulario*/
+		border: 3px solid #82776f; /*Color del borde de selects del formulario*/
 		border-radius: 12px;
 		padding: 8px 5px;
 		background-repeat: no-repeat;
@@ -180,9 +180,15 @@
 }
 
 .container {
+	background-image: url('../assets/for_isw.svg'); /* Ruta a tu imagen */
+    background-size: cover; /* Cubre toda la pantalla */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita repetición */
+    height: 100vh; /* Ocupa toda la altura de la pantalla */
+    display: flex;
 	height: auto; /* Permitir que el contenedor se ajuste al contenido */
 	min-height: 100vh; /* Asegurar que ocupe al menos toda la altura de la ventana */
-	background: linear-gradient(90deg, #003366, #001a33); /* Mantén tu fondo */
+	
 	display: flex;
 	justify-content: center;
 	align-items: flex-start; /* Ajusta los elementos desde el inicio */

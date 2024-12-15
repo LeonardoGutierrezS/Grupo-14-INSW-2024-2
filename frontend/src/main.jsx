@@ -15,6 +15,8 @@ import WorkHours from '@pages/WorkHours';
 import AddMarca from '@pages/AddMarca';
 import Inventario from './pages/Inventario';
 import AddSeller from '@pages/AddSeller';
+import CheckInOut from '@pages/CheckInOut';
+import MyShifts from './pages/MyShifts';
 
 const router = createBrowserRouter([
   {
@@ -51,6 +53,14 @@ const router = createBrowserRouter([
       </ProtectedRoute>
       ),
     },
+    {
+      path: '/check-in-out',
+      element: (
+      <ProtectedRoute allowedRoles={['vendedor' , 'mecanico']}> 
+         <CheckInOut /> 
+      </ProtectedRoute>
+      ),
+    },
     { 
       path: '/work-hours/:userId', 
       element: (
@@ -58,7 +68,15 @@ const router = createBrowserRouter([
               <WorkHours />
           </ProtectedRoute>
       )
-  },
+    },
+    { 
+    path: '/my-shifts', 
+    element: (
+        <ProtectedRoute allowedRoles={['vendedor' , 'mecanico']}>
+            <MyShifts />
+        </ProtectedRoute>
+      )
+    },
   
 
     {//leo

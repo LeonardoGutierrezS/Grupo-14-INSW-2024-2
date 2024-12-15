@@ -220,6 +220,8 @@ export async function registerSellerService(user) {
 }
 
 export async function updateEmployeeStatusService(userId, newStatus) {
+  
+
   try {
     const userRepository = AppDataSource.getRepository(User);
 

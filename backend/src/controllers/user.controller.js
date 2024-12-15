@@ -18,7 +18,7 @@ import {
   handleErrorServer,
   handleSuccess,
 } from "../handlers/responseHandlers.js";
-import { registerPaidHoursService } from "../services/paid_hours.service.js";
+import { getPaymentHistoryService, registerPaidHoursService } from "../services/paid_hours.service.js";
 
 export async function getUser(req, res) {
   try {
@@ -200,6 +200,7 @@ export async function approvePayment(req, res) {
   }
 }
 export async function updateEmployeeStatus(req, res) {
+  console.log("Datos recibidos en el backend:", req.body);
   try {
     const { userId } = req.params; // ID del empleado a actualizar
     const { newStatus } = req.body; // Nuevo estado (activo/inactivo)
@@ -224,3 +225,26 @@ export async function updateEmployeeStatus(req, res) {
     handleErrorServer(res, 500, "Error interno del servidor");
   }
 }
+export const getPaymentHistoryController = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const [paymentHistory, error] = await getPaymentHistoryService(userId);
+
+    if (error) {
+      return res.status(404).json({ status: "Error", message: error });
+    }
+
+    return res.status(200).json({
+      status: "Success",
+      message: "Historial de pagos obtenido exitosamente.",
+      data: paymentHistory,
+    });
+  } catch (error) {
+    console.error("Error al obtener el historial de pagos:", error);
+    return res.status(500).json({
+      status: "Error",
+      message: "Error interno del servidor al obtener el historial de pagos.",
+    });
+  }
+};

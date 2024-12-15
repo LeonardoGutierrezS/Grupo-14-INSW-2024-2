@@ -6,7 +6,7 @@ import { createSeller } from '../services/user.service';
 const AddSeller = () => {
     const navigate = useNavigate();
     const handleBack = () => {
-        navigate(-1); // Retrocede a la página anterior
+        navigate(-1); // Retrocede a la pagina snterior
     };
 
 

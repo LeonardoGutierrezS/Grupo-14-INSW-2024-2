@@ -67,3 +67,47 @@ export async function updateWorkHour(id, data) {
     }
 }
 
+export async function updateUserStatus(userId, newStatus) {
+    console.log('Datos enviados al backend:', { userId, newStatus });
+    try {
+        const response = await axios.patch(`/user/update-status/${userId}`, { 
+            newStatus 
+        });
+        return response.data; 
+    } catch (error) {
+        console.error('Error al actualizar el estado del usuario:', error.response?.data || error.message);
+        return error.response?.data || { status: 'Error', message: 'Error al realizar la solicitud' };
+    }
+}
+
+export async function approvePayment(userId, paymentType) {
+    try {
+        const response = await axios.patch(`/user/approve-payment/${userId}`, {
+            paymentType,
+        });
+        return response.data; // Retorna la respuesta del backend
+    } catch (error) {
+        console.error('Error al aprobar el pago:', error.response?.data || error.message);
+        return error.response?.data || { status: 'Error', message: 'Error al aprobar el pago.' };
+    }
+}
+export async function getPaymentHistory(userId) {
+    try {
+        const response = await axios.get(`/user/payment-history/${userId}`);
+        return response.data; // Retorna los datos del backend
+    } catch (error) {
+        console.error('Error al obtener el historial de pagos:', error.response?.data || error.message);
+        return error.response?.data || { status: 'Error', message: 'Error al obtener el historial de pagos.' };
+    }
+}
+
+export const getWorkHoursEmployee = async () => {
+    try {
+        const response = await axios.get('/user/work-hours');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener los turnos (empleado):', error.response?.data || error.message);
+        return error.response?.data || { status: 'Error', message: 'Error al obtener los turnos.' };
+    }
+};
+
