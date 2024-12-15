@@ -8,6 +8,8 @@ import {
 import {
     getAllMarcas,
     createMarca,
+    deleteMarca,
+    updateMarca,
 } from '@services/marca.service.js';
 import {
     getAllCategorias,
@@ -41,9 +43,15 @@ const Inventario = () => {
     const [tipos, setTipos] = useState([]);
 
     const [isFormVisible, setFormVisible] = useState(false);
+
     const [isMarcaModalOpen, setMarcaModalOpen] = useState(false);
+    const [isGestorDeMarcaModalOpen, setGestorDeMarcaModalOpen] = useState(false);
+
     const [isCategoriaModalOpen, setCategoriaModalOpen] = useState(false);
+    const [isGestorDeCategoriaModalOpen, setGestorDeCategoriaModalOpen] = useState(false);
+
     const [isTipoModalOpen, setTipoModalOpen] = useState(false);
+
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
@@ -60,6 +68,8 @@ const Inventario = () => {
     });
 
     const [newMarca, setNewMarca] = useState('');
+    const [editMarca, setEditMarca] = useState(null);
+
     const [newCategoria, setNewCategoria] = useState('');
     const [newTipo, setNewTipo] = useState('');
 
@@ -161,6 +171,28 @@ const Inventario = () => {
         }
     };
 
+    const handleUpdateMarca = async (id, nombre) => {
+        try {
+            await updateMarca(id, { nombre });
+            alert('Marca actualizada con éxito');
+            setEditMarca(null);
+            fetchMarcas();
+        } catch (error) {
+            console.error('Error al actualizar la marca:', error);
+        }
+    };
+
+    const handleDeleteMarca = async (id) => {
+        try {
+            await deleteMarca(id); 
+            alert('Marca eliminada con éxito');
+            fetchMarcas();
+        } catch (error) {
+            console.error('Error al eliminar la marca:', error);
+        }
+    };
+
+
     const handleCreateCategoria = async () => {
         try {
             await createCategoria({ nombre: newCategoria });
@@ -251,6 +283,10 @@ const Inventario = () => {
             <button className="inv-button" onClick={() => setFormVisible(!isFormVisible)}>
                 {isFormVisible ? 'Ocultar Formulario' : 'Agregar Inventario'}
             </button>
+            {/* Botón para mostrar el modal Gestor de marcas */}
+            <button className="inv-button-marca" onClick={() => setGestorDeMarcaModalOpen(true)}>Gestionar Marcas</button>
+            {/* Botón para mostrar el modal Gestor de categorías */}
+            <button className="inv-button-categoria" onClick={() => setGestorDeCategoriaModalOpen(true)}>Gestionar Categorías</button>
 
             {/* Formulario para agregar inventario */}
             {isFormVisible && (
@@ -453,6 +489,68 @@ const Inventario = () => {
                 />
                 <button className="inv-modal-save-button" onClick={handleCreateMarca}>Guardar</button>
             </Modal>
+            {/* Modal Para gestionar marcas */}
+
+            <Modal isOpen={isGestorDeMarcaModalOpen} onClose={() => setGestorDeMarcaModalOpen(false)} title="Gestor de Marcas">
+                <input
+                    type="text"
+                    className="inv-input"
+                    placeholder="Nueva Marca"
+                    value={newMarca}
+                    onChange={(e) => setNewMarca(e.target.value)}
+                />
+                <button className="inv-add-button" onClick={handleCreateMarca}>Añadir Marca</button>
+                <table className="inv-table">
+                    <thead>
+                        <tr>
+                            <th className="inv-th">Nombre</th>
+                            <th className="inv-th">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {marcas.map((marca) => (
+                            <tr key={marca.id_marca} className="inv-tr">
+                                <td className="inv-td">
+                                    {editMarca === marca.id_marca ? (
+                                        <input
+                                            type="text"
+                                            className="inv-input"
+                                            defaultValue={marca.nombre}
+                                            onChange={(e) => setNewMarca(e.target.value)}
+                                        />
+                                    ) : (
+                                        marca.nombre
+                                    )}
+                                </td>
+                                <td className="inv-td">
+                                    {editMarca === marca.id_marca ? (
+                                        <button
+                                            className="inv-save-button"
+                                            onClick={() => handleUpdateMarca(marca.id_marca, newMarca)}
+                                        >
+                                            Guardar
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="inv-edit-button"
+                                            onClick={() => setEditMarca(marca.id_marca)}
+                                        >
+                                            Editar
+                                        </button>
+                                    )}
+                                    <button
+                                        className="inv-delete-button"
+                                        onClick={() => handleDeleteMarca(marca.id_marca)}
+                                    >
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </Modal>
+
 
             {/* Modal para añadir categoría */}
             <Modal isOpen={isCategoriaModalOpen} onClose={() => setCategoriaModalOpen(false)} title="Añadir Categoría">

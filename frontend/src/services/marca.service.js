@@ -25,7 +25,7 @@ export async function createMarca(marcaData) {
 // Actualizar una marca existente
 export async function updateMarca(id, marcaData) {
   try {
-    const { data } = await axios.patch(`/marca/${id}/`, marcaData);
+    const { data } = await axios.patch(`/marca/updateMarca/${id}/`, marcaData);
     return data; // Devuelve los datos actualizados
   } catch (error) {
     console.error('Error al actualizar la marca:', error);
