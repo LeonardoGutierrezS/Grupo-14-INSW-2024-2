@@ -68,7 +68,7 @@ const Navbar = () => {
                             }} 
                             activeClassName="active"
                         >
-                            Usuarios
+                            Personal
                         </NavLink>
                     </li>
                     )}
@@ -134,6 +134,18 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     )}
+                    {(userRole === 'mecanico' || userRole === 'vendedor') && (
+                        <li>
+                            <NavLink to="/check-in-out" onClick={() => setMenuOpen(false)}>
+                                Ingreso/Salida
+                            </NavLink>
+                        </li>
+                    )}
+                    {userRole === 'mecanico' || userRole === 'vendedor' ? (
+                        <li>
+                            <NavLink to="/my-shifts">Mis Turnos</NavLink>
+                        </li>
+                    ) : null}
 
 
                     <li>

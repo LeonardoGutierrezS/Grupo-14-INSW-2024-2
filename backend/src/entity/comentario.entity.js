@@ -17,8 +17,9 @@ const ComentarioSchema = new EntitySchema({
       nullable: false,
       default: () => "CURRENT_TIMESTAMP",
     },
-    detalle: {
-      type: "text", 
+    comentario: {
+      type: "text",
+      nullable: false 
     },
     estado: {
       type: "varchar",
@@ -30,13 +31,16 @@ const ComentarioSchema = new EntitySchema({
     tarea: {
       type: "many-to-one",
       target: "Tarea",
-      joinColumn: { name: "tarea_id" }, // FK
+      joinColumn: { name: "id_tarea" }, // FK
       onDelete: "CASCADE",
+      nullable: false,
     },
     usuario: {
       type: "many-to-one",
       target: "User",
-      joinColumn: { name: "usuario_id" }, // FK
+      joinColumn: { name: "id_user" }, // FK
+      onDelete: "CASCADE",
+      nullable: false,
     },
   },
 });

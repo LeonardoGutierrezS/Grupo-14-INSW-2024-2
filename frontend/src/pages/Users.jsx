@@ -11,10 +11,40 @@ import '@styles/users.css';
 import useEditUser from '@hooks/users/useEditUser';
 import useDeleteUser from '@hooks/users/useDeleteUser';
 import { useNavigate } from 'react-router-dom';
+import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
+import { updateUserStatus } from '@services/user.service.js';
+import StatusPopup from '../components/StatusPopup';
+import '@styles/usersButtons.css';
 
 const Users = () => {
   const { users, fetchUsers, setUsers } = useUsers();
   const [filterRut, setFilterRut] = useState('');
+  const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+const handleEditStatusClick = (user) => {
+    setSelectedUser(user);
+    setIsStatusPopupOpen(true);
+};
+
+const handleSaveStatus = async (userId, status) => {
+  console.log('Datos enviados al servicio:', { userId, status }); // Verifica los datos aquí
+  try {
+      const response = await updateUserStatus(userId, status); // selectedStatus es un string ("activo" o "inactivo")
+      if (response.status === "Success") {
+          showSuccessAlert('¡Actualizado!', 'El estado del usuario se actualizó correctamente.');
+          setIsStatusPopupOpen(false);
+          fetchUsers(); // Refresca la tabla
+      } else {
+          showErrorAlert('Error', response.message || 'Ocurrió un error al actualizar el estado.');
+      }
+  } catch (error) {
+      console.error('Error al actualizar el estado del usuario:', error);
+      showErrorAlert('Error', 'Ocurrió un error al actualizar el estado.');
+  }
+};
+
+
 
   const navigate = useNavigate();
 
@@ -37,6 +67,8 @@ const Users = () => {
     setDataUser(selectedUsers);
   }, [setDataUser]);
   
+  
+  
 
 
   const columns = [
@@ -45,28 +77,45 @@ const Users = () => {
     { title: "Rut", field: "rut", width: 120, responsive: 2 },
     { title: "Rol", field: "rol", width: 100, responsive: 2 },
     { title: "Creado", field: "createdAt", width: 110, responsive: 2 },
-    { title: "Estado", field: "estado", width: 100, responsive: 2 },
-    { 
-      title: "Acciones", 
-      field: "actions", 
-      width: 100, 
-      formatter: () => '<button class="view-work-hours-btn">Ver Turnos</button>',
+    {
+      title: "Estado",
+      field: "estado",
+      width: 120,
+      formatter: (cell) => {
+        const user = cell.getData();
+        return `
+          ${user.estado}
+          <button class="button button-secondary">Editar</button>
+        `;
+      },
+      cellClick: function (e, cell) {
+        const rowData = cell.getRow().getData(); // Datos de la fila seleccionada
+        handleEditStatusClick(rowData); // Abre el popup con los datos del usuario
+      },
+    },
+    {
+      title: "Turnos",
+      field: "actions",
+      width: 120,
+      formatter: () => '<button class="button button-secondary">Ver Turnos</button>',
       cellClick: (e, cell) => {
-          const userId = cell.getRow().getData().id; // Obtiene el ID del usuario
-          console.log('datos de la celda:', cell.getRow().getData());
-          console.log('ID seleccionado:', userId); 
-          navigate(`/work-hours/${userId}`);
+        const userId = cell.getRow().getData().id; // Obtiene el ID del usuario
+        navigate(`/work-hours/${userId}`);
       }
-    }
+    },
   ];
 
   return (
     <div className='main-container'>
       <div className='table-container'>
         <div className='top-table'>
-          <h1 className='title-table'>Usuarios</h1>
-          <button onClick={() => navigate('/add-mechanic')}>Agregar Mecánico</button>
-
+          <h1 className='title-table'>Todo el personal</h1>
+          <button className="button button-primary" onClick={() => navigate('/add-mechanic')}>
+            Agregar Mecánico
+          </button>
+          <button className="button button-primary" onClick={() => navigate('/add-seller')}>
+            Agregar Vendedor
+          </button>
             <div className='filter-actions'>
               <Search value={filterRut} onChange={handleRutFilterChange} placeholder={'Filtrar por rut'} />
               <button onClick={handleClickUpdate} disabled={dataUser.length === 0}>
@@ -96,7 +145,17 @@ const Users = () => {
         />
       </div>
       <Popup show={isPopupOpen} setShow={setIsPopupOpen} data={dataUser} action={handleUpdate} />
+      {isStatusPopupOpen && (
+      <StatusPopup
+        show={isStatusPopupOpen}
+        setShow={setIsStatusPopupOpen}
+        user={selectedUser}
+        onSave={(newStatus) => handleSaveStatus(selectedUser.id, newStatus)}
+    />
+    )}
+
     </div>
+    
   );
 };
 
