@@ -109,7 +109,7 @@ export async function deleteCategoria(req, res) {
 
 export async function updateCategoria(req, res) {
     try {
-        const {id_categoria} = req.params;
+        const {id} = req.params;
         const {body} = req;
         const {error} = categoriaBodyValidation.validate(body);
 
@@ -117,7 +117,7 @@ export async function updateCategoria(req, res) {
             return handleErrorClient(res, 400, "Error de validación", error.message);
         }
 
-        const [categoria, errorCategoria] = await updateCategoriaService(id_categoria, body);
+        const [categoria, errorCategoria] = await updateCategoriaService(id, body);
 
         if (errorCategoria) {
             return handleErrorClient(res, 404, "Error al actualizar categoria", errorCategoria);
