@@ -179,7 +179,6 @@ export async function updateInventarioService(id, inventarioData) {
 
     // Buscar el inventario por ID
     const inventario = await inventarioRepository.findOne({ where: { id } });
-
     if (!inventario) {
       return [null, "El inventario no existe"];
     }
@@ -215,6 +214,7 @@ export async function updateInventarioService(id, inventarioData) {
     return [null, "Error interno del servidor"];
   }
 }
+
 // ahora un update que modifique solo la cantidad de un inventario
 
 export async function updateInventarioCantidadService(id, inventarioData) {
@@ -223,7 +223,6 @@ export async function updateInventarioCantidadService(id, inventarioData) {
 
     // Buscar el inventario por ID
     const inventario = await inventarioRepository.findOne({ where: { id } });
-
     if (!inventario) {
       return [null, "El inventario no existe"];
     }

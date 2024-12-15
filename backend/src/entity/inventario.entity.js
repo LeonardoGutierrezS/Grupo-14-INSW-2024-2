@@ -9,7 +9,8 @@ const InventarioSchema = new EntitySchema({
         id: {
             primary: true,
             type: "int",
-            generated: true
+            generated: true,
+            unique: true
         },
         nombre: {
             type: "varchar",

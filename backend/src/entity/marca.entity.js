@@ -1,3 +1,4 @@
+"use strict";
 import { EntitySchema } from "typeorm";
 
 const MarcaSchema = new EntitySchema({

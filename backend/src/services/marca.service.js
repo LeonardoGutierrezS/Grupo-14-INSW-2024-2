@@ -87,30 +87,20 @@ export async function deleteMarcaService(id_marca) {
     }
 }
 
-export async function updateMarcaService(query) {
+export async function updateMarcaService(id_marca, marcaData) {
     try {
-        const { id_marca, nombre } = query;
         const marcaRepository = AppDataSource.getRepository(Marca);
+        const { nombre } = marcaData;
         const marca = await marcaRepository.findOne({
             where: { id_marca },
         });
         if (!marca) return [null, "Marca no encontrada"];
-
-        const marcaExistente = await marcaRepository.findOne({
-            where: { nombre },
-            
-        });
-
-        if (marcaExistente && marcaExistente.id !== marca.id) {
-            //muestra en el mensaje l nombre de la marca que ya existe en el mensaje
-            return [null, `Una marca con " ${nombre} " por nombre ya existe`];
-        }
-
         marca.nombre = nombre;
-        const marcaActualizada = await marcaRepository.save(marca);
-        return [marcaActualizada, null];
+        const marcaGuardada = await marcaRepository.save(marca);
+        return [marcaGuardada, null];
     } catch (error) {
         console.error("Error al actualizar la marca:", error);
         return [null, "Error interno del servidor"];
     }
 }
+
