@@ -94,10 +94,12 @@ export async function updateMarcaService(id_marca, marcaData) {
         const marca = await marcaRepository.findOne({
             where: { id_marca },
         });
+
         if (!marca) return [null, "Marca no encontrada"];
         marca.nombre = nombre;
         const marcaGuardada = await marcaRepository.save(marca);
         return [marcaGuardada, null];
+        
     } catch (error) {
         console.error("Error al actualizar la marca:", error);
         return [null, "Error interno del servidor"];

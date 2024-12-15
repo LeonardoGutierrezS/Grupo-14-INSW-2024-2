@@ -86,25 +86,19 @@ export async function deleteTipoService(id_tipo) {
 }
 
 
-export async function updateTipoService(query) {
+export async function updateTipoService(id_tipo, tipoData) {
     try {
-        const { id_tipo, nombre } = query;
         const tipoRepository = AppDataSource.getRepository(Tipo);
+        const { nombre } = tipoData;
         const tipo = await tipoRepository.findOne({
             where: { id_tipo },
         });
+
         if (!tipo) return [null, "Tipo no encontrado"];
-        const tipoExistente = await tipoRepository.findOne({
-            where: { nombre },
-        });
-
-        if (tipoExistente && tipoExistente.id_tipo !== id_tipo) {
-            return [null, "El tipo ya existe"];
-        }
-
         tipo.nombre = nombre;
         const tipoActualizado = await tipoRepository.save(tipo);
         return [tipoActualizado, null];
+        
     } catch (error) {
         console.error("Error al actualizar el tipo:", error);
         return [null, "Error interno del servidor"];

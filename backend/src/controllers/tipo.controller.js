@@ -113,6 +113,7 @@ export async function deleteTipo(req, res) {
 
 export async function updateTipo(req, res) {
     try {
+        const { id } = req.params;
         const { body } = req;
         const { error } = tipoBodyValidation.validate(body);
 
@@ -120,7 +121,7 @@ export async function updateTipo(req, res) {
             return handleErrorClient(res, 400, "Error de validación", error.message);
         }
 
-        const [tipo, errorTipo] = await updateTipoService(body);
+        const [tipo, errorTipo] = await updateTipoService(id.body);
 
         if (errorTipo) {
             return handleErrorClient(res, 404, "Error al actualizar tipo", errorTipo);
