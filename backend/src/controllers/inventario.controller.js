@@ -4,7 +4,12 @@ import {
     getInventarioTotalService,
     getInventarioByIdService,
     getInventarioBynombreDeMarcaService,
+    getInventarioBynombreDeCategoriaService,
+    getInventarioBynombreDeTipoService,
     deleteInventarioService, 
+    updateInventarioService,
+    updateInventarioCantidadService
+
 } from "../services/inventario.service.js";
 
 import { 
@@ -94,6 +99,45 @@ export async function getInventarioBynombreDeMarca (req, res) {
     }
 }
 
+export async function getInventarioBynombreDeCategoria (req, res) {
+    try {
+        const {nombre} = req.params;
+
+        if (!nombre) {
+            return handleErrorClient(res, 400, "Error de validación", "El nombre es requerido");
+        }
+
+        const [inventario, errorInventario] = await getInventarioBynombreDeCategoriaService(nombre);
+
+        if (errorInventario) {
+            return handleErrorClient(res, 404, "Error al obtener inventario", errorInventario);
+        }
+        handleSuccess(res, 200, "Inventario encontrado", inventario);
+    }
+    catch (error) {
+        handleErrorServer(res, 500, "Error del Servidor", error.message);
+    }
+}
+
+export async function getInventarioBynombreDeTipo (req, res) {
+    try {
+        const {nombre} = req.params;
+        if (!nombre) {
+            return handleErrorClient(res, 400, "Error de validación", "El nombre es requerido");
+        }
+
+        const [inventario, errorInventario] = await getInventarioBynombreDeTipoService(nombre);
+
+        if (errorInventario) {
+            return handleErrorClient(res, 404, "Error al obtener inventario", errorInventario);
+        }
+        handleSuccess(res, 200, "Inventario encontrado", inventario);
+    }
+    catch (error) {
+        handleErrorServer(res, 500, "Error del Servidor", error.message);
+    }
+}
+
 export async function deleteInventario (req, res) {
     try {
         const {id} = req.params;
@@ -108,6 +152,48 @@ export async function deleteInventario (req, res) {
             return handleErrorClient(res, 404, "Error al eliminar inventario", errorInventario);
         }
         handleSuccess(res, 200, "Inventario eliminado", inventario);
+    }
+    catch (error) {
+        handleErrorServer(res, 500, "Error del Servidor", error.message);
+    }
+}
+
+export async function updateInventario (req, res) {
+    try {
+        const {id} = req.params;
+        const {body} = req;
+
+        if (!id) {
+            return handleErrorClient(res, 400, "Error de validación", "El id es requerido");
+        }
+
+        const [inventario, errorInventario] = await updateInventarioService(id, body);
+
+        if (errorInventario) {
+            return handleErrorClient(res, 404, "Error al actualizar inventario", errorInventario);
+        }
+        handleSuccess(res, 200, "Inventario actualizado", inventario);
+    }
+    catch (error) {
+        handleErrorServer(res, 500, "Error del Servidor", error.message);
+    }
+}
+
+export async function updateInventarioCantidad (req, res) {
+    try {
+        const {id} = req.params;
+        const {body} = req;
+
+        if (!id) {
+            return handleErrorClient(res, 400, "Error de validación", "El id es requerido");
+        }
+
+        const [inventario, errorInventario] = await updateInventarioCantidadService(id, body);
+
+        if (errorInventario) {
+            return handleErrorClient(res, 404, "Error al actualizar inventario", errorInventario);
+        }
+        handleSuccess(res, 200, "Inventario actualizado", inventario);
     }
     catch (error) {
         handleErrorServer(res, 500, "Error del Servidor", error.message);

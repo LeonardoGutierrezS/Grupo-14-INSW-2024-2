@@ -13,10 +13,11 @@ import '@styles/styles.css';
 import AddMechanic from '@pages/AddMechanic';
 import WorkHours from '@pages/WorkHours';
 import AddMarca from '@pages/AddMarca';
-import Inventario from './pages/Inventario';
+import Inventario from '@pages/Inventario';
 import AddSeller from '@pages/AddSeller';
 import CheckInOut from '@pages/CheckInOut';
 import MyShifts from './pages/MyShifts';
+
 
 const router = createBrowserRouter([
   {

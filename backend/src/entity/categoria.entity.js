@@ -1,11 +1,10 @@
-"use strict";
 import { EntitySchema } from "typeorm";
 
 const MarcaSchema = new EntitySchema({
-    name: "Marca",
-    tableName: "marcas",
+    name: "Categoria",
+    tableName: "categorias",
     columns: {
-        id_marca: {
+        id_categoria: {
             primary: true,
             type: "int",
             generated: true,
@@ -22,7 +21,7 @@ const MarcaSchema = new EntitySchema({
         inventarios: {
             target: "Inventario",
             type: "one-to-many",
-            inverseSide: "marca",
+            inverseSide: "categoria",
             cascade: true  // Propaga las operaciones a los inventarios relacionados
         }
     }

@@ -1,89 +1,192 @@
-/* Estilos generales para la vista de inventarios */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
 
 .inv-container {
-    display: flex;
-    flex-direction: column;
-    gap: 40px; /* Espacio entre las secciones */
+    max-width: 1200px;
+    margin: 50px auto;
     padding: 20px;
-    justify-content: center;
-    align-items: center;
-    margin-top: 70px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.inv-form-section {
+.inv-title {
+    text-align: center;
+    color: #333333;
+    margin-bottom: 20px;
+}
+
+.inv-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.inv-th, .inv-td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 10px;
+}
+
+.inv-th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    color: #333333;
+}
+
+.inv-tr:nth-child(even) {
     background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 600px;
-    margin-bottom: 40px;
 }
 
-.inv-table-section {
-    background-color: #fff;
+.inv-tr:hover {
+    background-color: #f1f1f1;
+}
+
+.inv-button {
+    display: block;
+    margin: 0 auto 20px auto;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.inv-button:hover {
+    background-color: #0056b3;
+}
+
+.inv-form {
+    background-color: #f8f8f8;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 1000px;
+    margin-bottom: 30px;
 }
 
 .inv-form-group {
     margin-bottom: 15px;
 }
 
-.inv-form-group label {
+.inv-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333333;
+}
+
+.inv-input, .inv-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.inv-input:focus, .inv-select:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+.inv-add-button {
+    margin-top: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.inv-add-button:hover {
+    background-color: #218838;
+}
+
+.inv-submit-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
     font-weight: bold;
 }
 
-.inv-form-group input {
-    display: flex;
-    border: 3px solid #003366; /*Color del borde de inputs del formulario*/
-    border-radius: 12px;
-    padding: 8px 5px;
-    background-repeat: no-repeat;
-    margin-bottom: 0.8vh;
-    background-color: #eef7ff;
-    font-weight: regular;
-    font-size: 16px;
-    color: #003366;
-    border-radius: 12px;
-    background-position: right 10px center;
-    background-size: 25px 25px;
-    box-sizing: border-box;
+.inv-submit-button:hover {
+    background-color: #0056b3;
 }
 
-.inv-container {
-    background-color: #003366; /*Color del boton del formulario*/
-}
-
-button:disabled {
-    background-color: #ccc;
-}
-
-/* Estilos para los títulos */
-h2 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
-
-/* Ajustes en la tabla */
-.inv-table-section table {
+.inv-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    border-collapse: collapse;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.inv-table-section th, .inv-table-section td {
+.inv-modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.inv-modal-title {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #333333;
+    text-align: center;
+}
+
+.inv-modal-input {
+    width: 100%;
     padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
-.inv-table-section th {
-    background-color: #f2f2f2;
+.inv-modal-save-button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
 }
 
-.inv-table-section tr:hover {
-    background-color: #f9f9f9;
+.inv-modal-save-button:hover {
+    background-color: #0056b3;
+}
+
+.inv-modal-close-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.inv-modal-close-btn:hover {
+    background-color: #c82333;
 }
