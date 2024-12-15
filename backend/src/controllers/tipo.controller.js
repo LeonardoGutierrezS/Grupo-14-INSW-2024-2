@@ -121,7 +121,7 @@ export async function updateTipo(req, res) {
             return handleErrorClient(res, 400, "Error de validación", error.message);
         }
 
-        const [tipo, errorTipo] = await updateTipoService(id.body);
+        const [tipo, errorTipo] = await updateTipoService(id, body);
 
         if (errorTipo) {
             return handleErrorClient(res, 404, "Error al actualizar tipo", errorTipo);

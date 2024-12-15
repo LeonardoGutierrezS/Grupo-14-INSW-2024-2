@@ -20,6 +20,8 @@ import {
 import {
     getAllTipos,
     createTipo,
+    deleteTipo,
+    updateTipo,
 } from '@services/tipo.service.js';
 import '@styles/inv.css';
 
@@ -53,6 +55,7 @@ const Inventario = () => {
     const [isGestorDeCategoriaModalOpen, setGestorDeCategoriaModalOpen] = useState(false);
 
     const [isTipoModalOpen, setTipoModalOpen] = useState(false);
+    const [isGestorDeTipoModalOpen, setGestorDeTipoModalOpen] = useState(false);
 
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -76,6 +79,7 @@ const Inventario = () => {
     const [editCategoria, setEditCategoria] = useState(null);
 
     const [newTipo, setNewTipo] = useState('');
+    const [editTipo, setEditTipo] = useState(null);
 
     useEffect(() => {
         fetchInventarios();
@@ -238,6 +242,25 @@ const Inventario = () => {
             console.error('Error al crear el tipo:', error);
         }
     };
+    const handleUpdateTipo = async (id, nombre) => {
+        try {
+            await updateTipo(id, { nombre });
+            alert('Tipo actualizado con éxito');
+            setEditTipo(null);
+            fetchTipos();
+        } catch (error) {
+            console.error('Error al actualizar el tipo:', error);
+        }
+    };
+    const handleDeleteTipo = async (id) => {
+        try {
+            await deleteTipo(id);
+            alert('Tipo eliminado con éxito');
+            fetchTipos();
+        } catch (error) {
+            console.error('Error al eliminar el tipo:', error);
+        }
+    };
 
     return (
         <div className="inv-container">
@@ -309,6 +332,8 @@ const Inventario = () => {
             <button className="inv-button-marca" onClick={() => setGestorDeMarcaModalOpen(true)}>Gestionar Marcas</button>
             {/* Botón para mostrar el modal Gestor de categorías */}
             <button className="inv-button-categoria" onClick={() => setGestorDeCategoriaModalOpen(true)}>Gestionar Categorías</button>
+            {/* Botón para mostrar el modal Gestor de tipos */}
+            <button className="inv-button-tipo" onClick={() => setGestorDeTipoModalOpen(true)}>Gestionar Tipos</button>
 
             {/* Formulario para agregar inventario */}
             {isFormVisible && (
@@ -657,6 +682,67 @@ const Inventario = () => {
                     placeholder="Nombre del tipo"
                 />
                 <button className="inv-modal-save-button" onClick={handleCreateTipo}>Guardar</button>
+            </Modal>
+                
+            {/* Modal Para gestionar tipos */}
+            <Modal isOpen={isGestorDeTipoModalOpen} onClose={() => setGestorDeTipoModalOpen(false)} title="Gestor de Tipos">
+                <input
+                    type="text"
+                    className="inv-input"
+                    placeholder="Nuevo Tipo"
+                    value={newTipo}
+                    onChange={(e) => setNewTipo(e.target.value)}
+                />
+                <button className="inv-add-button" onClick={handleCreateTipo}>Añadir Tipo</button>
+                <table className="inv-table">
+                    <thead>
+                        <tr>
+                            <th className="inv-th">Nombre</th>
+                            <th className="inv-th">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {tipos.map((tipo) => (
+                            <tr key={tipo.id_tipo} className="inv-tr">
+                                <td className="inv-td">
+                                    {editTipo === tipo.id_tipo ? (
+                                        <input
+                                            type="text"
+                                            className="inv-input"
+                                            defaultValue={tipo.nombre}
+                                            onChange={(e) => setNewTipo(e.target.value)}
+                                        />
+                                    ) : (
+                                        tipo.nombre
+                                    )}
+                                </td>
+                                <td className="inv-td">
+                                    {editTipo === tipo.id_tipo ? (
+                                        <button
+                                            className="inv-save-button"
+                                            onClick={() => handleUpdateTipo(tipo.id_tipo, newTipo)}
+                                        >
+                                            Guardar
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="inv-edit-button"
+                                            onClick={() => setEditTipo(tipo.id_tipo)}
+                                        >
+                                            Editar
+                                        </button>
+                                    )}
+                                    <button
+                                        className="inv-delete-button"
+                                        onClick={() => handleDeleteTipo(tipo.id_tipo)}
+                                    >
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </Modal>
         </div>
     );

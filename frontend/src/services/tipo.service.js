@@ -25,7 +25,7 @@ export async function createTipo(tipoData) {
 // Actualizar un tipo existente
 export async function updateTipo(id, tipoData) {
   try {
-    const { data } = await axios.patch(`/tipo/${id}/`, tipoData);
+    const { data } = await axios.put(`/tipo/updateTipo/${id}/`, tipoData);
     return data; // Devuelve los datos actualizados
   } catch (error) {
     console.error("Error al actualizar el tipo:", error);
