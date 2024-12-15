@@ -25,7 +25,7 @@ export async function createCategoria(categoriaData) {
 // Actualizar una categoría existente
 export async function updateCategoria(id, categoriaData) {
   try {
-    const { data } = await axios.patch(`/categoria/${id}/`, categoriaData);
+    const { data } = await axios.patch(`/categoria/updateCategoria/${id}/`, categoriaData);
     return data; // Devuelve los datos actualizados
   } catch (error) {
     console.error("Error al actualizar la categoría:", error);

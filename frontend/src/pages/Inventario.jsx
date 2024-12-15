@@ -14,6 +14,8 @@ import {
 import {
     getAllCategorias,
     createCategoria,
+    deleteCategoria,
+    updateCategoria,
 } from '@services/categoria.service.js';
 import {
     getAllTipos,
@@ -71,6 +73,8 @@ const Inventario = () => {
     const [editMarca, setEditMarca] = useState(null);
 
     const [newCategoria, setNewCategoria] = useState('');
+    const [editCategoria, setEditCategoria] = useState(null);
+
     const [newTipo, setNewTipo] = useState('');
 
     useEffect(() => {
@@ -170,7 +174,6 @@ const Inventario = () => {
             console.error('Error al crear la marca:', error);
         }
     };
-
     const handleUpdateMarca = async (id, nombre) => {
         try {
             await updateMarca(id, { nombre });
@@ -181,7 +184,6 @@ const Inventario = () => {
             console.error('Error al actualizar la marca:', error);
         }
     };
-
     const handleDeleteMarca = async (id) => {
         try {
             await deleteMarca(id); 
@@ -204,6 +206,26 @@ const Inventario = () => {
             console.error('Error al crear la categoría:', error);
         }
     };
+    const handleUpdateCategoria = async (id, nombre) => {
+        try {
+            await updateCategoria(id, { nombre });
+            alert('Categoría actualizada con éxito');
+            setEditCategoria(null);
+            fetchCategorias();
+        } catch (error) {
+            console.error('Error al actualizar la categoría:', error);
+        }
+    };
+    const handleDeleteCategoria = async (id) => {
+        try {
+            await deleteCategoria(id);
+            alert('Categoría eliminada con éxito');
+            fetchCategorias();
+        } catch (error) {
+            console.error('Error al eliminar la categoría:', error);
+        }
+    };
+
 
     const handleCreateTipo = async () => {
         try {
@@ -489,8 +511,8 @@ const Inventario = () => {
                 />
                 <button className="inv-modal-save-button" onClick={handleCreateMarca}>Guardar</button>
             </Modal>
-            {/* Modal Para gestionar marcas */}
 
+            {/* Modal Para gestionar marcas */}
             <Modal isOpen={isGestorDeMarcaModalOpen} onClose={() => setGestorDeMarcaModalOpen(false)} title="Gestor de Marcas">
                 <input
                     type="text"
@@ -562,6 +584,67 @@ const Inventario = () => {
                     placeholder="Nombre de la categoría"
                 />
                 <button className="inv-modal-save-button" onClick={handleCreateCategoria}>Guardar</button>
+            </Modal>
+
+            {/* Modal Para gestionar categorías */}
+            <Modal isOpen={isGestorDeCategoriaModalOpen} onClose={() => setGestorDeCategoriaModalOpen(false)} title="Gestor de Categorías">
+                <input
+                    type="text"
+                    className="inv-input"
+                    placeholder="Nueva Categoría"
+                    value={newCategoria}
+                    onChange={(e) => setNewCategoria(e.target.value)}
+                />
+                <button className="inv-add-button" onClick={handleCreateCategoria}>Añadir Categoría</button>
+                <table className="inv-table">
+                    <thead>
+                        <tr>
+                            <th className="inv-th">Nombre</th>
+                            <th className="inv-th">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {categorias.map((categoria) => (
+                            <tr key={categoria.id_categoria} className="inv-tr">
+                                <td className="inv-td">
+                                    {editCategoria === categoria.id_categoria ? (
+                                        <input
+                                            type="text"
+                                            className="inv-input"
+                                            defaultValue={categoria.nombre}
+                                            onChange={(e) => setNewCategoria(e.target.value)}
+                                        />
+                                    ) : (
+                                        categoria.nombre
+                                    )}
+                                </td>
+                                <td className="inv-td">
+                                    {editCategoria === categoria.id_categoria ? (
+                                        <button
+                                            className="inv-save-button"
+                                            onClick={() => handleUpdateCategoria(categoria.id_categoria, newCategoria)}
+                                        >
+                                            Guardar
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="inv-edit-button"
+                                            onClick={() => setEditCategoria(categoria.id_categoria)}
+                                        >
+                                            Editar
+                                        </button>
+                                    )}
+                                    <button
+                                        className="inv-delete-button"
+                                        onClick={() => handleDeleteCategoria(categoria.id_categoria)}
+                                    >
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </Modal>
 
             {/* Modal para añadir tipo */}
