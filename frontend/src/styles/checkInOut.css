@@ -1,0 +1,45 @@
+.shift-management-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 80px); 
+    background-color: #f9f9f9;
+    padding: 20px;
+  }
+  
+  .shift-management-container h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #003366;
+    margin-bottom: 20px;
+  }
+  
+  .shift-management-container p {
+    font-size: 16px;
+    color: #333;
+    margin: 10px 0;
+  }
+  
+  .shift-management-container button {
+    background-color: #003366;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  
+  .shift-management-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .shift-management-container button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
