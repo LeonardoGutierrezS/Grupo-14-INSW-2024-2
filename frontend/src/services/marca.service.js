@@ -1,6 +1,6 @@
 import axios from './root.service.js';
 
-// Obtener todas las marcas de bicicletas
+// Obtener todas las marcas 
 export async function getAllMarcas() {
   try {
     const { data } = await axios.get('/marca/getMarcas/');
@@ -11,7 +11,7 @@ export async function getAllMarcas() {
   }
 }
 
-// Crear una nueva marca de bicicleta
+// Crear una nueva marca 
 export async function createMarca(marcaData) {
   try {
     const { data } = await axios.post('/marca/crearMarca/', marcaData);
@@ -25,7 +25,7 @@ export async function createMarca(marcaData) {
 // Actualizar una marca existente
 export async function updateMarca(id, marcaData) {
   try {
-    const { data } = await axios.patch(`/marca/${id}/`, marcaData);
+    const { data } = await axios.put(`/marca/updateMarca/${id}/`, marcaData);
     return data; // Devuelve los datos actualizados
   } catch (error) {
     console.error('Error al actualizar la marca:', error);

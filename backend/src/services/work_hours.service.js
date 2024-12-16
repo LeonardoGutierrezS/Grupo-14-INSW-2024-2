@@ -13,8 +13,6 @@ export async function registerCheckInService(userId, checkIn) {
       .andWhere("workHours.check_out IS NULL")
       .getOne();
 
-    // Agregar log para verificar el estado de existingRecord
-    console.log("Registro existente encontrado:", existingRecord);
 
     if (existingRecord) {
       // Si existe un registro sin check_out, se considera como turno en progreso

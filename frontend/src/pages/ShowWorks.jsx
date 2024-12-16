@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from 'react';
+import { getAllIngresos } from '@services/ingresoBicicletas.service.js';
 import Table from '@components/Table';
 import useGetWorks from '@hooks/works/useGetWorks.jsx';
 import Search from '@components/Search';

@@ -173,7 +173,55 @@ export async function registerEmployeeService(user) {
   }
 }
 
+export async function registerSellerService(user) {
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+
+    const { nombreCompleto, rut, email, rol } = user;
+
+    const createErrorMessage = (dataInfo, message) => ({
+      dataInfo,
+      message,
+    });
+
+    const existingEmailUser = await userRepository.findOne({
+      where: { email },
+    });
+
+    if (existingEmailUser) {
+      return [null, createErrorMessage("email", "Correo electrónico en uso")];
+    }
+
+    const existingRutUser = await userRepository.findOne({
+      where: { rut },
+    });
+
+    if (existingRutUser) {
+      return [null, createErrorMessage("rut", "RUT ya registrado")];
+    }
+
+    const newEmployee = userRepository.create({
+      nombreCompleto,
+      email,
+      rut,
+      password: await encryptPassword(user.password),
+      rol: rol || "vendedor",  // Usamos el rol proporcionado o por defecto mecanico
+    });
+
+    await userRepository.save(newEmployee);
+
+    const { password, ...dataEmployee } = newEmployee;
+
+    return [dataEmployee, null];
+  } catch (error) {
+    console.error("Error al registrar un empleado", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
 export async function updateEmployeeStatusService(userId, newStatus) {
+  
+
   try {
     const userRepository = AppDataSource.getRepository(User);
 
