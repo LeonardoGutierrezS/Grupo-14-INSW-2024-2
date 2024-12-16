@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { checkIn, checkOut, getActiveShift } from "@services/work.service";
 import { showSuccessAlert, showErrorAlert } from "@helpers/sweetAlert";
 import '@styles/checkInOut.css';
-
+import '@styles/usersButtons.css';
 
 const ShiftManagement = () => {
   const [activeShift, setActiveShift] = useState(null);
@@ -74,15 +74,15 @@ const ShiftManagement = () => {
     }
   };
 
-  // Maneja el Check-Out
+  
   const handleCheckOut = async () => {
     try {
       const response = await checkOut();
       if (response.status === "Success") {
         showSuccessAlert("¡Check-Out Exitoso!", response.message);
-        setActiveShift(null); // Limpia el turno activo
-        stopTimer(); // Detiene el cronómetro
-        setElapsedTime(0); // Reinicia el cronómetro
+        setActiveShift(null); 
+        stopTimer(); 
+        setElapsedTime(0); 
       } else {
         showErrorAlert("Error", response.message);
       }
@@ -104,10 +104,20 @@ const ShiftManagement = () => {
           <p>
             <strong>Tiempo transcurrido:</strong> {formatTime(elapsedTime)}
           </p>
-          <button onClick={handleCheckOut}>Finalizar Turno</button>
+          <button 
+          className="button button-secondary"
+          onClick={handleCheckOut}
+          >
+            Finalizar Turno
+            </button>
         </div>
       ) : (
-        <button onClick={handleCheckIn}>Iniciar Turno</button>
+        <button
+        className="button button-secondary"
+        onClick={handleCheckIn}
+        >
+          Iniciar Turno
+        </button>
       )}
     </div>
   );

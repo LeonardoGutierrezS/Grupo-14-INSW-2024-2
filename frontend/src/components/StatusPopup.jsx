@@ -4,9 +4,9 @@ import CloseIcon from '@assets/XIcon.svg';
 
 export default function StatusPopup({ show, setShow, user, onSave }) {
     const handleSubmit = (formData) => {
-        const { status } = formData; // Extrae solo el `status`
+        const { status } = formData; 
         console.log('Estado extraído del formulario:', status);
-        onSave(status); // Envía solo el estado como string (activo o inactivo)
+        onSave(status); 
     };
 
     return (
@@ -26,7 +26,7 @@ export default function StatusPopup({ show, setShow, user, onSave }) {
                                     defaultValue: user.nombreCompleto || "",
                                     fieldType: 'input',
                                     type: "text",
-                                    disabled: true, // Campo deshabilitado
+                                    disabled: true, 
                                 },
                                 {
                                     label: "Correo electrónico",

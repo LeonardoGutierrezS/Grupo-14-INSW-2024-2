@@ -3,17 +3,17 @@ import { useParams } from 'react-router-dom';
 import { getPaymentHistory, getWorkHours, updateWorkHour, approvePayment } from '@services/user.service.js';
 import '@styles/users.css';
 import HoursPopup from '../components/HoursPopup';
-import PaymentPopup from '../components/PayPopup'; // Nuevo componente para seleccionar el tipo de pago
+import PaymentPopup from '../components/PayPopup'; 
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
-import PayHistoryPopup from '../components/PayHistoryPopup'; // Importa el componente del popup
+import PayHistoryPopup from '../components/PayHistoryPopup'; 
 import Table from '../components/Table';
 
 const WorkHours = () => {
-    const { userId } = useParams(); // Obtiene el ID del mecánico desde la URL
+    const { userId } = useParams(); 
     const [workHours, setWorkHours] = useState([]);
     const [totalHours, setTotalHours] = useState(0);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
-    const [isPaymentPopupOpen, setIsPaymentPopupOpen] = useState(false); // Estado para el popup de pago
+    const [isPaymentPopupOpen, setIsPaymentPopupOpen] = useState(false); 
     const [selectedWorkHour, setSelectedWorkHour] = useState(null);
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [isHistoryPopupOpen, setIsHistoryPopupOpen] = useState(false);
@@ -22,9 +22,19 @@ const WorkHours = () => {
         const date = new Date(value);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     };
+    const adjustTimeZone = (dateTimeString) => {
+        const date = new Date(dateTimeString);
+        const userTime = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+        return userTime.toISOString().slice(0, 19); 
+    };
 
     const handleEditClick = (workHour) => {
-        setSelectedWorkHour(workHour);
+        const adjustedWorkHour = {
+            ...workHour,
+            check_in: adjustTimeZone(workHour.check_in),
+            check_out: adjustTimeZone(workHour.check_out),
+        };
+        setSelectedWorkHour(adjustedWorkHour);
         setIsEditPopupOpen(true);
     };
 
@@ -38,7 +48,7 @@ const WorkHours = () => {
                 const workHours = response.data.workHours || []; 
                 console.log('Turnos antes del filtro:', workHours);
     
-                // Filtrar turnos con horas trabajadas mayores a 0
+                
                 const filteredWorkHours = workHours.filter(turno => {
                     const totalHours = parseFloat(turno.total_hours);
                     return !isNaN(totalHours) && totalHours > 0;
@@ -47,7 +57,7 @@ const WorkHours = () => {
                 console.log('Turnos después del filtro:', filteredWorkHours);
                 setWorkHours(filteredWorkHours);
     
-                // Calcula el total de horas trabajadas con los turnos filtrados
+                
                 const totalFilteredHours = filteredWorkHours.reduce((acc, turno) => acc + parseFloat(turno.total_hours), 0);
                 setTotalHours(totalFilteredHours);
             } else {
@@ -125,7 +135,7 @@ const WorkHours = () => {
 
     return (
         <div className="main-container">
-            <h1 className="title-table">Turnos del Mecánico</h1>
+            <h1>Turnos del Mecánico</h1>
             
             <Table
                 data={workHours} 
@@ -171,7 +181,7 @@ const WorkHours = () => {
             >
                 Historial de Pagos
             </button>
-</div>
+            </div>
             
             {isHistoryPopupOpen && (
                 <PayHistoryPopup 

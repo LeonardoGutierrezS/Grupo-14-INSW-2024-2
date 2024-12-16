@@ -1,6 +1,6 @@
 import Form from '@components/Form'; 
 import CloseIcon from '@assets/XIcon.svg'; 
-import '@styles/popup.css'; // Reutiliza los estilos del popup
+import '@styles/popup.css'; 
 
 const HoursPopup = ({ show, setShow, workHour, onSave }) => {
     const onSubmit = (data) => {

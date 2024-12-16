@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { getAllIngresos } from '@services/ingresoBicicletas.service.js';
+
 import Table from '@components/Table';
 import useGetWorks from '@hooks/works/useGetWorks.jsx';
 import Search from '@components/Search';
@@ -8,7 +7,7 @@ import DeleteIcon from '@assets/deleteIcon.svg';
 import UpdateIcon from '@assets/updateIcon.svg';
 import UpdateIconDisable from '@assets/updateIconDisabled.svg';
 import DeleteIconDisable from '@assets/deleteIconDisabled.svg';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import '@styles/works.css';
 import useEditWork from '@hooks/works/useEditWorks.jsx';
 import useDeleteWork from '@hooks/works/useDeleteWorks.jsx';

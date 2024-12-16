@@ -85,7 +85,7 @@ export async function approvePayment(userId, paymentType) {
         const response = await axios.patch(`/user/approve-payment/${userId}`, {
             paymentType,
         });
-        return response.data; // Retorna la respuesta del backend
+        return response.data; 
     } catch (error) {
         console.error('Error al aprobar el pago:', error.response?.data || error.message);
         return error.response?.data || { status: 'Error', message: 'Error al aprobar el pago.' };
@@ -94,7 +94,7 @@ export async function approvePayment(userId, paymentType) {
 export async function getPaymentHistory(userId) {
     try {
         const response = await axios.get(`/user/payment-history/${userId}`);
-        return response.data; // Retorna los datos del backend
+        return response.data; 
     } catch (error) {
         console.error('Error al obtener el historial de pagos:', error.response?.data || error.message);
         return error.response?.data || { status: 'Error', message: 'Error al obtener el historial de pagos.' };
