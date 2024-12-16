@@ -1,16 +1,16 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    background-color: #003366;
     margin: 0;
     padding: 0;
 }
 
 .inv-container {
-    max-width: 1200px;
-    margin: 50px auto;
+    max-width: 90%;
+    margin: 140px auto;
     padding: 20px;
     background-color: #ffffff;
-    border-radius: 8px;
+    border-radius: 30px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -25,17 +25,22 @@ body {
     border-collapse: collapse;
     margin-bottom: 30px;
 }
+.inv-tr-header {
+    background-color: #003366;
+}
 
 .inv-th, .inv-td {
     border: 1px solid #dddddd;
-    text-align: left;
+    text-align: center;
     padding: 10px;
 }
 
 .inv-th {
-    background-color: #f4f4f4;
+    background-color: #003366;
+    color: white;
     font-weight: bold;
-    color: #333333;
+    text-align: center;
+    
 }
 
 .inv-tr:nth-child(even) {
@@ -189,4 +194,93 @@ body {
 
 .inv-modal-close-btn:hover {
     background-color: #c82333;
+}
+
+.estado-sin-stock {
+    background-color: #000;
+    color: #fff; /* Contraste para texto */
+}
+
+.estado-critico {
+    background-color: #c01616;
+    color: #fff; /* Contraste para texto */
+}
+
+.estado-muy-bajo {
+    background-color: #ff8400;
+    color: #000; /* Contraste para texto */
+}
+
+.estado-bajo {
+    background-color: #ffd500;
+    color: #000; /* Contraste para texto */
+}
+
+.estado-disponible {
+    background-color: #008000;
+    color: #fff; /* Contraste para texto */
+}
+
+.inv-edit-button {
+    background-color: #ffc107;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.inv-delete-button {
+    margin-left: 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.inv-save-button {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.inv-button {
+    background-color: #003366;
+    border-radius: 15px;
+}
+
+.inv-button-marca {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.inv-button-categoria {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.inv-button-tipo {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
 }

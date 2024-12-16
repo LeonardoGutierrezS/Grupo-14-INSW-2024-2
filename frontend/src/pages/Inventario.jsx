@@ -267,62 +267,84 @@ const Inventario = () => {
             <h2 className="inv-title">Inventario</h2>
 
             {/* Tabla de inventarios */}
-            <table className="inv-table">
-                <thead>
-                    <tr>
-                        <th className="inv-th">Nombre</th>
-                        <th className="inv-th">Marca</th>
-                        <th className="inv-th">Categoría</th>
-                        <th className="inv-th">Tipo</th>
-                        <th className="inv-th">Cantidad</th>
-                        <th className="inv-th">Precio</th>
-                        <th className="inv-th">Descripción</th>
-                        <th className="inv-th">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {inventarios.map((inv) => (
-                        <tr key={inv.id} className="inv-tr">
-                            <td className="inv-td">{inv.nombre}</td>
-                            <td className="inv-td">{marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca'}</td>
-                            <td className="inv-td">{categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría'}</td>
-                            <td className="inv-td">{tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo'}</td>
-                            <td className="inv-td">{inv.cantidad}</td>
-                            <td className="inv-td">{inv.precio}</td>
-                            <td className="inv-td">{inv.descripcion}</td>
-                            <td className="inv-td">
-                                <button
-                                    className="inv-edit-button"
-                                    onClick={() => {
-                                        setEditTarget(inv);
-                                        setInventarioData({
-                                            nombre: inv.nombre,
-                                            cantidad: inv.cantidad,
-                                            precio: inv.precio,
-                                            descripcion: inv.descripcion,
-                                            id_marca: inv.id_marca,
-                                            id_categoria: inv.id_categoria,
-                                            id_tipo: inv.id_tipo,
-                                        });
-                                        setEditModalOpen(true);
-                                    }}
-                                >
-                                    Editar
-                                </button>
-                                <button
-                                    className="inv-delete-button"
-                                    onClick={() => {
-                                        setDeleteTarget(inv);
-                                        setDeleteModalOpen(true);
-                                    }}
-                                >
-                                    Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+{/* Tabla de inventarios */}
+<table className="inv-table">
+    <thead>
+        <tr className='inv-tr-header'>
+            <th className="inv-th">Nombre</th>
+            <th className="inv-th">Marca</th>
+            <th className="inv-th">Categoría</th>
+            <th className="inv-th">Tipo</th>
+            <th className="inv-th">Cantidad</th>
+            <th className="inv-th">Precio</th>
+            <th className="inv-th">Descripción</th>
+            <th className="inv-th">Estado de Inventario</th>
+            <th className="inv-th">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {inventarios.map((inv) => {
+            // Determinar el estado del inventario basado en la cantidad
+            let estado = { texto: '', clase: '' };
+            if (inv.cantidad === 0) {
+                estado = { texto: 'Sin Stock', clase: 'estado-critico' }; // Negro
+            } else if (inv.cantidad <= 15) {
+                estado = { texto: 'Bajo', clase: 'estado-bajo' }; // Amarillo
+            } else {
+                estado = { texto: 'Disponible', clase: 'estado-disponible' }; // Verde
+            }
+
+            return (
+                <tr key={inv.id} className="inv-tr">
+                    <td className="inv-td">{inv.nombre}</td>
+                    <td className="inv-td">
+                        {marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca'}
+                    </td>
+                    <td className="inv-td">
+                        {categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría'}
+                    </td>
+                    <td className="inv-td">
+                        {tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo'}
+                    </td>
+                    <td className="inv-td">{inv.cantidad}</td>
+                    <td className="inv-td">{inv.precio}</td>
+                    <td className="inv-td">{inv.descripcion}</td>
+                    <td className={`inv-td estado ${estado.clase}`}>{estado.texto}</td>
+                    <td className="inv-td">
+                        <button
+                            className="inv-edit-button"
+                            onClick={() => {
+                                setEditTarget(inv);
+                                setInventarioData({
+                                    nombre: inv.nombre,
+                                    cantidad: inv.cantidad,
+                                    precio: inv.precio,
+                                    descripcion: inv.descripcion,
+                                    id_marca: inv.id_marca,
+                                    id_categoria: inv.id_categoria,
+                                    id_tipo: inv.id_tipo,
+                                });
+                                setEditModalOpen(true);
+                            }}
+                        >
+                            Editar
+                        </button>
+                        <button
+                            className="inv-delete-button"
+                            onClick={() => {
+                                setDeleteTarget(inv);
+                                setDeleteModalOpen(true);
+                            }}
+                        >
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            );
+        })}
+    </tbody>
+</table>
+
 
             {/* Botón para mostrar el formulario */}
             <button className="inv-button" onClick={() => setFormVisible(!isFormVisible)}>
