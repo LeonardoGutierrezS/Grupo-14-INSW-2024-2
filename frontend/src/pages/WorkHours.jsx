@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getPaymentHistory, getWorkHours, updateWorkHour, approvePayment } from '@services/user.service.js';
-import Table from '@components/Table';
 import '@styles/users.css';
 import HoursPopup from '../components/HoursPopup';
 import PaymentPopup from '../components/PayPopup'; // Nuevo componente para seleccionar el tipo de pago
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 import PayHistoryPopup from '../components/PayHistoryPopup'; // Importa el componente del popup
-
+import Table from '../components/Table';
 
 const WorkHours = () => {
     const { userId } = useParams(); // Obtiene el ID del mecánico desde la URL
@@ -18,6 +17,11 @@ const WorkHours = () => {
     const [selectedWorkHour, setSelectedWorkHour] = useState(null);
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [isHistoryPopupOpen, setIsHistoryPopupOpen] = useState(false);
+
+    const formatTime = (value) => {
+        const date = new Date(value);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    };
 
     const handleEditClick = (workHour) => {
         setSelectedWorkHour(workHour);
@@ -31,7 +35,7 @@ const WorkHours = () => {
             console.log('Respuesta del servicio:', response);
     
             if (response.status === 'Success') {
-                const workHours = response.data.workHours || []; // Asegúrate de que sea un array
+                const workHours = response.data.workHours || []; 
                 console.log('Turnos antes del filtro:', workHours);
     
                 // Filtrar turnos con horas trabajadas mayores a 0
@@ -62,7 +66,7 @@ const WorkHours = () => {
             if (response.status === 'Success') {
                 showSuccessAlert('¡Éxito!', 'El pago ha sido aprobado correctamente.');
                 setIsPaymentPopupOpen(false);
-                fetchWorkHours(); // Actualiza los turnos
+                fetchWorkHours(); 
             } else {
                 showErrorAlert('Error', response.message || 'Ocurrió un error al aprobar el pago.');
             }
@@ -75,8 +79,8 @@ const WorkHours = () => {
         try {
             const response = await getPaymentHistory(userId);
             if (response.status === 'Success') {
-                setPaymentHistory(response.data); // Almacena el historial en el estado
-                setIsHistoryPopupOpen(true); // Abre el popup
+                setPaymentHistory(response.data); 
+                setIsHistoryPopupOpen(true); 
             } else {
                 console.error('Error al obtener el historial de pagos:', response.message);
             }
@@ -91,15 +95,26 @@ const WorkHours = () => {
 
     const columns = [
         { title: "Fecha de Trabajo", field: "work_date", width: 200 },
-        { title: "Hora de Entrada", field: "check_in", width: 200 },
-        { title: "Hora de Salida", field: "check_out", width: 200 },
+        { 
+            title: "Hora de Entrada", 
+            field: "check_in", 
+            width: 200,
+            formatter: (cell) => formatTime(cell.getValue())
+        },
+            
+        { title: "Hora de Salida", 
+            field: "check_out", 
+            width: 200,
+            formatter: (cell) => formatTime(cell.getValue())
+         },
         { title: "Horas Totales", field: "total_hours", width: 150 },
         { 
             title: "Modificar",
             field: "actions", 
             hozAlign: "center",
+            width: 110,
             formatter: function () {
-                return "<button class='edit-btn'>Editar</button>";
+                return "<button class='button button-secondary'>Editar</button>";
             },
             cellClick: function (e, cell) {
                 const rowData = cell.getRow().getData(); 
@@ -112,7 +127,7 @@ const WorkHours = () => {
         <div className="main-container">
             <h1 className="title-table">Turnos del Mecánico</h1>
             
-            <Table 
+            <Table
                 data={workHours} 
                 columns={columns} 
                 initialSortName={'work_date'}
@@ -154,8 +169,8 @@ const WorkHours = () => {
                 className="button button-secondary"
                 onClick={handlePaymentHistoryClick}
             >
-        Historial de Pagos
-    </button>
+                Historial de Pagos
+            </button>
 </div>
             
             {isHistoryPopupOpen && (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getAllIngresos } from '@services/ingresoBicicletas.service.js';
 import Table from '@components/Table';
 import Search from '@components/Search';

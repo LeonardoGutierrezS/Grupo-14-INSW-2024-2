@@ -34,7 +34,7 @@ export default function StatusPopup({ show, setShow, user, onSave }) {
                                     defaultValue: user.email || "",
                                     fieldType: 'input',
                                     type: "email",
-                                    disabled: true, // Campo deshabilitado
+                                    disabled: true, 
                                 },
                                 {
                                     label: "Rut",
@@ -42,7 +42,7 @@ export default function StatusPopup({ show, setShow, user, onSave }) {
                                     defaultValue: user.rut || "",
                                     fieldType: 'input',
                                     type: "text",
-                                    disabled: true, // Campo deshabilitado
+                                    disabled: true, 
                                 },
                                 {
                                     label: "Estado",
@@ -52,7 +52,7 @@ export default function StatusPopup({ show, setShow, user, onSave }) {
                                         { value: 'activo', label: 'Activo' },
                                         { value: 'inactivo', label: 'Inactivo' },
                                     ],
-                                    defaultValue: user.estado || "activo", // Estado por defecto
+                                    defaultValue: user.estado || "activo", 
                                     required: true,
                                 },
                             ]}

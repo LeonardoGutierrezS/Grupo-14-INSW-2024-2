@@ -26,8 +26,8 @@
     color: #333;
     }
   
-    ..delete-button {
-        background-color: #f44336; /* Rojo */
+    .delete-button {
+        background-color: #f44336; 
         color: white;
         border: none;
         padding: 5px 10px;
@@ -37,12 +37,12 @@
       }
       
       .delete-button:hover {
-        background-color: #d32f2f; /* Rojo oscuro */
+        background-color: #d32f2f; 
       }
       
       .delete-button:disabled {
-        background-color: #e0e0e0; /* Gris claro */
-        color: #9e9e9e; /* Gris oscuro */
+        background-color: #e0e0e0; 
+        color: #9e9e9e; 
         cursor: not-allowed;
       }
       
