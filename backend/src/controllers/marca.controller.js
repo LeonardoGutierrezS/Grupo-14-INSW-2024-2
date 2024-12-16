@@ -112,15 +112,19 @@ export async function deleteMarca(req, res) {
     }
 }
 
+
+
 export async function updateMarca(req, res) {
     try {
         const {id} = req.params;
         const {body} = req;
-        if (!id) {
-            return handleErrorClient(res, 400, "Error de validación", "Id de la marca es requerido");
+        const {error} = marcaBodyValidation.validate(body);
+
+        if (error) {
+            return handleErrorClient(res, 400, "Error de validación", error.message);
         }
 
-        const [marca, errorMarca] = await updateMarcaService({id, ...body});
+        const [marca, errorMarca] = await updateMarcaService(id, body);
 
         if (errorMarca) {
             return handleErrorClient(res, 404, "Marca no encontrada", errorMarca);

@@ -49,8 +49,10 @@ const AddMarca = () => {
         try {
             // Enviar los datos al backend en el formato esperado
             const response = await createMarca(marcaData);
-            alert('Marca registrada con éxito');
             console.log('Respuesta del backend:', response);
+            // DAME UNA ALERTA QUE ME DE EL MENSAJE DE LA RESPUESTA DEL BACKEND
+
+            alert(response.data.message);
 
             // Limpiar los datos del formulario
             setMarcaData({ nombre: '' });
@@ -64,7 +66,7 @@ const AddMarca = () => {
     };
 
     return (
-        <div className="container">
+        <div className="container" style={{ paddingTop: '200px' }}>
             <form className="form" onSubmit={handleSubmit}>
                 <h1>Agregar Marca</h1>
 

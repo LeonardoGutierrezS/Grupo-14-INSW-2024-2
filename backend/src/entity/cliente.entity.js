@@ -28,7 +28,7 @@ const ClienteSchema = new EntitySchema({
     },
     correo: {
       type: "varchar",
-      length: 255,
+      length: 320,
       nullable: false,
     },
   },

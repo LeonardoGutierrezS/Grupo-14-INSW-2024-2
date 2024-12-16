@@ -49,14 +49,14 @@ const ReparacionSchema = new EntitySchema({
       nullable: true,
     },
     precio: {
-      type: "decimal",
+      type: "int",
       nullable: false,
     },
     estado: {
       type: "varchar",
       length: 50,
-      nullable: false,
-      default: "pendiente",
+      nullable: true,
+      default: "Trabajo ingresado",
     },
   },
   indices: [

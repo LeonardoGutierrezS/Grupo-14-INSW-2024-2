@@ -3,6 +3,8 @@ import { AppDataSource } from "../config/configDb.js";
 import BicicletaSchema from "../entity/bicicleta.entity.js";
 import ClienteSchema from "../entity/cliente.entity.js";
 import ReparacionSchema from "../entity/reparacion.entity.js";
+import { sendEmail } from "../services/email.service.js";
+import { updateIngresoBicicletaService } from "../services/ingresoBicicleta.service.js";
 
 // Crear un nuevo ingreso de bicicleta (Bicicleta, Cliente, Reparación)
 export const createIngresoBicicleta = async (req, res) => {
@@ -30,7 +32,43 @@ export const createIngresoBicicleta = async (req, res) => {
     });
     await reparacionRepository.save(newReparacion);
 
+
+    // Configurar el correo
+    const subject = "Confirmación de Ingreso de Bicicleta";
+    const htmlContent = `
+      <h1>¡Ingreso de bicicleta registrado con éxito!</h1>
+      <h2>Detalles del Cliente</h2>
+      <p><strong>Nombre:</strong> ${newCliente.nombre}</p>
+      <p><strong>RUT:</strong> ${newCliente.rut}</p>
+      <p><strong>WhatsApp:</strong> ${newCliente.whatsapp}</p>
+      <p><strong>Correo:</strong> ${newCliente.correo}</p>
+
+      <h2>Detalles de la Bicicleta</h2>
+      <p><strong>Marca:</strong> ${newBicicleta.marca}</p>
+      <p><strong>Modelo:</strong> ${newBicicleta.modelo}</p>
+      <p><strong>Color:</strong> ${newBicicleta.color}</p>
+
+      <h2>Detalles de la Reparación</h2>
+      <p><strong>Tipo de Trabajo:</strong> ${newReparacion.tipo_trabajo}</p>
+      <p><strong>Detalle del Trabajo:</strong> ${newReparacion.detalle_trabajo || "N/A"}</p>
+      <p><strong>Observaciones:</strong> ${newReparacion.obs_bici || "N/A"}</p>
+      <p><strong>Fecha de Ingreso:</strong> ${newReparacion.fecha_ingreso}</p>
+      <p><strong>Fecha Estimada de Entrega:</strong> ${newReparacion.fecha_est_entrega || "Por definir"}</p>
+      <p><strong>Precio:</strong> $${newReparacion.precio}</p>
+      <p><strong>Estado:</strong> ${newReparacion.estado}</p>
+
+      <p>Gracias por confiar en nuestro servicio de reparaciones.</p>
+    `;
+
+    // Enviar el correo al cliente
+    await sendEmail(newCliente.correo, subject, "Confirmación de ingreso de bicicleta", htmlContent);
+
+
+
+
+
     return res.status(201).json({
+      status: "Success",
       message: "Ingreso de bicicleta creado con éxito",
       data: { newCliente, newBicicleta, newReparacion },
     });
@@ -53,42 +91,24 @@ export const getAllIngresos = async (req, res) => {
 };
 
 // Editar un ingreso
+// Editar un ingreso de bicicleta, cliente, y reparación
 export const updateIngresoBicicleta = async (req, res) => {
   const { id } = req.params;
-  const { bicicleta, cliente, reparacion } = req.body;
+  const updateData = req.body;
 
   try {
-    const bicicletaRepository = AppDataSource.getRepository(BicicletaSchema);
-    const clienteRepository = AppDataSource.getRepository(ClienteSchema);
-    const reparacionRepository = AppDataSource.getRepository(ReparacionSchema);
-
-    // Actualizar datos de cliente
-    const existingCliente = await clienteRepository.findOneBy({
-      id_cliente: reparacion.id_cliente,
-    });
-    clienteRepository.merge(existingCliente, cliente);
-    await clienteRepository.save(existingCliente);
-
-    // Actualizar datos de bicicleta
-    const existingBicicleta = await bicicletaRepository.findOneBy({
-      id_bici: reparacion.id_bici,
-    });
-    bicicletaRepository.merge(existingBicicleta, bicicleta);
-    await bicicletaRepository.save(existingBicicleta);
-
-    // Actualizar datos de reparación
-    const existingReparacion = await reparacionRepository.findOneBy({ id });
-    reparacionRepository.merge(existingReparacion, reparacion);
-    await reparacionRepository.save(existingReparacion);
-
-    return res.status(200).json({
-      message: "Ingreso actualizado con éxito",
-      data: { existingCliente, existingBicicleta, existingReparacion },
-    });
+    const response = await updateIngresoBicicletaService(id, updateData);
+    return res.status(200).json(response);
   } catch (error) {
-    return res.status(500).json({ message: "Error actualizando el ingreso", error });
+    console.error("Error actualizando el ingreso:", error); // Captura el error en el log
+    return res.status(500).json({
+      message: "Error actualizando el ingreso",
+      error: error.message || error,
+    });
   }
 };
+
+
 
 // Eliminar un ingreso
 export const deleteIngresoBicicleta = async (req, res) => {

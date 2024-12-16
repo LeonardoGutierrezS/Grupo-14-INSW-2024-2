@@ -24,7 +24,7 @@ const router = Router();
 
 router
   .use(authenticateJwt)
- 
+
 
 router
   .get("/", getUsers)
