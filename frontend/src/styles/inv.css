@@ -310,3 +310,36 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
+
+/* Contenedor principal */
+.inv-botones-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+/* Botón central superior */
+.inv-boton-central {
+    margin-bottom: 10px;
+}
+
+/* Línea inferior de botones */
+.inv-boton-linea {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Botones alineados a la izquierda */
+.inv-botones-izquierda {
+    display: flex;
+    gap: 10px; /* Espacio entre botones */
+}
+
+/* Botones alineados a la derecha */
+.inv-botones-derecha {
+    display: flex;
+    gap: 10px; /* Espacio entre botones */
+}
