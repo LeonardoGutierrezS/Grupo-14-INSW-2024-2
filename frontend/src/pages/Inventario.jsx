@@ -46,6 +46,12 @@ const Inventario = () => {
     const [categorias, setCategorias] = useState([]);
     const [tipos, setTipos] = useState([]);
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedMarca, setSelectedMarca] = useState('');
+    const [selectedCategoria, setSelectedCategoria] = useState('');
+    const [selectedTipo, setSelectedTipo] = useState('');
+    const [selectedEstado, setSelectedEstado] = useState('');
+
     const [isFormVisible, setFormVisible] = useState(false);
 
     const [isMarcaModalOpen, setMarcaModalOpen] = useState(false);
@@ -107,6 +113,23 @@ const Inventario = () => {
         const response = await getAllTipos();
         setTipos(response.data || []);
     };
+
+    const getEstado = (cantidad) => {
+        if (cantidad === 0) return 'Sin Stock';
+        if (cantidad <= 15) return 'Bajo';
+        return 'Disponible';
+    };
+
+    const filteredInventarios = inventarios.filter((inv) => {
+        const estado = getEstado(inv.cantidad);
+        const matchesSearch = inv.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesMarca = selectedMarca === '' || inv.id_marca === parseInt(selectedMarca);
+        const matchesCategoria = selectedCategoria === '' || inv.id_categoria === parseInt(selectedCategoria);
+        const matchesTipo = selectedTipo === '' || inv.id_tipo === parseInt(selectedTipo);
+        const matchesEstado = selectedEstado === '' || estado === selectedEstado;
+
+        return matchesSearch && matchesMarca && matchesCategoria && matchesTipo && matchesEstado;
+    });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -265,11 +288,67 @@ const Inventario = () => {
     return (
         <div className="inv-container">
             <h2 className="inv-title">Inventario</h2>
+            
+            {/* Filtros de búsqueda */}
+            <div className="inv-filters">
+                {/* Barra de búsqueda */}
+                <input
+                    type="text"
+                    className="inv-input-search"
+                    placeholder="Buscar por nombre"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {/* Filtro por marca */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedMarca}
+                    onChange={(e) => setSelectedMarca(e.target.value)}
+                    >
+                    <option value="">Todas las Marcas</option>
+                    {marcas.map((marca) => (
+                        <option key={marca.id_marca} value={marca.id_marca}>{marca.nombre}</option>
+                    ))}
+                </select>
+                {/* Filtro por categoría */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedCategoria}
+                    onChange={(e) => setSelectedCategoria(e.target.value)}
+                    >
+                    <option value="">Todas las Categorías</option>
+                    {categorias.map((categoria) => (
+                        <option key={categoria.id_categoria} value={categoria.id_categoria}>{categoria.nombre}</option>
+                    ))}
+                </select>
+                {/* Filtro por tipo */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedTipo}
+                    onChange={(e) => setSelectedTipo(e.target.value)}
+                    >
+                    <option value="">Todos los Tipos</option>
+                    {tipos.map((tipo) => (
+                        <option key={tipo.id_tipo} value={tipo.id_tipo}>{tipo.nombre}</option>
+                    ))}
+                </select>
+                {/* Filtro por estado */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedEstado}
+                    onChange={(e) => setSelectedEstado(e.target.value)}
+                    >
+                    <option value="">Todos los Estados</option>
+                    <option value="Sin Stock">Sin Stock</option>
+                    <option value="Bajo">Bajo</option>
+                    <option value="Disponible">Disponible</option>
+                </select>
+            </div>
 
             {/* Tabla de inventarios */}
             <table className="inv-table">
                 <thead>
-                    <tr>
+                    <tr className='inv-tr-header'>
                         <th className="inv-th">Nombre</th>
                         <th className="inv-th">Marca</th>
                         <th className="inv-th">Categoría</th>
@@ -277,52 +356,73 @@ const Inventario = () => {
                         <th className="inv-th">Cantidad</th>
                         <th className="inv-th">Precio</th>
                         <th className="inv-th">Descripción</th>
+                        <th className="inv-th">Estado de Inventario</th>
                         <th className="inv-th">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {inventarios.map((inv) => (
-                        <tr key={inv.id} className="inv-tr">
-                            <td className="inv-td">{inv.nombre}</td>
-                            <td className="inv-td">{marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca'}</td>
-                            <td className="inv-td">{categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría'}</td>
-                            <td className="inv-td">{tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo'}</td>
-                            <td className="inv-td">{inv.cantidad}</td>
-                            <td className="inv-td">{inv.precio}</td>
-                            <td className="inv-td">{inv.descripcion}</td>
-                            <td className="inv-td">
-                                <button
-                                    className="inv-edit-button"
-                                    onClick={() => {
-                                        setEditTarget(inv);
-                                        setInventarioData({
-                                            nombre: inv.nombre,
-                                            cantidad: inv.cantidad,
-                                            precio: inv.precio,
-                                            descripcion: inv.descripcion,
-                                            id_marca: inv.id_marca,
-                                            id_categoria: inv.id_categoria,
-                                            id_tipo: inv.id_tipo,
-                                        });
-                                        setEditModalOpen(true);
-                                    }}
-                                >
-                                    Editar
-                                </button>
-                                <button
-                                    className="inv-delete-button"
-                                    onClick={() => {
-                                        setDeleteTarget(inv);
-                                        setDeleteModalOpen(true);
-                                    }}
-                                >
-                                    Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                    {filteredInventarios.map((inv) => {
+                        // Determinar el estado del inventario basado en la cantidad
+                        let estado = { texto: '', clase: '' };
+                        if (inv.cantidad === 0) {
+                            estado = { texto: 'Sin Stock', clase: 'estado-critico' }; // Negro
+                        } else if (inv.cantidad <= 15) {
+                            estado = { texto: 'Bajo', clase: 'estado-bajo' }; // Amarillo
+                        } else {
+                            estado = { texto: 'Disponible', clase: 'estado-disponible' }; // Verde
+                        }
+
+                        return (
+                            <tr key={inv.id} className="inv-tr">
+                                <td className="inv-td">{inv.nombre}</td>
+                                <td className="inv-td">
+                                    {marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca'}
+                                </td>
+                                <td className="inv-td">
+                                    {categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría'}
+                                </td>
+                                <td className="inv-td">
+                                    {tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo'}
+                                </td>
+                                <td className="inv-td">{inv.cantidad}</td>
+                                <td className="inv-td">{inv.precio}</td>
+                                <td className="inv-td">{inv.descripcion}</td>
+                                <td className={`inv-td estado ${estado.clase}`}>{estado.texto}</td>
+                                <td className="inv-td">
+                                    <button
+                                        className="inv-edit-button"
+                                        onClick={() => {
+                                            setEditTarget(inv);
+                                            setInventarioData({
+                                                nombre: inv.nombre,
+                                                cantidad: inv.cantidad,
+                                                precio: inv.precio,
+                                                descripcion: inv.descripcion,
+                                                id_marca: inv.id_marca,
+                                                id_categoria: inv.id_categoria,
+                                                id_tipo: inv.id_tipo,
+                                            });
+                                            setEditModalOpen(true);
+                                        }}
+                                    >
+                                        Editar
+                                    </button>
+                                    <button
+                                        className="inv-delete-button"
+                                        onClick={() => {
+                                            setDeleteTarget(inv);
+                                            setDeleteModalOpen(true);
+                                        }}
+                                    >
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
+
 
             {/* Botón para mostrar el formulario */}
             <button className="inv-button" onClick={() => setFormVisible(!isFormVisible)}>
