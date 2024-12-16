@@ -80,7 +80,7 @@ const handleSaveStatus = async (userId, status) => {
     {
       title: "Estado",
       field: "estado",
-      width: 120,
+      width: 135,
       formatter: (cell) => {
         const user = cell.getData();
         return `

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getWorkHoursEmployee } from '@services/user.service.js';
-import Table from '@components/TableTwo.jsx';
-import '@styles/forTable.css'; 
+import TableNoSelectable from '@components/TableTwo.jsx';
+import '@styles/forTable.css';
 
 const MyShifts = () => {
     const [workHours, setWorkHours] = useState([]);
@@ -12,8 +12,9 @@ const MyShifts = () => {
         try {
             const response = await getWorkHoursEmployee();
             if (response.status === 'Success') {
-                
-                const filteredWorkHours = response.data.workHours.filter(turno => parseFloat(turno.total_hours) > 0);
+                const filteredWorkHours = response.data.workHours.filter(
+                    (turno) => parseFloat(turno.total_hours) > 0
+                );
                 setWorkHours(filteredWorkHours);
                 setTotalHours(response.data.totalHours);
             } else {
@@ -24,27 +25,39 @@ const MyShifts = () => {
         }
     };
 
-    
     useEffect(() => {
         fetchWorkHours();
     }, []);
 
+    const formatTime = (value) => {
+        const date = new Date(value);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    };
+
     const columns = [
         { title: "Fecha de Trabajo", field: "work_date", width: 200 },
-        { title: "Hora de Entrada", field: "check_in", width: 200 },
-        { title: "Hora de Salida", field: "check_out", width: 200 },
-        { title: "Horas Totales", field: "total_hours", width: 250 },
+        { 
+            title: "Hora de Entrada", 
+            field: "check_in", 
+            width: 200, 
+            formatter: (cell) => formatTime(cell.getValue())
+        },
+        { 
+            title: "Hora de Salida", 
+            field: "check_out", 
+            width: 200, 
+            formatter: (cell) => formatTime(cell.getValue())
+        },
+        { title: "Horas Totales", field: "total_hours", width: 200 },
     ];
 
     return (
         <div className="main-container">
             <h1 className="title-table">Mis Turnos</h1>
-            <Table
-                
-                data={workHours} 
-                columns={columns} 
+            <TableNoSelectable
+                data={workHours}
+                columns={columns}
                 initialSortName={'work_date'}
-                
             />
             <h2>Horas disponibles a pago: {totalHours}</h2>
         </div>
