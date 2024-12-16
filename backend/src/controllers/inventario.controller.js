@@ -162,9 +162,14 @@ export async function updateInventario (req, res) {
     try {
         const {id} = req.params;
         const {body} = req;
+        const {error} = inventarioBodyValidation.validate(body);
 
         if (!id) {
             return handleErrorClient(res, 400, "Error de validación", "El id es requerido");
+        }
+
+        if (error) {
+            return handleErrorClient(res, 400, "Error de validación", error.message);
         }
 
         const [inventario, errorInventario] = await updateInventarioService(id, body);
@@ -186,6 +191,9 @@ export async function updateInventarioCantidad (req, res) {
 
         if (!id) {
             return handleErrorClient(res, 400, "Error de validación", "El id es requerido");
+        }
+        if (error) {
+            return handleErrorClient(res, 400, "Error de validación", error.message);
         }
 
         const [inventario, errorInventario] = await updateInventarioCantidadService(id, body);

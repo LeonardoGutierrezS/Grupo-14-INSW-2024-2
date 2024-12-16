@@ -15,16 +15,29 @@ export const inventarioBodyValidation = Joi.object({
       "string.pattern.base":
         "El nombre solo puede contener letras mayúsculas, números y un solo espacio entre palabras.",
     }),
-
     cantidad: Joi.number()
-    .min(1)
-    .max(999999)
-    .required(),
+    .integer()
+    .min(0)    
+    .max(999999) 
+    .required()
+    .messages({
+        "number.base": "La cantidad debe ser de tipo numérico.",
+        "number.empty": "La cantidad no debe estar vacía.",
+        "number.min": "La cantidad debe ser mayor o igual a 0.",
+        "number.max": "La cantidad debe ser menor o igual a 999999."
+    }), 
 
     precio: Joi.number()
-    .min(1)
-    .max(999999)
-    .required(),
+    .integer() 
+    .min(0)    
+    .max(9999999) 
+    .required()
+    .messages({
+        "number.base": "El precio debe ser de tipo numérico.",
+        "number.empty": "El precio no debe estar vacío.",
+        "number.min": "El precio debe ser mayor o igual a 0.",
+        "number.max": "El precio debe ser menor o igual a 9999999."
+    }),
 
     descripcion: Joi.string()
     .min(3)
