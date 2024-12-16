@@ -50,11 +50,11 @@ export const getAllTareasService = async () => {
   }
 };
 
-export const getTareaByIdService = async (id) => {
+export const getTareaByIdService = async (id_tarea) => {
   const tareaRepository = AppDataSource.getRepository(TareaSchema);
 
   try {
-    const tarea = await tareaRepository.findOne({ where: { idTarea: id }, relations: ["usuario"] });
+    const tarea = await tareaRepository.findOne({ where: { id_tarea: id_tarea }, relations: ["usuario"] });
     if (!tarea) {
       throw new Error("Tarea no encontrada");
     }
@@ -65,11 +65,11 @@ export const getTareaByIdService = async (id) => {
 };
 
 // Actualizar una tarea
-export const updateTareaService = async (id, tareaData) => {
+export const updateTareaService = async (id_tarea, tareaData) => {
   const tareaRepository = AppDataSource.getRepository(TareaSchema);
 
   try {
-    const existingTarea = await tareaRepository.findOneBy({ idTarea: id });
+    const existingTarea = await tareaRepository.findOneBy({ id_tarea: id_tarea });
     if (!existingTarea) {
       throw new Error("Tarea no encontrada");
     }
@@ -84,12 +84,12 @@ export const updateTareaService = async (id, tareaData) => {
 };
 
 // Eliminar una tarea
-export const deleteTareaService = async (id) => {
+export const deleteTareaService = async (id_tarea) => {
   const tareaRepository = AppDataSource.getRepository(TareaSchema);
 
   try {
     // Buscar y eliminar la tarea
-    const tareaToDelete = await tareaRepository.findOneBy({ idTarea: id });
+    const tareaToDelete = await tareaRepository.findOneBy({ id_tarea: id_tarea });
     if (!tareaToDelete) {
       throw new Error("Tarea no encontrada");
     }

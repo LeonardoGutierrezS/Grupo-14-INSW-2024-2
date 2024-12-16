@@ -104,6 +104,20 @@ const Navbar = () => {
                         </li>
                     )}
 
+                    {userRole === 'administrador' && (
+                        <li>
+                            <NavLink
+                                to="/Tareas"
+                                onClick={() => {
+                                    setMenuOpen(false);
+                                    addActiveClass();
+                                }}
+                                activeClassName="active"
+                            >
+                                Tareas
+                            </NavLink>
+                        </li>
+                    )}
 
                     {userRole === 'administrador' && (
                     <li>

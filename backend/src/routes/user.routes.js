@@ -10,6 +10,7 @@ import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import {
   approvePayment,
   deleteUser,
+  //getMechanics,
   getUser,
   getUsers,
   registerEmployee,
@@ -27,6 +28,7 @@ router
 router
   .get("/", getUsers)
   .get("/detail/", getUser)
+  //.get("/mechanics", getMechanics)
   .patch("/detail/", updateUser)
   .delete("/detail/", deleteUser)
   .post("/register-employee", isAdmin, registerEmployee)

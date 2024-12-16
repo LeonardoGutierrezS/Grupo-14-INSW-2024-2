@@ -43,6 +43,11 @@ const TareaSchema = new EntitySchema({
       joinColumn: { name: "usuario_id" }, // FK, nombre del campo en 'Tarea' que almacena el id de 'User'
       nullable: false, // Usuario es obligatorio, debe ser un mecánico
     },
+    reparacion: { 
+      type: "many-to-one",
+      target: "Reparacion",
+      joinColumn: { name: "id_reparacion" }, 
+    },
     comentarios: {
       type: "one-to-many",
       target: "Comentario",

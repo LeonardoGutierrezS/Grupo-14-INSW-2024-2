@@ -5,10 +5,26 @@ export async function getUsers() {
     try {
         const { data } = await axios.get('/user/');
         const formattedData = data.data.map(formatUserData);
-        console.log("USUARIOS",formattedData);
+        console.log("USUARIOS", formattedData);
         return formattedData;
     } catch (error) {
         return error.response.data;
+    }
+}
+
+// Obtener mecánicos filtrando por rol 'mecanico'
+export async function getMechanics() {
+    try {
+        const { data } = await axios.get('/user/');
+        // Filtra usuarios que tengan el rol 'mecanico'
+        const mechanics = data.data
+            .filter(user => user.rol === 'mecanico')
+            .map(formatUserData); // Formatear los datos si es necesario
+        console.log("MECÁNICOS", mechanics);
+        return mechanics;
+    } catch (error) {
+        console.error("Error al obtener mecánicos:", error.response?.data || error.message);
+        return [];
     }
 }
 
@@ -31,6 +47,7 @@ export async function deleteUser(rut) {
         return error.response.data;
     }
 }
+
 export async function createMechanic(data) {
     try {
         const response = await axios.post('/user/register-employee', data);
@@ -39,6 +56,7 @@ export async function createMechanic(data) {
         return error.response.data;
     }
 }
+
 export async function getWorkHours(userId) {
     try {
         const { data } = await axios.get(`/user/work-hours/${userId}`);
@@ -48,4 +66,3 @@ export async function getWorkHours(userId) {
         throw error.response.data;
     }
 }
-

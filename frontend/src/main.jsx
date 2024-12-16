@@ -14,6 +14,10 @@ import AddMechanic from '@pages/AddMechanic';
 import WorkHours from '@pages/WorkHours';
 import AddMarca from '@pages/AddMarca';
 import Inventario from './pages/Inventario';
+import Tareas from '@pages/Tareas';
+import AddTareas from '@pages/AddTareas';
+import Comentario from '@pages/Comentario';
+import AddComentario from '@pages/AddComentario';
 
 const router = createBrowserRouter([
   {
@@ -86,8 +90,38 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-    
-
+      {
+        path: '/Tareas',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador', 'usuario']}>
+            <Tareas />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: '/AddTareas',
+        element: (
+        <ProtectedRoute allowedRoles={['administrador']}>
+            <AddTareas />
+        </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/comentarios/:id_tarea',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador', 'usuario']}>
+            <Comentario />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: '/comentarios/crear/:id_tarea',
+        element: (
+        <ProtectedRoute allowedRoles={['administrador', 'usuario']}>
+            <AddComentario />
+        </ProtectedRoute>
+        ),
+      },
     ]
   },
   {
