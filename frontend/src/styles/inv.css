@@ -87,8 +87,8 @@ body {
 }
 
 .inv-input, .inv-select {
-    width: 100%;
-    padding: 10px;
+    width: 55%;
+    padding: 8px;
     border: 1px solid #cccccc;
     border-radius: 4px;
     font-size: 14px;
@@ -101,7 +101,9 @@ body {
 
 .inv-add-button {
     margin-top: 10px;
-    background-color: #28a745;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    background-color: #003366;
     color: white;
     border: none;
     padding: 8px 12px;
@@ -222,7 +224,7 @@ body {
 }
 
 .inv-edit-button {
-    background-color: #ffc107;
+    background-color:  #0066d2;
     color: white;
     border: none;
     padding: 8px 12px;
@@ -233,7 +235,7 @@ body {
 
 .inv-delete-button {
     margin-left: 10px;
-    background-color: #dc3545;
+    background-color: #b20012;
     color: white;
     border: none;
     padding: 8px 12px;
@@ -274,6 +276,7 @@ body {
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
+    margin-left: 2%;
 }
 .inv-button-tipo {
     background-color: #003366;
@@ -283,4 +286,5 @@ body {
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
+    margin-left: 2%;
 }
