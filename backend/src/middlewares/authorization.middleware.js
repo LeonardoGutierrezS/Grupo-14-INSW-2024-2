@@ -38,3 +38,69 @@ try {
     );
 }
 }
+export async function isMechanic(req, res, next) {
+    try {
+        const userRepository = AppDataSource.getRepository(User);
+    
+        const userFound = await userRepository.findOneBy({ email: req.user.email });
+    
+        if (!userFound) {
+        return handleErrorClient(
+            res,
+            404,
+            "Usuario no encontrado en la base de datos",
+        );
+        }
+    
+        const rolUser = userFound.rol;
+    
+        if (rolUser !== "mecanico") {
+            return handleErrorClient(
+                res,
+                403,
+                "Error al acceder al recurso",
+                "Necesitas ser mecanico para esta accion."
+            );
+        }
+        next();
+    } catch (error) {
+        handleErrorServer(
+        res,
+        500,
+        error.message,
+        );
+    }
+}
+export async function isSeller(req, res, next) {
+    try {
+        const userRepository = AppDataSource.getRepository(User);
+    
+        const userFound = await userRepository.findOneBy({ email: req.user.email });
+    
+        if (!userFound) {
+        return handleErrorClient(
+            res,
+            404,
+            "Usuario no encontrado en la base de datos",
+        );
+        }
+    
+        const rolUser = userFound.rol;
+    
+        if (rolUser !== "vendedor") {
+            return handleErrorClient(
+                res,
+                403,
+                "Error al acceder al recurso",
+                "Necesitas ser vendedor/cajero para esta accion."
+            );
+        }
+        next();
+    } catch (error) {
+        handleErrorServer(
+        res,
+        500,
+        error.message,
+        );
+    }
+    }

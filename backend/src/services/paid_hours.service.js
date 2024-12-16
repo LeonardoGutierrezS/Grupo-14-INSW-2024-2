@@ -47,3 +47,22 @@ export async function registerPaidHoursService(userId, paymentType, approvedById
     return [null, "Error interno del servidor"];
   }
 }
+export const getPaymentHistoryService = async (userId) => {
+  const paidHoursRepository = AppDataSource.getRepository(PaidHours);
+  try {
+    const paymentHistory = await paidHoursRepository.find({
+      where: { user: { id: userId } },
+      relations: ["user", "approvedBy"],
+      order: { approvedAt: "DESC" }, // Ordenar por fecha de aprobación descendente
+    });
+
+    if (paymentHistory.length === 0) {
+      return [null, "No se encontraron pagos para este usuario."];
+    }
+
+    return [paymentHistory, null];
+  } catch (error) {
+    console.error("Error al obtener el historial de pagos:", error);
+    return [null, "Error interno del servidor al obtener el historial de pagos."];
+  }
+};
