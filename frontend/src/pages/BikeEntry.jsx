@@ -1,199 +1,182 @@
-import React, { useState } from 'react';
 import { createIngresoBicicleta } from '@services/ingresoBicicletas.service.js';
-import '@styles/form.css';
+import Form from '@components/Form';
+import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
 
 const BikeEntry = () => {
-  const [bicicletaData, setBicicletaData] = useState({
-    marca: '',
-    modelo: '',
-    color: '',
-  });
 
-  const [clienteData, setClienteData] = useState({
-    rut: '',
-    nombre: '',
-    whatsapp: '',
-    correo: '',
-  });
-
-  const [reparacionData, setReparacionData] = useState({
-    tipo_trabajo: '',
-    detalle_trabajo: '',
-    obs_bici: '',
-    repuestos: '',
-    precio: '',
-  });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const onSubmit = async (data) => {
     try {
-      // Enviar los datos al backend en el formato esperado
-      const response = await createIngresoBicicleta(bicicletaData, clienteData, reparacionData);
-      alert('Ingreso registrado con éxito');
-      console.log('Respuesta del backend:', response);
+      const response = await createIngresoBicicleta(
+        {
+          marca: data.marca,
+          modelo: data.modelo,
+          color: data.color,
+        },
+        {
+          rut: data.rut,
+          nombre: data.nombre,
+          whatsapp: data.whatsapp,
+          correo: data.correo,
+        },
+        {
+          tipo_trabajo: data.tipo_trabajo,
+          detalle_trabajo: data.detalle_trabajo,
+          obs_bici: data.obs_bici,
+          repuestos: data.repuestos,
+          precio: data.precio,
+          fecha_estimada_entrega: data.fecha_estimada_entrega,
+        }
+      );
 
-      // Limpiar los datos del formulario
-      setBicicletaData({ marca: '', modelo: '', color: '' });
-      setClienteData({ rut: '', nombre: '', whatsapp: '', correo: '' });
-      setReparacionData({
-        tipo_trabajo: '',
-        detalle_trabajo: '',
-        obs_bici: '',
-        repuestos: '',
-        precio: '',
-      });
+      if (response.status === 'Success') {
+        showSuccessAlert('¡Registrado!', 'El ingreso se registró correctamente.');
+        document.querySelector('form').reset();
+      } else {
+        showErrorAlert('Error', response.details || 'Ocurrió un error al registrar el ingreso.');
+      }
     } catch (error) {
-      alert('Error al registrar el ingreso');
-      console.error('Error:', error.response?.data || error.message);
+      console.error('Error al registrar el ingreso:', error);
+      showErrorAlert('Error', 'Ocurrió un error al registrar el ingreso.',error);
     }
   };
 
+  const patternRut = new RegExp(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d{6}|[1-2]\d{7}|29\.999\.999|29999999)-[\dkK]$/);
+
   return (
-    <div className="container">
-      <form className="form" onSubmit={handleSubmit}>
-        <h1>Ingresar Bicicleta</h1>
-
-        {/* Sección Bicicleta */}
-        <div>
-          <h2>Bicicleta</h2>
-          <label>
-            Marca:
-            <input
-              type="text"
-              name="marca"
-              value={bicicletaData.marca}
-              onChange={(e) => setBicicletaData({ ...bicicletaData, marca: e.target.value })}
-              placeholder="Ingrese la marca"
-            />
-          </label>
-          <label>
-            Modelo:
-            <input
-              type="text"
-              name="modelo"
-              value={bicicletaData.modelo}
-              onChange={(e) => setBicicletaData({ ...bicicletaData, modelo: e.target.value })}
-              placeholder="Ingrese el modelo"
-            />
-          </label>
-          <label>
-            Color:
-            <input
-              type="text"
-              name="color"
-              value={bicicletaData.color}
-              onChange={(e) => setBicicletaData({ ...bicicletaData, color: e.target.value })}
-              placeholder="Ingrese el color"
-            />
-          </label>
-        </div>
-
-        {/* Sección Cliente */}
-        <div>
-          <h2>Cliente</h2>
-          <label>
-            Rut:
-            <input
-              type="text"
-              name="rut"
-              value={clienteData.rut}
-              onChange={(e) => setClienteData({ ...clienteData, rut: e.target.value })}
-              placeholder="Ingrese el RUT"
-            />
-          </label>
-          <label>
-            Nombre:
-            <input
-              type="text"
-              name="nombre"
-              value={clienteData.nombre}
-              onChange={(e) => setClienteData({ ...clienteData, nombre: e.target.value })}
-              placeholder="Ingrese el nombre completo"
-            />
-          </label>
-          <label>
-            Whatsapp:
-            <input
-              type="tel"
-              name="whatsapp"
-              value={clienteData.whatsapp}
-              onChange={(e) => setClienteData({ ...clienteData, whatsapp: e.target.value })}
-              placeholder="Ingrese el número de Whatsapp"
-            />
-          </label>
-          <label>
-            Correo Electrónico:
-            <input
-              type="email"
-              name="correo"
-              value={clienteData.correo}
-              onChange={(e) => setClienteData({ ...clienteData, correo: e.target.value })}
-              placeholder="Ingrese el correo electrónico"
-            />
-          </label>
-        </div>
-
-        {/* Sección Reparación */}
-        <div>
-          <h2>Reparación</h2>
-          <label>
-            Tipo de Trabajo:
-            <input
-              type="text"
-              name="tipo_trabajo"
-              value={reparacionData.tipo_trabajo}
-              onChange={(e) => setReparacionData({ ...reparacionData, tipo_trabajo: e.target.value })}
-              placeholder="Ingrese el tipo de trabajo"
-            />
-          </label>
-          <label>
-            Detalle de Trabajo:
-            <textarea
-              name="detalle_trabajo"
-              value={reparacionData.detalle_trabajo}
-              onChange={(e) =>
-                setReparacionData({ ...reparacionData, detalle_trabajo: e.target.value })
-              }
-              placeholder="Describa el detalle del trabajo"
-            ></textarea>
-          </label>
-          <label>
-            Observaciones de la bicicleta:
-            <textarea
-              name="obs_bici"
-              value={reparacionData.obs_bici}
-              onChange={(e) =>
-                setReparacionData({ ...reparacionData, obs_bici: e.target.value })
-              }
-              placeholder="Ingrese las observaciones"
-            ></textarea>
-          </label>
-          <label>
-            Repuestos a utilizar:
-            <textarea
-              name="repuestos"
-              value={reparacionData.repuestos}
-              onChange={(e) => setReparacionData({ ...reparacionData, repuestos: e.target.value })}
-              placeholder="Ingrese los repuestos a utilizar"
-            ></textarea>
-          </label>
-          <label>
-            Precio de la reparación:
-            <input
-              type="number"
-              name="precio"
-              value={reparacionData.precio}
-              onChange={(e) => setReparacionData({ ...reparacionData, precio: e.target.value })}
-              placeholder="Ingrese el precio"
-            />
-          </label>
-        </div>
-
-        {/* Botón de envío */}
-        <button type="submit">Registrar Bicicleta</button>
-      </form>
-    </div>
+    <main className="container">
+      <Form
+        title="Registrar Ingreso de Bicicleta"
+        fields={[
+          // Sección Bicicleta
+          
+          {
+            label: 'Marca',
+            name: 'marca',
+            placeholder: 'Ingrese la marca',
+            fieldType: 'input',
+            type: 'text',
+            required: true,
+            minLength: 3,
+            maxLength: 50,
+          },
+          {
+            label: 'Modelo',
+            name: 'modelo',
+            placeholder: 'Ingrese el modelo',
+            fieldType: 'input',
+            type: 'text',
+            required: true,
+            minLength: 3,
+            maxLength: 50,
+          },
+          {
+            label: 'Color',
+            name: 'color',
+            placeholder: 'Ingrese el color',
+            fieldType: 'input',
+            type: 'text',
+            required: true,
+            maxLength: 20,
+          },
+          // Sección Cliente
+          {
+            label: 'RUT',
+            name: 'rut',
+            placeholder: '12.345.678-9',
+            fieldType: 'input',
+            type: 'text',
+            required: true,
+            pattern: patternRut,
+            patternMessage: 'Debe ser xx.xxx.xxx-x o xxxxxxxx-x',
+          },
+          {
+            label: 'Nombre',
+            name: 'nombre',
+            placeholder: 'Ingrese el nombre completo',
+            fieldType: 'input',
+            type: 'text',
+            required: true,
+            minLength: 3,
+            maxLength: 50,
+          },
+          {
+            label: 'Whatsapp',
+            name: 'whatsapp',
+            placeholder: 'Ingrese el número de Whatsapp',
+            fieldType: 'input',
+            type: 'tel',
+            required: true,
+          },
+          {
+            label: 'Correo Electrónico',
+            name: 'correo',
+            placeholder: 'example@email.com',
+            fieldType: 'input',
+            type: 'email',
+            required: true,
+            validate: {
+              emailDomain: (value) =>
+                /\S+@\S+\.\S+/.test(value) || 'Debe ingresar un correo válido',
+            },
+          },
+          // Sección Reparación
+          {
+            label: 'Tipo de Trabajo',
+            name: 'tipo_trabajo',
+            placeholder: 'Ingrese el tipo de trabajo',
+            fieldType: 'input',
+            type: 'text',
+            required: true,
+          },
+          {
+            label: 'Detalle de Trabajo',
+            name: 'detalle_trabajo',
+            placeholder: 'Describa el detalle del trabajo',
+            fieldType: 'textarea',
+            required: false,
+          },
+          {
+            label: 'Observaciones de la Bicicleta',
+            name: 'obs_bici',
+            placeholder: 'Ingrese observaciones',
+            fieldType: 'textarea',
+            required: false,
+          },
+          {
+            label: 'Repuestos',
+            name: 'repuestos',
+            placeholder: 'Ingrese los repuestos utilizados',
+            fieldType: 'textarea',
+            required: false,
+          },
+          {
+            label: 'Precio',
+            name: 'precio',
+            placeholder: 'Ingrese el precio',
+            fieldType: 'input',
+            type: 'number',
+            required: true,
+            min: 0,
+          },
+          {
+            label: 'Fecha Estimada de Entrega',
+            name: 'fecha_estimada_entrega',
+            placeholder: 'Seleccione la fecha',
+            fieldType: 'input',
+            type: 'date',
+            required: true,
+          },
+        ]}
+        onSubmit={onSubmit}
+        footerContent={
+          <div className="button-container">
+            <button type="submit" className="create-button">
+              Registrar Ingreso
+            </button>
+          </div>
+        }
+      />
+    </main>
   );
 };
 

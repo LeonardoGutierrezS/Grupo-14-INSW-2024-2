@@ -12,17 +12,17 @@ const BicicletaSchema = new EntitySchema({
     },
     marca: {
       type: "varchar",
-      length: 255,
+      length: 15,
       nullable: false,
     },
     modelo: {
       type: "varchar",
-      length: 255,
+      length: 15,
       nullable: false,
     },
     color: {
       type: "varchar",
-      length: 50,
+      length: 15,
       nullable: false,
     },
   },

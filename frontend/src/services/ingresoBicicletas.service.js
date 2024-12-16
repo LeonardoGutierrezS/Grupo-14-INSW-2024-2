@@ -29,7 +29,7 @@ export async function createIngresoBicicleta(bicicletaData, clienteData, reparac
 // Actualizar un ingreso existente (bicicleta, cliente y reparación)
 export async function updateIngresoBicicleta(id, bicicletaData, clienteData, reparacionData) {
   try {
-    const { data } = await axios.patch(`/ingresos/${id}/`, {
+    const { data } = await axios.put(`/bicicleta/${id}/`, {
       bicicleta: bicicletaData,
       cliente: clienteData,
       reparacion: reparacionData,
