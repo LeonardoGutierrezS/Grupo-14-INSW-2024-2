@@ -50,6 +50,7 @@ const Inventario = () => {
     const [selectedMarca, setSelectedMarca] = useState('');
     const [selectedCategoria, setSelectedCategoria] = useState('');
     const [selectedTipo, setSelectedTipo] = useState('');
+    const [selectedEstado, setSelectedEstado] = useState('');
 
     const [isFormVisible, setFormVisible] = useState(false);
 
@@ -113,12 +114,21 @@ const Inventario = () => {
         setTipos(response.data || []);
     };
 
+    const getEstado = (cantidad) => {
+        if (cantidad === 0) return 'Sin Stock';
+        if (cantidad <= 15) return 'Bajo';
+        return 'Disponible';
+    };
+
     const filteredInventarios = inventarios.filter((inv) => {
+        const estado = getEstado(inv.cantidad);
         const matchesSearch = inv.nombre.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesMarca = selectedMarca === '' || inv.id_marca === parseInt(selectedMarca);
         const matchesCategoria = selectedCategoria === '' || inv.id_categoria === parseInt(selectedCategoria);
         const matchesTipo = selectedTipo === '' || inv.id_tipo === parseInt(selectedTipo);
-        return matchesSearch && matchesMarca && matchesCategoria && matchesTipo;
+        const matchesEstado = selectedEstado === '' || estado === selectedEstado;
+
+        return matchesSearch && matchesMarca && matchesCategoria && matchesTipo && matchesEstado;
     });
 
     const handleSubmit = async (e) => {
@@ -321,6 +331,17 @@ const Inventario = () => {
                     {tipos.map((tipo) => (
                         <option key={tipo.id_tipo} value={tipo.id_tipo}>{tipo.nombre}</option>
                     ))}
+                </select>
+                {/* Filtro por estado */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedEstado}
+                    onChange={(e) => setSelectedEstado(e.target.value)}
+                    >
+                    <option value="">Todos los Estados</option>
+                    <option value="Sin Stock">Sin Stock</option>
+                    <option value="Bajo">Bajo</option>
+                    <option value="Disponible">Disponible</option>
                 </select>
             </div>
 
