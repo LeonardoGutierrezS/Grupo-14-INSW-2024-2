@@ -74,15 +74,15 @@ const ShiftManagement = () => {
     }
   };
 
-  // Maneja el Check-Out
+  
   const handleCheckOut = async () => {
     try {
       const response = await checkOut();
       if (response.status === "Success") {
         showSuccessAlert("¡Check-Out Exitoso!", response.message);
-        setActiveShift(null); // Limpia el turno activo
-        stopTimer(); // Detiene el cronómetro
-        setElapsedTime(0); // Reinicia el cronómetro
+        setActiveShift(null); 
+        stopTimer(); 
+        setElapsedTime(0); 
       } else {
         showErrorAlert("Error", response.message);
       }

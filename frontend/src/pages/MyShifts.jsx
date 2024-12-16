@@ -7,7 +7,7 @@ const MyShifts = () => {
     const [workHours, setWorkHours] = useState([]);
     const [totalHours, setTotalHours] = useState(0);
 
-    // Función para obtener los turnos
+    
     const fetchWorkHours = async () => {
         try {
             const response = await getWorkHoursEmployee();
@@ -53,13 +53,13 @@ const MyShifts = () => {
 
     return (
         <div className="main-container">
-            <h1 className="title-table">Mis Turnos</h1>
+            <h1 style={{ color: "white" }}>Mis turnos</h1>
             <TableNoSelectable
                 data={workHours}
                 columns={columns}
                 initialSortName={'work_date'}
             />
-            <h2>Horas disponibles a pago: {totalHours}</h2>
+            <h2 style={{ color: "white" }}>Horas disponibles a pago: {totalHours}</h2>
         </div>
     );
 };

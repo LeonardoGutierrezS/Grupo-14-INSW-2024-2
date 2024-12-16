@@ -6,7 +6,7 @@ import { createSeller } from '../services/user.service';
 const AddSeller = () => {
     const navigate = useNavigate();
     const handleBack = () => {
-        navigate(-1); // Retrocede a la pagina snterior
+        navigate(-1); 
     };
 
 
@@ -15,7 +15,7 @@ const AddSeller = () => {
             const response = await createSeller(data);
             if (response.status === 'Success') {
                 showSuccessAlert('¡Creado!', 'El vendedor se ha agregado correctamente.');
-                navigate('/users'); // Vuelve a la lista de usuarios después de la creación
+                navigate('/users'); 
             } else {
                 showErrorAlert('Error', response.details || 'Ocurrió un error al crear el vendedor.');
             }

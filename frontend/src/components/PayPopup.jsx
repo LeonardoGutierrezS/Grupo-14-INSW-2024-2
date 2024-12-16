@@ -4,8 +4,8 @@ import CloseIcon from '@assets/XIcon.svg';
 
 export default function PaymentPopup({ show, setShow, onSave }) {
     const handleSubmit = (formData) => {
-        const { paymentType } = formData; // Extrae el tipo de pago
-        onSave(paymentType); // Llama a la función para aprobar el pago
+        const { paymentType } = formData; 
+        onSave(paymentType); 
     };
 
     return (
