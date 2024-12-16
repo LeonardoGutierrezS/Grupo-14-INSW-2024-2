@@ -26,6 +26,7 @@ import {
     updateTipo,
 } from '@services/tipo.service.js';
 import '@styles/inv.css';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 
 const Modal = ({ isOpen, onClose, title, children, showCloseButton = true }) => {
     if (!isOpen) return null;
@@ -206,8 +207,12 @@ const Inventario = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await createInventario(inventarioData);
-            alert('Inventario creado con éxito');
+            const response = await createInventario(inventarioData);
+            if (response.status === 'Success') {
+                showSuccessAlert('Inventario creado con éxito');
+            } else {
+                showErrorAlert('Error al crear el inventario');
+            }
             fetchInventarios();
             setInventarioData({
                 nombre: '',
@@ -228,8 +233,12 @@ const Inventario = () => {
         e.preventDefault();
         if (editTarget) {
             try {
-                await updateInventario(editTarget.id, inventarioData);
-                alert(`Inventario "${inventarioData.nombre}" actualizado con éxito`);
+                const response = await updateInventario(editTarget.id, inventarioData);
+                if (response.status === 'Success') {
+                    showSuccessAlert('Inventario actualizado con éxito');
+                } else {
+                    showErrorAlert('Error al actualizar el inventario');
+                }
                 fetchInventarios();
                 setEditModalOpen(false);
                 setEditTarget(null);
@@ -251,8 +260,12 @@ const Inventario = () => {
     const handleDelete = async () => {
         if (deleteTarget) {
             try {
-                await deleteInventario(deleteTarget.id);
-                alert(`Inventario "${deleteTarget.nombre}" eliminado con éxito`);
+                const response = await deleteInventario(deleteTarget.id);
+                if (response.status === 'Success') {
+                    showSuccessAlert('Inventario eliminado con éxito');
+                } else {
+                    showErrorAlert('Error al eliminar el inventario');
+                }
                 fetchInventarios();
                 setDeleteModalOpen(false);
                 setDeleteTarget(null);
@@ -264,8 +277,12 @@ const Inventario = () => {
 
     const handleCreateMarca = async () => {
         try {
-            await createMarca({ nombre: newMarca });
-            alert('Marca creada con éxito');
+            const response = await createMarca({ nombre: newMarca });
+            if (response.status === 'Success') {
+                showSuccessAlert('Marca creada con éxito');
+            } else {
+                showErrorAlert('Error al crear la marca');
+            }
             setMarcaModalOpen(false);
             setNewMarca('');
             fetchMarcas();
@@ -275,8 +292,12 @@ const Inventario = () => {
     };
     const handleUpdateMarca = async (id, nombre) => {
         try {
-            await updateMarca(id, { nombre });
-            alert('Marca actualizada con éxito');
+            const response = await updateMarca(id, { nombre });
+            if (response.status === 'Success') {
+                showSuccessAlert('Marca actualizada con éxito');
+            } else {
+                showErrorAlert('Error al actualizar la marca');
+            }
             setEditMarca(null);
             fetchMarcas();
         } catch (error) {
@@ -285,8 +306,12 @@ const Inventario = () => {
     };
     const handleDeleteMarca = async (id) => {
         try {
-            await deleteMarca(id); 
-            alert('Marca eliminada con éxito');
+            const response = await deleteMarca(id); 
+            if (response.status === 'Success') {
+                showSuccessAlert('Marca eliminada con éxito');
+            } else {
+                showErrorAlert('Error al eliminar la marca');
+            }
             fetchMarcas();
         } catch (error) {
             console.error('Error al eliminar la marca:', error);
@@ -296,8 +321,12 @@ const Inventario = () => {
 
     const handleCreateCategoria = async () => {
         try {
-            await createCategoria({ nombre: newCategoria });
-            alert('Categoría creada con éxito');
+            const response = await createCategoria({ nombre: newCategoria });
+            if (response.status === 'Success') {
+                showSuccessAlert('Categoría creada con éxito');
+            } else {
+                showErrorAlert('Error al crear la categoría');
+            }
             setCategoriaModalOpen(false);
             setNewCategoria('');
             fetchCategorias();
@@ -307,8 +336,12 @@ const Inventario = () => {
     };
     const handleUpdateCategoria = async (id, nombre) => {
         try {
-            await updateCategoria(id, { nombre });
-            alert('Categoría actualizada con éxito');
+            const response = await updateCategoria(id, { nombre });
+            if (response.status === 'Success') {
+                showSuccessAlert('Categoría actualizada con éxito');
+            } else {
+                showErrorAlert('Error al actualizar la categoría');
+            }
             setEditCategoria(null);
             fetchCategorias();
         } catch (error) {
@@ -317,8 +350,13 @@ const Inventario = () => {
     };
     const handleDeleteCategoria = async (id) => {
         try {
-            await deleteCategoria(id);
-            alert('Categoría eliminada con éxito');
+            const response = await deleteCategoria(id);
+            if (response.status === 'Success') {
+                showSuccessAlert('Categoría eliminada con éxito');
+            }
+            else {
+                showErrorAlert('Error al eliminar la categoría');
+            }
             fetchCategorias();
         } catch (error) {
             console.error('Error al eliminar la categoría:', error);
@@ -328,8 +366,13 @@ const Inventario = () => {
 
     const handleCreateTipo = async () => {
         try {
-            await createTipo({ nombre: newTipo });
-            alert('Tipo creado con éxito');
+            const response = await createTipo({ nombre: newTipo });
+            if (response.status === 'Success') {
+                showSuccessAlert('Tipo creado con éxito');
+            }
+            else {
+                showErrorAlert('Error al crear el tipo');
+            }
             setTipoModalOpen(false);
             setNewTipo('');
             fetchTipos();
@@ -339,8 +382,12 @@ const Inventario = () => {
     };
     const handleUpdateTipo = async (id, nombre) => {
         try {
-            await updateTipo(id, { nombre });
-            alert('Tipo actualizado con éxito');
+            const response = await updateTipo(id, { nombre });
+            if (response.status === 'Success') {
+                showSuccessAlert('Tipo actualizado con éxito');
+            } else {
+                showErrorAlert('Error al actualizar el tipo');
+            }
             setEditTipo(null);
             fetchTipos();
         } catch (error) {
@@ -349,8 +396,12 @@ const Inventario = () => {
     };
     const handleDeleteTipo = async (id) => {
         try {
-            await deleteTipo(id);
-            alert('Tipo eliminado con éxito');
+            const response = await deleteTipo(id);
+            if (response.status === 'Success') {
+                showSuccessAlert('Tipo eliminado con éxito');
+            } else {
+                showErrorAlert('Error al eliminar el tipo');
+            }
             fetchTipos();
         } catch (error) {
             console.error('Error al eliminar el tipo:', error);
