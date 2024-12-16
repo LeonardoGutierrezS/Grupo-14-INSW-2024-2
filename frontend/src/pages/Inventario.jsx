@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 import {
     createInventario,
     getAllInventarios,
@@ -130,6 +132,76 @@ const Inventario = () => {
 
         return matchesSearch && matchesMarca && matchesCategoria && matchesTipo && matchesEstado;
     });
+
+    const generarReporte = () => {
+        const encabezados = [
+            'Nombre',
+            'Marca',
+            'Categoría',
+            'Tipo',
+            'Cantidad',
+            'Precio',
+            'Descripción',
+            'Estado'
+        ];
+        const filas = filteredInventarios.map((inv) => {
+            const marca = marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca';
+            const categoria = categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría';
+            const tipo = tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo';
+            const estado = getEstado(inv.cantidad);
+
+            return [
+                inv.nombre,
+                marca,
+                categoria,
+                tipo,
+                inv.cantidad,
+                inv.precio,
+                inv.descripcion,
+                estado
+            ].join(',');
+        });
+
+        const csvContent = [encabezados.join(','), ...filas].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'reporte_inventario.csv';
+        link.click();
+    };
+
+    const generarReportePDF = () => {
+        const doc = new jsPDF();
+        doc.text('Reporte de Inventario', 14, 15); // Título del reporte
+
+        // Crear filas del PDF
+        const filas = filteredInventarios.map((inv) => {
+            const marca = marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca';
+            const categoria = categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría';
+            const tipo = tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo';
+            const estado = getEstado(inv.cantidad);
+
+            return [
+                inv.nombre,
+                marca,
+                categoria,
+                tipo,
+                inv.cantidad,
+                inv.precio,
+                inv.descripcion,
+                estado
+            ];
+        });
+
+        // Configurar la tabla
+        doc.autoTable({
+            head: [['Nombre', 'Marca', 'Categoría', 'Tipo', 'Cantidad', 'Precio', 'Descripción', 'Estado']],
+            body: filas,
+            startY: 20, // Posición de inicio
+        });
+
+        doc.save('reporte_inventario.pdf'); // Descargar el PDF
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -287,6 +359,7 @@ const Inventario = () => {
 
     return (
         <div className="inv-container">
+            
             <h2 className="inv-title">Inventario</h2>
             
             {/* Filtros de búsqueda */}
@@ -424,16 +497,40 @@ const Inventario = () => {
             </table>
 
 
-            {/* Botón para mostrar el formulario */}
-            <button className="inv-button" onClick={() => setFormVisible(!isFormVisible)}>
-                {isFormVisible ? 'Ocultar Formulario' : 'Agregar Inventario'}
-            </button>
-            {/* Botón para mostrar el modal Gestor de marcas */}
-            <button className="inv-button-marca" onClick={() => setGestorDeMarcaModalOpen(true)}>Gestionar Marcas</button>
-            {/* Botón para mostrar el modal Gestor de categorías */}
-            <button className="inv-button-categoria" onClick={() => setGestorDeCategoriaModalOpen(true)}>Gestionar Categorías</button>
-            {/* Botón para mostrar el modal Gestor de tipos */}
-            <button className="inv-button-tipo" onClick={() => setGestorDeTipoModalOpen(true)}>Gestionar Tipos</button>
+            <div className="inv-botones-container">
+                {/* Botón centralizado para Agregar Inventario */}
+                <div className="inv-boton-central">
+                    <button className="inv-button" onClick={() => setFormVisible(!isFormVisible)}>
+                        {isFormVisible ? 'Ocultar Formulario' : 'Agregar Inventario'}
+                    </button>
+                </div>
+
+                {/* Línea inferior con botones alineados a la izquierda y derecha */}
+                <div className="inv-boton-linea">
+                    {/* Botones alineados a la izquierda */}
+                    <div className="inv-botones-izquierda">
+                        <button className="inv-button" onClick={() => setGestorDeMarcaModalOpen(true)}>
+                            Gestionar Marcas
+                        </button>
+                        <button className="inv-button" onClick={() => setGestorDeCategoriaModalOpen(true)}>
+                            Gestionar Categorías
+                        </button>
+                        <button className="inv-button" onClick={() => setGestorDeTipoModalOpen(true)}>
+                            Gestionar Tipos
+                        </button>
+                    </div>
+
+                    {/* Botones alineados a la derecha */}
+                    <div className="inv-botones-derecha">
+                        <button className="inv-button" onClick={generarReporte}>
+                            Crear Reporte CSV
+                        </button>
+                        <button className="inv-button" onClick={generarReportePDF}>
+                            Crear Reporte PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             {/* Formulario para agregar inventario */}
             {isFormVisible && (
