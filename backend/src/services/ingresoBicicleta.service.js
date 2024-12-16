@@ -1,8 +1,9 @@
 "use strict";
-import { AppDataSource } from "../config/configDb";
-import BicicletaSchema from "../entity/Bicicleta";
-import ClienteSchema from "../entity/Cliente";
-import ReparacionSchema from "../entity/Reparacion";
+import { AppDataSource } from "../config/configDb.js";
+import BicicletaSchema from "../entity/bicicleta.entity.js";
+import ClienteSchema from "../entity/cliente.entity.js";
+import ReparacionSchema from "../entity/reparacion.entity.js";
+
 
 // Crear un nuevo ingreso de bicicleta, cliente, y reparación
 export const createIngresoBicicletaService = async (bicicletaData, clienteData, reparacionData) => {
@@ -19,14 +20,6 @@ export const createIngresoBicicletaService = async (bicicletaData, clienteData, 
     const newBicicleta = bicicletaRepository.create(bicicletaData);
     await bicicletaRepository.save(newBicicleta);
 
-    // Procesar fecha_est_entrega si existe
-    if (reparacionData.fecha_est_entrega) {
-      const parsedDate = parse(reparacionData.fecha_est_entrega, "dd/MM/yyyy", new Date());
-      if (!isValid(parsedDate)) {
-        throw new Error("La fecha_est_entrega no tiene un formato válido. Use dd/MM/yyyy.");
-      }
-      reparacionData.fecha_est_entrega = format(parsedDate, "yyyy-MM-dd");
-    }
 
     // Crear nueva reparación vinculando la bicicleta y el cliente
     const newReparacion = reparacionRepository.create({
@@ -56,36 +49,55 @@ export const getAllIngresosService = async () => {
 };
 
 // Editar un ingreso de bicicleta, cliente, y reparación
-export const updateIngresoBicicletaService = async (id, bicicletaData, clienteData, reparacionData) => {
+export const updateIngresoBicicletaService = async (id, updateData) => {
   try {
     const bicicletaRepository = AppDataSource.getRepository(BicicletaSchema);
     const clienteRepository = AppDataSource.getRepository(ClienteSchema);
     const reparacionRepository = AppDataSource.getRepository(ReparacionSchema);
 
-    // Actualizar datos de cliente
-    const existingCliente = await clienteRepository.findOneBy({
-      id_cliente: reparacionData.id_cliente,
+    // Obtener la reparación actual
+    const reparacion = await reparacionRepository.findOne({
+      where: { id_reparacion: id },
+      relations: ["id_bici", "id_cliente"],
     });
-    clienteRepository.merge(existingCliente, clienteData);
-    await clienteRepository.save(existingCliente);
 
-    // Actualizar datos de bicicleta
-    const existingBicicleta = await bicicletaRepository.findOneBy({
-      id_bici: reparacionData.id_bici,
-    });
-    bicicletaRepository.merge(existingBicicleta, bicicletaData);
-    await bicicletaRepository.save(existingBicicleta);
+    if (!reparacion) {
+      throw new Error("Ingreso no encontrado");
+    }
 
-    // Actualizar datos de reparación
-    const existingReparacion = await reparacionRepository.findOneBy({ id_reparacion: id });
-    reparacionRepository.merge(existingReparacion, reparacionData);
-    await reparacionRepository.save(existingReparacion);
+    // Actualizar campos específicos de la reparación
+    if (updateData.reparacion) {
+      Object.assign(reparacion, updateData.reparacion);
+      await reparacionRepository.save(reparacion);
+    }
 
-    return { existingCliente, existingBicicleta, existingReparacion };
+    // Actualizar campos específicos de la bicicleta
+    if (updateData.bicicleta) {
+      const bicicleta = await bicicletaRepository.findOneBy({
+        id_bici: reparacion.id_bici.id_bici,
+      });
+      if (!bicicleta) throw new Error("Bicicleta no encontrada");
+      Object.assign(bicicleta, updateData.bicicleta);
+      await bicicletaRepository.save(bicicleta);
+    }
+
+    // Actualizar campos específicos del cliente
+    if (updateData.cliente) {
+      const cliente = await clienteRepository.findOneBy({
+        id_cliente: reparacion.id_cliente.id_cliente,
+      });
+      if (!cliente) throw new Error("Cliente no encontrado");
+      Object.assign(cliente, updateData.cliente);
+      await clienteRepository.save(cliente);
+    }
+
+    return { message: "Ingreso actualizado con éxito" };
   } catch (error) {
     throw new Error("Error actualizando el ingreso: " + error.message);
   }
 };
+
+
 
 // Eliminar un ingreso
 export const deleteIngresoBicicletaService = async (id) => {

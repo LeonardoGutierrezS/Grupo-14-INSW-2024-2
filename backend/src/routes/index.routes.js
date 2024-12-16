@@ -3,7 +3,7 @@ import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
 import biciRoutes from "./ingresoBicicleta.routes.js";
-
+import sendCustomEmail  from "./email.routes.js";
 import inventarioRoutes from "./inventario.routes.js";
 import marcaRoutes from "./marca.routes.js";
 import categoriaRoutes from "./categoria.routes.js";
@@ -27,7 +27,7 @@ router
 
     .use("/comentario", comentarioRoutes)
     .use("/tareas", tareasRoutes)
-    .use("/bicicleta", biciRoutes);
-
+    .use("/bicicleta", biciRoutes)
+    .use("/email", sendCustomEmail);
 
 export default router;
