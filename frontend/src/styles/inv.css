@@ -289,15 +289,23 @@ body {
     margin-left: 2%;
 }
 
-.inv-search-bar {
+.inv-filters {
+    display: flex;
+    justify-content: space-between;
     margin-bottom: 20px;
-    text-align: left;
 }
 
 .inv-input-search {
     padding: 10px;
     width: 100%;
     max-width: 400px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.inv-select-filter {
+    padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;

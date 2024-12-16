@@ -47,6 +47,9 @@ const Inventario = () => {
     const [tipos, setTipos] = useState([]);
 
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedMarca, setSelectedMarca] = useState('');
+    const [selectedCategoria, setSelectedCategoria] = useState('');
+    const [selectedTipo, setSelectedTipo] = useState('');
 
     const [isFormVisible, setFormVisible] = useState(false);
 
@@ -110,9 +113,13 @@ const Inventario = () => {
         setTipos(response.data || []);
     };
 
-    const filteredInventarios = inventarios.filter((inv) => 
-        inv.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredInventarios = inventarios.filter((inv) => {
+        const matchesSearch = inv.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesMarca = selectedMarca === '' || inv.id_marca === parseInt(selectedMarca);
+        const matchesCategoria = selectedCategoria === '' || inv.id_categoria === parseInt(selectedCategoria);
+        const matchesTipo = selectedTipo === '' || inv.id_tipo === parseInt(selectedTipo);
+        return matchesSearch && matchesMarca && matchesCategoria && matchesTipo;
+    });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -271,8 +278,10 @@ const Inventario = () => {
     return (
         <div className="inv-container">
             <h2 className="inv-title">Inventario</h2>
-            {/* Barra de búsqueda */}
-            <div className="inv-search-bar">
+            
+            {/* Filtros de búsqueda */}
+            <div className="inv-filters">
+                {/* Barra de búsqueda */}
                 <input
                     type="text"
                     className="inv-input-search"
@@ -280,8 +289,40 @@ const Inventario = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
+                {/* Filtro por marca */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedMarca}
+                    onChange={(e) => setSelectedMarca(e.target.value)}
+                    >
+                    <option value="">Todas las Marcas</option>
+                    {marcas.map((marca) => (
+                        <option key={marca.id_marca} value={marca.id_marca}>{marca.nombre}</option>
+                    ))}
+                </select>
+                {/* Filtro por categoría */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedCategoria}
+                    onChange={(e) => setSelectedCategoria(e.target.value)}
+                    >
+                    <option value="">Todas las Categorías</option>
+                    {categorias.map((categoria) => (
+                        <option key={categoria.id_categoria} value={categoria.id_categoria}>{categoria.nombre}</option>
+                    ))}
+                </select>
+                {/* Filtro por tipo */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedTipo}
+                    onChange={(e) => setSelectedTipo(e.target.value)}
+                    >
+                    <option value="">Todos los Tipos</option>
+                    {tipos.map((tipo) => (
+                        <option key={tipo.id_tipo} value={tipo.id_tipo}>{tipo.nombre}</option>
+                    ))}
+                </select>
             </div>
-
 
             {/* Tabla de inventarios */}
             <table className="inv-table">
