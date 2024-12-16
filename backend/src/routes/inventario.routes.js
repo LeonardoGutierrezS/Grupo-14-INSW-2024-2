@@ -14,7 +14,7 @@ import {
 
 } from "../controllers/inventario.controller.js";
 
-import { isAdmin } from "../middlewares/authorization.middleware.js";
+import { isAdmin, isMechanic } from "../middlewares/authorization.middleware.js";
 
 import {authenticateJwt} from "../middlewares/authentication.middleware.js";
 
@@ -30,7 +30,7 @@ post("/crearInventario", authenticateJwt, isAdmin, crearInventario)             
 .get("/getInventarioBynombreDeTipo/:nombre", getInventarioBynombreDeTipo)                   //  http://localhost:3000/api/inventario/getInventarioBynombreDeTipo/:nombre
 .delete("/deleteInventario/:id", authenticateJwt, isAdmin, deleteInventario)                //  http://localhost:3000/api/inventario/deleteInventario/:id
 .put("/updateInventario/:id", authenticateJwt, isAdmin, updateInventario)                   //  http://localhost:3000/api/inventario/updateInventario/:id
-.put("/updateInventarioCantidad/:id", authenticateJwt, isAdmin, updateInventarioCantidad);  //  http://localhost:3000/api/inventario/updateInventarioCantidad/:id
+.put("/updateInventarioCantidad/:id", authenticateJwt, isAdmin, isMechanic, updateInventarioCantidad);  //  http://localhost:3000/api/inventario/updateInventarioCantidad/:id
 
 
 
