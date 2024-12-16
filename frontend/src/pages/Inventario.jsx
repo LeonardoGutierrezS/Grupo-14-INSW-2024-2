@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import {
@@ -358,6 +358,7 @@ const Inventario = () => {
     };
 
     return (
+        
         <div className="inv-container">
             
             <h2 className="inv-title">Inventario</h2>

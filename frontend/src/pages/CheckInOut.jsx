@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { checkIn, checkOut, getActiveShift } from "@services/work.service";
 import { showSuccessAlert, showErrorAlert } from "@helpers/sweetAlert";
 import '@styles/checkInOut.css';
-
+import '@styles/usersButtons.css';
 
 const ShiftManagement = () => {
   const [activeShift, setActiveShift] = useState(null);
@@ -104,10 +104,20 @@ const ShiftManagement = () => {
           <p>
             <strong>Tiempo transcurrido:</strong> {formatTime(elapsedTime)}
           </p>
-          <button onClick={handleCheckOut}>Finalizar Turno</button>
+          <button 
+          className="button button-secondary"
+          onClick={handleCheckOut}
+          >
+            Finalizar Turno
+            </button>
         </div>
       ) : (
-        <button onClick={handleCheckIn}>Iniciar Turno</button>
+        <button
+        className="button button-secondary"
+        onClick={handleCheckIn}
+        >
+          Iniciar Turno
+        </button>
       )}
     </div>
   );

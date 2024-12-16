@@ -22,9 +22,19 @@ const WorkHours = () => {
         const date = new Date(value);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     };
+    const adjustTimeZone = (dateTimeString) => {
+        const date = new Date(dateTimeString);
+        const userTime = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+        return userTime.toISOString().slice(0, 19); // Formato 'YYYY-MM-DDTHH:mm:ss'
+    };
 
     const handleEditClick = (workHour) => {
-        setSelectedWorkHour(workHour);
+        const adjustedWorkHour = {
+            ...workHour,
+            check_in: adjustTimeZone(workHour.check_in),
+            check_out: adjustTimeZone(workHour.check_out),
+        };
+        setSelectedWorkHour(adjustedWorkHour);
         setIsEditPopupOpen(true);
     };
 
@@ -171,7 +181,7 @@ const WorkHours = () => {
             >
                 Historial de Pagos
             </button>
-</div>
+            </div>
             
             {isHistoryPopupOpen && (
                 <PayHistoryPopup 
