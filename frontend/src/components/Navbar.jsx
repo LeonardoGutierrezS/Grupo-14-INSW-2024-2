@@ -72,23 +72,6 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     )}
-
-                    {userRole === 'administrador' && (
-                        <li>
-                            <NavLink
-                                to="/AddMarca"
-                                onClick={() => {
-                                    setMenuOpen(false);
-                                    addActiveClass();
-
-                                }}
-                                activeClassName="active"
-                            >
-                                Agregar Marca
-                            </NavLink>
-                        </li>
-                    )}
-
                     {userRole === 'administrador' && (
                         <li>
                             <NavLink
