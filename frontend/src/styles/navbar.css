@@ -157,3 +157,22 @@
         }
 	}
 }
+
+.nav-menu ul li .change-password-button {
+    background-color: transparent;
+    color: white;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-menu ul li .change-password-button:hover {
+    background-color: #003366;
+    color: #ffffff;
+	transition: all 0.3s ease, box-shadow 0.2s ease;
+	box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+	transform: translateY(-3px); /* Efecto de levantamiento */
+}

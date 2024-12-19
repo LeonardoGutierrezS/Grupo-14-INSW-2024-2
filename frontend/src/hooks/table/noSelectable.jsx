@@ -11,7 +11,7 @@ function useNoSelectable({ data, columns, filter, dataToFilter, initialSortName 
     useEffect(() => {
         if (tableRef.current) {
             const tabulatorTable = new Tabulator(tableRef.current, {
-                data: [], // Datos iniciales vacíos
+                data: [], 
                 columns: columns,
                 layout: "fitData",
                 responsiveLayout: "hide",
@@ -46,7 +46,7 @@ function useNoSelectable({ data, columns, filter, dataToFilter, initialSortName 
         }
     }, []);
 
-    // Actualiza los datos cuando la tabla esté construida
+    
     useEffect(() => {
         if (table && isTableBuilt) {
             table.replaceData(data);

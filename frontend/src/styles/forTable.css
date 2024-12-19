@@ -6,7 +6,8 @@
 }
 
 .tabulator .tabulator-tableholder {
-    width: auto; /* Ajusta la altura de forma dinámica */
+    width: auto;
+    height: auto; /* Ajusta la altura de forma dinámica */
 }
 
 .tabulator-row {
@@ -27,3 +28,4 @@ div.tabulator {
     border: 1px solid #ccc; /* Agrega un borde para visualizar los límites */
     overflow: auto; /* Habilita scroll si el contenido excede el tamaño */
 }
+
