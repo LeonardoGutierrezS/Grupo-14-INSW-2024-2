@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getPaymentHistory, getWorkHours, updateWorkHour, approvePayment } from '@services/user.service.js';
+import { getPaymentHistory, getUsersWithHours ,getWorkHours, updateWorkHour, approvePayment } from '@services/user.service.js';
 import '@styles/users.css';
 import HoursPopup from '../components/HoursPopup';
 import PaymentPopup from '../components/PayPopup'; 
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 import PayHistoryPopup from '../components/PayHistoryPopup'; 
 import Table from '../components/Table';
+import UsersWithHoursPopup from '../components/UsersToPayPopup';
 
 const WorkHours = () => {
     const { userId } = useParams(); 
@@ -17,6 +18,9 @@ const WorkHours = () => {
     const [selectedWorkHour, setSelectedWorkHour] = useState(null);
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [isHistoryPopupOpen, setIsHistoryPopupOpen] = useState(false);
+    const [isUsersPopupOpen, setIsUsersPopupOpen] = useState(false);
+    const [usersWithHours, setUsersWithHours] = useState([]);
+
 
     const formatTime = (value) => {
         const date = new Date(value);
@@ -98,6 +102,19 @@ const WorkHours = () => {
             console.error('Error al obtener el historial de pagos:', error);
         }
     };
+    const fetchUsersWithHours = async () => {
+        try {
+            const response = await getUsersWithHours();
+            if (response.status === 'Success') {
+                setUsersWithHours(response.data); // Guarda los datos en el estado
+            } else {
+                console.error('Error al obtener usuarios con horas trabajadas:', response.message);
+            }
+        } catch (error) {
+            console.error('Error al obtener usuarios con horas trabajadas:', error);
+        }
+    };
+    
 
     useEffect(() => {
         fetchWorkHours();
@@ -167,7 +184,7 @@ const WorkHours = () => {
                     onSave={handleApprovePayment}
                 />
             )}
-            <h2>Total de horas trabajadas: {totalHours}</h2>
+            <h2>Total de horas trabajadas: {Number(totalHours).toFixed(2)}</h2>
             <div className="buttons-container">
             <button 
                 className="button button-secondary"
@@ -175,6 +192,16 @@ const WorkHours = () => {
             >
                 Aprobar Pago
             </button>
+            <button 
+                className="button button-secondary"
+                onClick={() => {
+                fetchUsersWithHours(); 
+                setIsUsersPopupOpen(true); 
+            }}
+            >
+                 + Disponibles a pago
+            </button>
+
             <button 
                 className="button button-secondary"
                 onClick={handlePaymentHistoryClick}
@@ -190,13 +217,21 @@ const WorkHours = () => {
                     paymentHistory={paymentHistory} 
                 />
             )}
-		{isPaymentPopupOpen && (
+		    {isPaymentPopupOpen && (
                 <PaymentPopup
                     show={isPaymentPopupOpen}
                     setShow={setIsPaymentPopupOpen}
                     onSave={handleApprovePayment}
                 />
             )}
+            {isUsersPopupOpen && (
+                <UsersWithHoursPopup 
+                    show={isUsersPopupOpen} 
+                    setShow={setIsUsersPopupOpen} 
+                    usersWithHours={usersWithHours} 
+                />
+            )}
+
         </div>
     );
 };

@@ -111,3 +111,26 @@ export const getWorkHoursEmployee = async () => {
     }
 };
 
+export async function getUsersWithHours() {
+    try {
+        const response = await axios.get('/user/users-with-hours');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener usuarios con horas trabajadas:', error.response?.data || error.message);
+        return error.response?.data || { status: 'Error', message: 'Error al obtener usuarios con horas trabajadas.' };
+    }
+}
+
+export async function changePassword({ currentPassword, newPassword }) {
+    try {
+        const response = await axios.patch('/user/change-password', {
+            currentPassword,
+            newPassword,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al cambiar la contraseña:', error.response?.data || error.message);
+        return error.response?.data || { status: 'Error', message: 'Error al cambiar la contraseña.' };
+    }
+}
+

@@ -59,7 +59,7 @@ const MyShifts = () => {
                 columns={columns}
                 initialSortName={'work_date'}
             />
-            <h2 style={{ color: "white" }}>Horas disponibles a pago: {totalHours}</h2>
+            <h2 style={{ color: "white" }}>Horas ponibles a pago: {totalHours}</h2>
         </div>
     );
 };
