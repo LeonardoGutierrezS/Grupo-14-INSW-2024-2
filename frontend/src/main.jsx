@@ -7,7 +7,7 @@ import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
 import BikeEntry from '@pages/BikeEntry'; //Leo
 import ShowWorks from '@pages/ShowWorks'; //Leo
-import WorkDetails from '@pages/WorkDetails';
+import WorkDetails from '@pages/workDetails';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
