@@ -131,6 +131,21 @@ const Navbar = () => {
                                 <NavLink to="/my-shifts">Mis Turnos</NavLink>
                             </li>
                         ) : null}
+                        
+                        {(userRole === 'administrador' || userRole === 'mecanico') &&(
+                        <li>
+                            <NavLink 
+                                to="/tareas" 
+                                onClick={() => { 
+                                    setMenuOpen(false); 
+                                    addActiveClass();
+                                }} 
+                                activeClassName="active"
+                            >
+                                Tareas
+                            </NavLink>
+                        </li>
+                        )}
                        <li>
                             <button 
                                 className="change-password-button"

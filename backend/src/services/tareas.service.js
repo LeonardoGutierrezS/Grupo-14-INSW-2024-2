@@ -43,7 +43,19 @@ export const getAllTareasService = async () => {
   const tareaRepository = AppDataSource.getRepository(TareaSchema);
 
   try {
-    const tareas = await tareaRepository.find({ relations: ["usuario"] }); // Incluir relación con el usuario
+    const tareas = await tareaRepository.find({ 
+      relations: ["usuario"],
+      select: {
+        id_tarea: true,
+        detalle: true,
+        prioridad: true,
+        estado: true,
+        usuario: {
+          id: true,
+          nombreCompleto: true,
+        },
+      },
+    }); // Incluir relación con el usuario
     return tareas;
   } catch (error) {
     throw new Error(`Error obteniendo tareas: ${error.message}`);
@@ -65,11 +77,11 @@ export const getTareaByIdService = async (id) => {
 };
 
 // Actualizar una tarea
-export const updateTareaService = async (id, tareaData) => {
+export const updateTareaService = async (id_tarea, tareaData) => {
   const tareaRepository = AppDataSource.getRepository(TareaSchema);
 
   try {
-    const existingTarea = await tareaRepository.findOneBy({ idTarea: id });
+    const existingTarea = await tareaRepository.findOneBy({ id_tarea: id_tarea });
     if (!existingTarea) {
       throw new Error("Tarea no encontrada");
     }
@@ -84,20 +96,20 @@ export const updateTareaService = async (id, tareaData) => {
 };
 
 // Eliminar una tarea
-export const deleteTareaService = async (id) => {
+export const deleteTareaService = async (id_tarea) => {
   const tareaRepository = AppDataSource.getRepository(TareaSchema);
 
   try {
     // Buscar y eliminar la tarea
-    const tareaToDelete = await tareaRepository.findOneBy({ idTarea: id });
+    const tareaToDelete = await tareaRepository.findOneBy({ id_tarea: id_tarea });
     if (!tareaToDelete) {
       throw new Error("Tarea no encontrada");
     }
 
     await tareaRepository.remove(tareaToDelete);
 
-    return { message: "Tarea eliminada con éxito" };
+    return { status: "success", message: "Tarea eliminada con éxito" };
   } catch (error) {
-    throw new Error(`Error eliminando la tarea: ${error.message}`);
+    return { status: "error", message: `Error eliminando la tarea: ${error.message}` };
   }
 };

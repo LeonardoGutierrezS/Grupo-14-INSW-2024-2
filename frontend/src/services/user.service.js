@@ -12,6 +12,19 @@ export async function getUsers() {
     }
 }
 
+export async function getMechanics() {
+    try {
+        const { data } = await axios.get('/user/');
+        // Filtrar usuarios con rol 'mecánico'
+        const mechanics = data.data.filter(user => user.rol === 'mecanico');
+        console.log("MECÁNICOS", mechanics);
+        return mechanics;
+    } catch (error) {
+        console.error("Error al obtener mecánicos:", error.response.data);
+        return [];
+    }
+}
+
 export async function updateUser(data, rut) {
     try {
         const response = await axios.patch(`/user/detail/?rut=${rut}`, {data, estado: data.estado});

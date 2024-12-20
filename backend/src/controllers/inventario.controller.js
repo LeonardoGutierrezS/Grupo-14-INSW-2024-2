@@ -184,26 +184,26 @@ export async function updateInventario (req, res) {
     }
 }
 
-export async function updateInventarioCantidad (req, res) {
+export async function updateInventarioCantidad(req, res) {
     try {
-        const {id} = req.params;
-        const {body} = req;
-
+        const { id } = req.params;
+        const { cantidad } = req.body;
         if (!id) {
-            return handleErrorClient(res, 400, "Error de validación", "El id es requerido");
+            return handleErrorClient(res, 400, "Error de validación", "El ID es requerido");
         }
-        if (error) {
-            return handleErrorClient(res, 400, "Error de validación", error.message);
+        if (cantidad == null || isNaN(cantidad)) {
+            return handleErrorClient(res, 400, "Error de validación", "La cantidad debe ser un número válido");
         }
 
-        const [inventario, errorInventario] = await updateInventarioCantidadService(id, body);
+        const [inventario, errorInventario] = await updateInventarioCantidadService(id, { cantidad });
 
         if (errorInventario) {
             return handleErrorClient(res, 404, "Error al actualizar inventario", errorInventario);
         }
-        handleSuccess(res, 200, "Inventario actualizado", inventario);
-    }
-    catch (error) {
+
+        handleSuccess(res, 200, "Inventario actualizado con éxito", inventario);
+    } catch (error) {
+        console.error("Error en el controlador:", error.message);
         handleErrorServer(res, 500, "Error del Servidor", error.message);
     }
 }

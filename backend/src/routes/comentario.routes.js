@@ -1,13 +1,12 @@
-"use strict";
 import express from "express";
-import { crearComentario, obtenerComentarios } from "../controllers/comentario.controller.js";
-import { actualizarComentario, eliminarComentario } from "../controllers/comentario.controller.js";
+import { actualizarComentario, crearComentario } from "../controllers/comentario.controller.js";
+import { eliminarComentario, obtenerComentarios } from "../controllers/comentario.controller.js";
 
 const router = express.Router();
 
-router.post("/crear", crearComentario);
-router.get("/:id_tarea", obtenerComentarios);
+router.get("/", obtenerComentarios);
+router.post("/addcomentario", crearComentario);
 router.put("/:id_com", actualizarComentario);
-router.delete("/:id_com", eliminarComentario);
+router.delete("/eliminar/:id_com", eliminarComentario);
 
 export default router;

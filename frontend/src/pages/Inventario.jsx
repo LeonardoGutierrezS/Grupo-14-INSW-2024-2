@@ -27,6 +27,7 @@ import {
 } from '@services/tipo.service.js';
 import '@styles/inv.css';
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
+import { updateInventarioCantidad } from '../services/inventario.service';
 
 const Modal = ({ isOpen, onClose, title, children, showCloseButton = true }) => {
     if (!isOpen) return null;
@@ -89,6 +90,8 @@ const Inventario = () => {
 
     const [newTipo, setNewTipo] = useState('');
     const [editTipo, setEditTipo] = useState(null);
+
+    const [numero, setNumero] = useState(null);
 
     useEffect(() => {
         fetchInventarios();
@@ -198,7 +201,7 @@ const Inventario = () => {
         doc.autoTable({
             head: [['Nombre', 'Marca', 'Categoría', 'Tipo', 'Cantidad', 'Precio', 'Descripción', 'Estado']],
             body: filas,
-            startY: 20, // Posición de inicio
+            startY: 20, 
         });
 
         doc.save('reporte_inventario.pdf'); // Descargar el PDF
@@ -211,7 +214,10 @@ const Inventario = () => {
             if (response.status === 'Success') {
                 showSuccessAlert('Inventario creado con éxito');
             } else {
-                showErrorAlert('Error al crear el inventario');
+                //muestra tambien el mensaje de error del backend y el detalle
+                showErrorAlert('Error al crear el inventario',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
             }
             fetchInventarios();
             setInventarioData({
@@ -237,7 +243,9 @@ const Inventario = () => {
                 if (response.status === 'Success') {
                     showSuccessAlert('Inventario actualizado con éxito');
                 } else {
-                    showErrorAlert('Error al actualizar el inventario');
+                    showErrorAlert('Error al actualizar el inventario',
+                        `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                    );
                 }
                 fetchInventarios();
                 setEditModalOpen(false);
@@ -256,6 +264,28 @@ const Inventario = () => {
             }
         }
     };
+    const handleCantidadChange = async (id, nuevaCantidad) => {
+        if (nuevaCantidad < 0) {
+            showErrorAlert("La cantidad no puede ser negativa");
+            return;
+        }
+    
+        try {
+            const response = await updateInventarioCantidad(id, { cantidad: nuevaCantidad });
+            if (response.status === "Success") {
+                showSuccessAlert("Cantidad actualizada con éxito");
+                fetchInventarios(); // Actualizar la lista de inventarios
+            } else {
+                showErrorAlert(
+                    "Error al actualizar la cantidad", 
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
+        } catch (error) {
+            console.error("Error al actualizar la cantidad:", error);
+            showErrorAlert("Error interno al actualizar la cantidad");
+        }
+    };
 
     const handleDelete = async () => {
         if (deleteTarget) {
@@ -264,7 +294,7 @@ const Inventario = () => {
                 if (response.status === 'Success') {
                     showSuccessAlert('Inventario eliminado con éxito');
                 } else {
-                    showErrorAlert('Error al eliminar el inventario');
+                    showErrorAlert('Error al eliminar el inventario', response.details || response.message);
                 }
                 fetchInventarios();
                 setDeleteModalOpen(false);
@@ -281,7 +311,9 @@ const Inventario = () => {
             if (response.status === 'Success') {
                 showSuccessAlert('Marca creada con éxito');
             } else {
-                showErrorAlert('Error al crear la marca');
+                showErrorAlert('Error al crear la marca',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
             }
             setMarcaModalOpen(false);
             setNewMarca('');
@@ -296,7 +328,9 @@ const Inventario = () => {
             if (response.status === 'Success') {
                 showSuccessAlert('Marca actualizada con éxito');
             } else {
-                showErrorAlert('Error al actualizar la marca');
+                showErrorAlert('Error al actualizar la marca',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
             }
             setEditMarca(null);
             fetchMarcas();
@@ -310,7 +344,9 @@ const Inventario = () => {
             if (response.status === 'Success') {
                 showSuccessAlert('Marca eliminada con éxito');
             } else {
-                showErrorAlert('Error al eliminar la marca');
+                showErrorAlert('Error al eliminar la marca La marca se encuentra en uso',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
             }
             fetchMarcas();
         } catch (error) {
@@ -325,7 +361,9 @@ const Inventario = () => {
             if (response.status === 'Success') {
                 showSuccessAlert('Categoría creada con éxito');
             } else {
-                showErrorAlert('Error al crear la categoría');
+                showErrorAlert('Error al crear la categoría',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
             }
             setCategoriaModalOpen(false);
             setNewCategoria('');
@@ -340,7 +378,9 @@ const Inventario = () => {
             if (response.status === 'Success') {
                 showSuccessAlert('Categoría actualizada con éxito');
             } else {
-                showErrorAlert('Error al actualizar la categoría');
+                showErrorAlert('Error al actualizar la categoría',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
             }
             setEditCategoria(null);
             fetchCategorias();
@@ -355,7 +395,9 @@ const Inventario = () => {
                 showSuccessAlert('Categoría eliminada con éxito');
             }
             else {
-                showErrorAlert('Error al eliminar la categoría');
+                showErrorAlert('Error al eliminar la categoría',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
             }
             fetchCategorias();
         } catch (error) {
@@ -371,7 +413,9 @@ const Inventario = () => {
                 showSuccessAlert('Tipo creado con éxito');
             }
             else {
-                showErrorAlert('Error al crear el tipo');
+                showErrorAlert('Error al crear el tipo',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
             }
             setTipoModalOpen(false);
             setNewTipo('');
@@ -386,7 +430,9 @@ const Inventario = () => {
             if (response.status === 'Success') {
                 showSuccessAlert('Tipo actualizado con éxito');
             } else {
-                showErrorAlert('Error al actualizar el tipo');
+                showErrorAlert('Error al actualizar el tipo',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
             }
             setEditTipo(null);
             fetchTipos();
@@ -400,7 +446,9 @@ const Inventario = () => {
             if (response.status === 'Success') {
                 showSuccessAlert('Tipo eliminado con éxito');
             } else {
-                showErrorAlert('Error al eliminar el tipo');
+                showErrorAlert('Error al eliminar el tipo',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
             }
             fetchTipos();
         } catch (error) {
@@ -483,6 +531,7 @@ const Inventario = () => {
                         <th className="inv-th">Descripción</th>
                         <th className="inv-th">Estado de Inventario</th>
                         <th className="inv-th">Acciones</th>
+                        <th className="inv-th">Agregar/Restar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -542,6 +591,29 @@ const Inventario = () => {
                                         Eliminar
                                     </button>
                                 </td>
+                                <td className="inv-td">
+                                    <input style={{ width: '50px', marginRight: '10px' }}
+                                        type="number"
+                                        value={numero}
+                                        onChange={(e) => setNumero(parseInt(e.target.value))}
+                                        className="inv-input"
+                                        min="0"
+                                    />
+                                    <button
+                                        className="inv-edit-button"
+                                        onClick={() => handleCantidadChange(inv.id, inv.cantidad + numero)}
+                                    >
+                                        Agregar
+                                    </button>
+                                    <button
+                                        className="inv-delete-button"
+                                        onClick={() => handleCantidadChange(inv.id, inv.cantidad - numero)}
+                                        disabled={inv.cantidad <= 0}
+                                    >
+                                        Restar
+                                    </button>
+                                </td>
+                                
                             </tr>
                         );
                     })}

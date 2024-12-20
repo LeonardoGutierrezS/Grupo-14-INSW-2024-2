@@ -113,13 +113,21 @@ body {
 }
 
 .inv-add-button:hover {
-    background-color: #218838;
+    background-color: #266e8b;
+}
+
+.inv-edit-button:hover {
+    background-color: #266e8b;
+}
+
+.inv-delete-button:hover {
+    background-color: #d9534f;
 }
 
 .inv-submit-button {
     width: 100%;
     padding: 10px;
-    background-color: #007BFF;
+    background-color: #003366;
     color: white;
     border: none;
     border-radius: 4px;
@@ -129,7 +137,7 @@ body {
 }
 
 .inv-submit-button:hover {
-    background-color: #0056b3;
+    background-color: #0060c7;
 }
 
 .inv-modal-overlay {
@@ -224,7 +232,7 @@ body {
 }
 
 .inv-edit-button {
-    background-color:  #0066d2;
+    background-color:  #003771;
     color: white;
     border: none;
     padding: 8px 12px;
@@ -312,19 +320,15 @@ body {
 }
 
 
-/* Contenedor principal */
 .inv-botones-container {
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
 }
-
-/* Botón central superior */
 .inv-boton-central {
     margin-bottom: 10px;
 }
 
-/* Línea inferior de botones */
 .inv-boton-linea {
     display: flex;
     justify-content: space-between;
@@ -332,14 +336,13 @@ body {
     max-width: 100%;
 }
 
-/* Botones alineados a la izquierda */
 .inv-botones-izquierda {
     display: flex;
-    gap: 10px; /* Espacio entre botones */
+    gap: 10px;
 }
 
-/* Botones alineados a la derecha */
+
 .inv-botones-derecha {
     display: flex;
-    gap: 10px; /* Espacio entre botones */
+    gap: 10px; 
 }
