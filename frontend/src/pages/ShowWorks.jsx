@@ -1,4 +1,3 @@
-
 import Table from '@components/Table';
 import useGetWorks from '@hooks/works/useGetWorks.jsx';
 import Search from '@components/Search';
@@ -39,10 +38,11 @@ const Works = () => {
   }, [setDataWork]);
 
   const columns = [
-    { title: "ID", field: "id_reparacion", width: 55, responsive: 0 },
-    { title: "Bicicleta", field: "bicicleta", width: 300, responsive: 0 },
-    { title: "Cliente", field: "nombre_cliente", width: 300 , responsive: 2 },
+    { title: "RUT", field: "rut", width: 110, responsive: 0 },
+    { title: "Bicicleta", field: "bicicleta", width: 220, responsive: 0 },
+    { title: "Cliente", field: "nombre_cliente", width: 220 , responsive: 2 },
     { title: "Tipo trabajo", field: "tipo_trabajo", width: 200, responsive: 2 },
+    { title: "Estado", field: "estado", width: 150, responsive: 2 },
     { title: "Fecha ingreso", field: "fechaIngreso", width: 150, responsive: 2 },
 
     {
