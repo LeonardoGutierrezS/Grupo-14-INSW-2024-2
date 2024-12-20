@@ -13,9 +13,6 @@ export async function crearInventarioService(inventarioData) {
 
     const createErrorMessage = (dataInfo, message) => ({ dataInfo, message });
 
-    //verificar si el inventario ya existe al tener el nombre, id_tipo, id_marca, id_categoria
-    //iguales a uno ya existente
-    
     const inventarioExistente = await inventarioRepository.findOne({
       where: {
         nombre,
@@ -202,10 +199,8 @@ export async function updateInventarioService(id, inventarioData) {
       return [null, "El inventario ya existe con esos atributos"];
     }
 
-    // Actualizar los campos del inventario encontrado
     Object.assign(inventario, { nombre, cantidad, precio, descripcion, id_marca, id_categoria, id_tipo });
 
-    // Guardar los cambios en la base de datos
     await inventarioRepository.save(inventario);
 
     return [inventario, null];
@@ -215,29 +210,31 @@ export async function updateInventarioService(id, inventarioData) {
   }
 }
 
-// ahora un update que modifique solo la cantidad de un inventario
-
 export async function updateInventarioCantidadService(id, inventarioData) {
   try {
-    const inventarioRepository = AppDataSource.getRepository(Inventario);
+      const inventarioRepository = AppDataSource.getRepository(Inventario);
 
-    // Buscar el inventario por ID
-    const inventario = await inventarioRepository.findOne({ where: { id } });
-    if (!inventario) {
-      return [null, "El inventario no existe"];
-    }
+      // Buscar por ID
+      const inventario = await inventarioRepository.findOne({ where: { id } });
+      if (!inventario) {
+          return [null, "El inventario no existe"];
+      }
 
-    const { cantidad } = inventarioData;
+      const { cantidad } = inventarioData;
 
-    // Actualizar los campos del inventario encontrado
-    Object.assign(inventario, { cantidad });
+      // Validar que la cantidad no sea negativa
+      if (cantidad < 0) {
+          return [null, "La cantidad no puede ser negativa"];
+      }
 
-    // Guardar los cambios en la base de datos
-    await inventarioRepository.save(inventario);
+      // Actualizar la cantidad del inventario
+      inventario.cantidad = cantidad;
 
-    return [inventario, null];
+      await inventarioRepository.save(inventario);
+
+      return [inventario, null];
   } catch (error) {
-    console.error("Error al actualizar el inventario:", error.message || error);
-    return [null, "Error interno del servidor"];
+      console.error("Error al actualizar el inventario:", error.message || error);
+      return [null, "Error interno del servidor"];
   }
 }

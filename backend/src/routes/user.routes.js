@@ -9,6 +9,7 @@ import { checkActive } from "../middlewares/active.middleware.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import {
   approvePayment,
+  changePassword,
   deleteUser,
   getPaymentHistoryController,
   getUser,
@@ -40,5 +41,7 @@ router
   .get("/work-hours/:userId", isAdmin, getEmployeeWorkHours)
   .patch("/approve-payment/:userId", isAdmin, approvePayment)
   .patch("/update-status/:userId", isAdmin, updateEmployeeStatus)
-  .get("/payment-history/:userId", isAdmin, getPaymentHistoryController);
+  .get("/payment-history/:userId", isAdmin, getPaymentHistoryController)
+  .patch("/change-password", changePassword);
+  
 export default router;

@@ -139,3 +139,19 @@ export const userBodyValidation = Joi.object({
     "object.missing":
       "Debes proporcionar al menos un campo: nombreCompleto, email, password, newPassword, rut o rol.",
   });
+  
+
+export const changePasswordValidation = Joi.object({
+  newPassword: Joi.string()
+  .min(8)
+  .max(26)
+  .pattern(/^[a-zA-Z0-9]+$/)
+  .required()
+  .messages({
+    "string.empty": "La nueva contraseña no puede estar vacía.",
+    "string.min": "La nueva contraseña debe tener al menos 8 caracteres.",
+    "string.max": "La nueva contraseña debe tener como máximo 26 caracteres.",
+    "string.pattern.base": "La nueva contraseña solo puede contener letras y números.",
+    }),
+  });
+  

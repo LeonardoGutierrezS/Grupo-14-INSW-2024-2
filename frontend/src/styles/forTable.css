@@ -1,0 +1,31 @@
+.table-container {
+    width: auto; /* Asegura que la tabla use todo el ancho disponible */
+    height: auto; /* La altura se ajusta al contenido */
+    margin: 0 auto; /* Centra la tabla horizontalmente */
+    overflow: hidden; /* Elimina posibles desbordamientos */
+}
+
+.tabulator .tabulator-tableholder {
+    width: auto;
+    height: auto; /* Ajusta la altura de forma dinámica */
+}
+
+.tabulator-row {
+    min-height: 0; /* Asegura que las filas no tengan una altura mínima extra */
+    padding: 0; /* Elimina padding innecesario */
+}
+
+.tabulator-footer {
+    width: auto; /* Evita margen extra en el footer */
+}
+
+
+div.tabulator {
+    width: auto; /* Ancho fijo */
+    height: auto; /* Altura fija */
+    max-width: 100%; /* Ancho máximo para responsividad */
+    margin: 0 auto; /* Centra el div horizontalmente */
+    border: 1px solid #ccc; /* Agrega un borde para visualizar los límites */
+    overflow: auto; /* Habilita scroll si el contenido excede el tamaño */
+}
+

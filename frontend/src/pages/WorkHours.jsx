@@ -1,26 +1,44 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getPaymentHistory, getWorkHours, updateWorkHour, approvePayment } from '@services/user.service.js';
-import Table from '@components/Table';
+import { getPaymentHistory, getUsersWithHours ,getWorkHours, updateWorkHour, approvePayment } from '@services/user.service.js';
 import '@styles/users.css';
 import HoursPopup from '../components/HoursPopup';
-import PaymentPopup from '../components/PayPopup'; // Nuevo componente para seleccionar el tipo de pago
+import PaymentPopup from '../components/PayPopup'; 
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
-import PayHistoryPopup from '../components/PayHistoryPopup'; // Importa el componente del popup
-
+import PayHistoryPopup from '../components/PayHistoryPopup'; 
+import Table from '../components/Table';
+import UsersWithHoursPopup from '../components/UsersToPayPopup';
 
 const WorkHours = () => {
-    const { userId } = useParams(); // Obtiene el ID del mecánico desde la URL
+    const { userId } = useParams(); 
     const [workHours, setWorkHours] = useState([]);
     const [totalHours, setTotalHours] = useState(0);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
-    const [isPaymentPopupOpen, setIsPaymentPopupOpen] = useState(false); // Estado para el popup de pago
+    const [isPaymentPopupOpen, setIsPaymentPopupOpen] = useState(false); 
     const [selectedWorkHour, setSelectedWorkHour] = useState(null);
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [isHistoryPopupOpen, setIsHistoryPopupOpen] = useState(false);
+    const [isUsersPopupOpen, setIsUsersPopupOpen] = useState(false);
+    const [usersWithHours, setUsersWithHours] = useState([]);
+
+
+    const formatTime = (value) => {
+        const date = new Date(value);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    };
+    const adjustTimeZone = (dateTimeString) => {
+        const date = new Date(dateTimeString);
+        const userTime = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+        return userTime.toISOString().slice(0, 19); 
+    };
 
     const handleEditClick = (workHour) => {
-        setSelectedWorkHour(workHour);
+        const adjustedWorkHour = {
+            ...workHour,
+            check_in: adjustTimeZone(workHour.check_in),
+            check_out: adjustTimeZone(workHour.check_out),
+        };
+        setSelectedWorkHour(adjustedWorkHour);
         setIsEditPopupOpen(true);
     };
 
@@ -31,10 +49,10 @@ const WorkHours = () => {
             console.log('Respuesta del servicio:', response);
     
             if (response.status === 'Success') {
-                const workHours = response.data.workHours || []; // Asegúrate de que sea un array
+                const workHours = response.data.workHours || []; 
                 console.log('Turnos antes del filtro:', workHours);
     
-                // Filtrar turnos con horas trabajadas mayores a 0
+                
                 const filteredWorkHours = workHours.filter(turno => {
                     const totalHours = parseFloat(turno.total_hours);
                     return !isNaN(totalHours) && totalHours > 0;
@@ -43,7 +61,7 @@ const WorkHours = () => {
                 console.log('Turnos después del filtro:', filteredWorkHours);
                 setWorkHours(filteredWorkHours);
     
-                // Calcula el total de horas trabajadas con los turnos filtrados
+                
                 const totalFilteredHours = filteredWorkHours.reduce((acc, turno) => acc + parseFloat(turno.total_hours), 0);
                 setTotalHours(totalFilteredHours);
             } else {
@@ -62,7 +80,7 @@ const WorkHours = () => {
             if (response.status === 'Success') {
                 showSuccessAlert('¡Éxito!', 'El pago ha sido aprobado correctamente.');
                 setIsPaymentPopupOpen(false);
-                fetchWorkHours(); // Actualiza los turnos
+                fetchWorkHours(); 
             } else {
                 showErrorAlert('Error', response.message || 'Ocurrió un error al aprobar el pago.');
             }
@@ -75,8 +93,8 @@ const WorkHours = () => {
         try {
             const response = await getPaymentHistory(userId);
             if (response.status === 'Success') {
-                setPaymentHistory(response.data); // Almacena el historial en el estado
-                setIsHistoryPopupOpen(true); // Abre el popup
+                setPaymentHistory(response.data); 
+                setIsHistoryPopupOpen(true); 
             } else {
                 console.error('Error al obtener el historial de pagos:', response.message);
             }
@@ -84,6 +102,19 @@ const WorkHours = () => {
             console.error('Error al obtener el historial de pagos:', error);
         }
     };
+    const fetchUsersWithHours = async () => {
+        try {
+            const response = await getUsersWithHours();
+            if (response.status === 'Success') {
+                setUsersWithHours(response.data); // Guarda los datos en el estado
+            } else {
+                console.error('Error al obtener usuarios con horas trabajadas:', response.message);
+            }
+        } catch (error) {
+            console.error('Error al obtener usuarios con horas trabajadas:', error);
+        }
+    };
+    
 
     useEffect(() => {
         fetchWorkHours();
@@ -91,15 +122,26 @@ const WorkHours = () => {
 
     const columns = [
         { title: "Fecha de Trabajo", field: "work_date", width: 200 },
-        { title: "Hora de Entrada", field: "check_in", width: 200 },
-        { title: "Hora de Salida", field: "check_out", width: 200 },
+        { 
+            title: "Hora de Entrada", 
+            field: "check_in", 
+            width: 200,
+            formatter: (cell) => formatTime(cell.getValue())
+        },
+            
+        { title: "Hora de Salida", 
+            field: "check_out", 
+            width: 200,
+            formatter: (cell) => formatTime(cell.getValue())
+         },
         { title: "Horas Totales", field: "total_hours", width: 150 },
         { 
             title: "Modificar",
             field: "actions", 
             hozAlign: "center",
+            width: 110,
             formatter: function () {
-                return "<button class='edit-btn'>Editar</button>";
+                return "<button class='button button-secondary'>Editar</button>";
             },
             cellClick: function (e, cell) {
                 const rowData = cell.getRow().getData(); 
@@ -110,9 +152,9 @@ const WorkHours = () => {
 
     return (
         <div className="main-container">
-            <h1 className="title-table">Turnos del Mecánico</h1>
+            <h1>Turnos del Mecánico</h1>
             
-            <Table 
+            <Table
                 data={workHours} 
                 columns={columns} 
                 initialSortName={'work_date'}
@@ -142,7 +184,7 @@ const WorkHours = () => {
                     onSave={handleApprovePayment}
                 />
             )}
-            <h2>Total de horas trabajadas: {totalHours}</h2>
+            <h2>Total de horas trabajadas: {Number(totalHours).toFixed(2)}</h2>
             <div className="buttons-container">
             <button 
                 className="button button-secondary"
@@ -152,11 +194,21 @@ const WorkHours = () => {
             </button>
             <button 
                 className="button button-secondary"
+                onClick={() => {
+                fetchUsersWithHours(); 
+                setIsUsersPopupOpen(true); 
+            }}
+            >
+                 + Disponibles a pago
+            </button>
+
+            <button 
+                className="button button-secondary"
                 onClick={handlePaymentHistoryClick}
             >
-        Historial de Pagos
-    </button>
-</div>
+                Historial de Pagos
+            </button>
+            </div>
             
             {isHistoryPopupOpen && (
                 <PayHistoryPopup 
@@ -165,13 +217,21 @@ const WorkHours = () => {
                     paymentHistory={paymentHistory} 
                 />
             )}
-		{isPaymentPopupOpen && (
+		    {isPaymentPopupOpen && (
                 <PaymentPopup
                     show={isPaymentPopupOpen}
                     setShow={setIsPaymentPopupOpen}
                     onSave={handleApprovePayment}
                 />
             )}
+            {isUsersPopupOpen && (
+                <UsersWithHoursPopup 
+                    show={isUsersPopupOpen} 
+                    setShow={setIsUsersPopupOpen} 
+                    usersWithHours={usersWithHours} 
+                />
+            )}
+
         </div>
     );
 };

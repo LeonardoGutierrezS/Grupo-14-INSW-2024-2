@@ -6,7 +6,7 @@ import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
 const AddMechanic = () => {
     const navigate = useNavigate();
     const handleBack = () => {
-        navigate(-1); // Retrocede a la página anterior
+        navigate(-1); 
     };
 
 
@@ -15,7 +15,7 @@ const AddMechanic = () => {
             const response = await createMechanic(data);
             if (response.status === 'Success') {
                 showSuccessAlert('¡Creado!', 'El mecánico se ha agregado correctamente.');
-                navigate('/users'); // Vuelve a la lista de usuarios después de la creación
+                navigate('/users'); 
             } else {
                 showErrorAlert('Error', response.details || 'Ocurrió un error al crear el mecánico.');
             }

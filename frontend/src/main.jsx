@@ -18,6 +18,10 @@ import Inventario from '@pages/Inventario';
 import AddSeller from '@pages/AddSeller';
 import CheckInOut from '@pages/CheckInOut';
 import MyShifts from './pages/MyShifts';
+import Tareas from '@pages/Tareas';
+import AddTareas from '@pages/AddTareas'
+import AddComentario from '@pages/AddComentario';
+import Comentario from '@pages/Comentario';
 
 
 const router = createBrowserRouter([
@@ -123,7 +127,38 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-    
+      {
+        path: '/Tareas',
+        element: (
+        <ProtectedRoute allowedRoles={['administrador', 'mecanico']}>
+          <Tareas />
+        </ProtectedRoute>
+        ),
+      },
+      {
+      path: '/AddTareas',
+      element: (
+      <ProtectedRoute allowedRoles={['administrador', 'mecanico']}>
+        <AddTareas />
+      </ProtectedRoute>
+      ),
+      },
+      {
+        path: '/AddComentario',
+        element: (
+        <ProtectedRoute allowedRoles={['administrador', 'mecanico']}>
+          <AddComentario />
+        </ProtectedRoute>
+        ),
+        },
+      {
+        path: '/comentario',
+        element: (
+        <ProtectedRoute allowedRoles={['administrador']}>
+          <Comentario />
+        </ProtectedRoute>
+          ),
+      },
 
     ]
   },

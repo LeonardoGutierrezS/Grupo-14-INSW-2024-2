@@ -38,7 +38,7 @@ const ComentarioSchema = new EntitySchema({
     usuario: {
       type: "many-to-one",
       target: "User",
-      joinColumn: { name: "id_user" }, // FK
+      joinColumn: { name: "id" }, // FK
       onDelete: "CASCADE",
       nullable: false,
     },

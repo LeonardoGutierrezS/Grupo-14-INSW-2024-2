@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/crear", crearTarea);
 router.get("/", obtenerTodasTareas);
-router.put("/estado/:id", actualizarEstado);
-router.delete("/eliminar/:id", eliminarTarea)
+router.patch("/estado/:id_tarea", actualizarEstado);
+router.delete("/eliminar/:id_tarea", eliminarTarea)
 
 export default router;

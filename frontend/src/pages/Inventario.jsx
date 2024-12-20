@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 import {
     createInventario,
     getAllInventarios,
@@ -24,6 +26,8 @@ import {
     updateTipo,
 } from '@services/tipo.service.js';
 import '@styles/inv.css';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
+import { updateInventarioCantidad } from '../services/inventario.service';
 
 const Modal = ({ isOpen, onClose, title, children, showCloseButton = true }) => {
     if (!isOpen) return null;
@@ -45,6 +49,12 @@ const Inventario = () => {
     const [marcas, setMarcas] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [tipos, setTipos] = useState([]);
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedMarca, setSelectedMarca] = useState('');
+    const [selectedCategoria, setSelectedCategoria] = useState('');
+    const [selectedTipo, setSelectedTipo] = useState('');
+    const [selectedEstado, setSelectedEstado] = useState('');
 
     const [isFormVisible, setFormVisible] = useState(false);
 
@@ -81,6 +91,8 @@ const Inventario = () => {
     const [newTipo, setNewTipo] = useState('');
     const [editTipo, setEditTipo] = useState(null);
 
+    const [numero, setNumero] = useState(null);
+
     useEffect(() => {
         fetchInventarios();
         fetchMarcas();
@@ -108,11 +120,105 @@ const Inventario = () => {
         setTipos(response.data || []);
     };
 
+    const getEstado = (cantidad) => {
+        if (cantidad === 0) return 'Sin Stock';
+        if (cantidad <= 15) return 'Bajo';
+        return 'Disponible';
+    };
+
+    const filteredInventarios = inventarios.filter((inv) => {
+        const estado = getEstado(inv.cantidad);
+        const matchesSearch = inv.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesMarca = selectedMarca === '' || inv.id_marca === parseInt(selectedMarca);
+        const matchesCategoria = selectedCategoria === '' || inv.id_categoria === parseInt(selectedCategoria);
+        const matchesTipo = selectedTipo === '' || inv.id_tipo === parseInt(selectedTipo);
+        const matchesEstado = selectedEstado === '' || estado === selectedEstado;
+
+        return matchesSearch && matchesMarca && matchesCategoria && matchesTipo && matchesEstado;
+    });
+
+    const generarReporte = () => {
+        const encabezados = [
+            'Nombre',
+            'Marca',
+            'Categoría',
+            'Tipo',
+            'Cantidad',
+            'Precio',
+            'Descripción',
+            'Estado'
+        ];
+        const filas = filteredInventarios.map((inv) => {
+            const marca = marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca';
+            const categoria = categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría';
+            const tipo = tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo';
+            const estado = getEstado(inv.cantidad);
+
+            return [
+                inv.nombre,
+                marca,
+                categoria,
+                tipo,
+                inv.cantidad,
+                inv.precio,
+                inv.descripcion,
+                estado
+            ].join(',');
+        });
+
+        const csvContent = [encabezados.join(','), ...filas].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'reporte_inventario.csv';
+        link.click();
+    };
+
+    const generarReportePDF = () => {
+        const doc = new jsPDF();
+        doc.text('Reporte de Inventario', 14, 15); // Título del reporte
+
+        // Crear filas del PDF
+        const filas = filteredInventarios.map((inv) => {
+            const marca = marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca';
+            const categoria = categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría';
+            const tipo = tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo';
+            const estado = getEstado(inv.cantidad);
+
+            return [
+                inv.nombre,
+                marca,
+                categoria,
+                tipo,
+                inv.cantidad,
+                inv.precio,
+                inv.descripcion,
+                estado
+            ];
+        });
+
+        // Configurar la tabla
+        doc.autoTable({
+            head: [['Nombre', 'Marca', 'Categoría', 'Tipo', 'Cantidad', 'Precio', 'Descripción', 'Estado']],
+            body: filas,
+            startY: 20, 
+        });
+
+        doc.save('reporte_inventario.pdf'); // Descargar el PDF
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await createInventario(inventarioData);
-            alert('Inventario creado con éxito');
+            const response = await createInventario(inventarioData);
+            if (response.status === 'Success') {
+                showSuccessAlert('Inventario creado con éxito');
+            } else {
+                //muestra tambien el mensaje de error del backend y el detalle
+                showErrorAlert('Error al crear el inventario',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
             fetchInventarios();
             setInventarioData({
                 nombre: '',
@@ -133,8 +239,14 @@ const Inventario = () => {
         e.preventDefault();
         if (editTarget) {
             try {
-                await updateInventario(editTarget.id, inventarioData);
-                alert(`Inventario "${inventarioData.nombre}" actualizado con éxito`);
+                const response = await updateInventario(editTarget.id, inventarioData);
+                if (response.status === 'Success') {
+                    showSuccessAlert('Inventario actualizado con éxito');
+                } else {
+                    showErrorAlert('Error al actualizar el inventario',
+                        `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                    );
+                }
                 fetchInventarios();
                 setEditModalOpen(false);
                 setEditTarget(null);
@@ -152,12 +264,38 @@ const Inventario = () => {
             }
         }
     };
+    const handleCantidadChange = async (id, nuevaCantidad) => {
+        if (nuevaCantidad < 0) {
+            showErrorAlert("La cantidad no puede ser negativa");
+            return;
+        }
+    
+        try {
+            const response = await updateInventarioCantidad(id, { cantidad: nuevaCantidad });
+            if (response.status === "Success") {
+                showSuccessAlert("Cantidad actualizada con éxito");
+                fetchInventarios(); // Actualizar la lista de inventarios
+            } else {
+                showErrorAlert(
+                    "Error al actualizar la cantidad", 
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
+        } catch (error) {
+            console.error("Error al actualizar la cantidad:", error);
+            showErrorAlert("Error interno al actualizar la cantidad");
+        }
+    };
 
     const handleDelete = async () => {
         if (deleteTarget) {
             try {
-                await deleteInventario(deleteTarget.id);
-                alert(`Inventario "${deleteTarget.nombre}" eliminado con éxito`);
+                const response = await deleteInventario(deleteTarget.id);
+                if (response.status === 'Success') {
+                    showSuccessAlert('Inventario eliminado con éxito');
+                } else {
+                    showErrorAlert('Error al eliminar el inventario', response.details || response.message);
+                }
                 fetchInventarios();
                 setDeleteModalOpen(false);
                 setDeleteTarget(null);
@@ -169,8 +307,14 @@ const Inventario = () => {
 
     const handleCreateMarca = async () => {
         try {
-            await createMarca({ nombre: newMarca });
-            alert('Marca creada con éxito');
+            const response = await createMarca({ nombre: newMarca });
+            if (response.status === 'Success') {
+                showSuccessAlert('Marca creada con éxito');
+            } else {
+                showErrorAlert('Error al crear la marca',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
             setMarcaModalOpen(false);
             setNewMarca('');
             fetchMarcas();
@@ -180,8 +324,14 @@ const Inventario = () => {
     };
     const handleUpdateMarca = async (id, nombre) => {
         try {
-            await updateMarca(id, { nombre });
-            alert('Marca actualizada con éxito');
+            const response = await updateMarca(id, { nombre });
+            if (response.status === 'Success') {
+                showSuccessAlert('Marca actualizada con éxito');
+            } else {
+                showErrorAlert('Error al actualizar la marca',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
             setEditMarca(null);
             fetchMarcas();
         } catch (error) {
@@ -190,8 +340,14 @@ const Inventario = () => {
     };
     const handleDeleteMarca = async (id) => {
         try {
-            await deleteMarca(id); 
-            alert('Marca eliminada con éxito');
+            const response = await deleteMarca(id); 
+            if (response.status === 'Success') {
+                showSuccessAlert('Marca eliminada con éxito');
+            } else {
+                showErrorAlert('Error al eliminar la marca La marca se encuentra en uso',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
             fetchMarcas();
         } catch (error) {
             console.error('Error al eliminar la marca:', error);
@@ -201,8 +357,14 @@ const Inventario = () => {
 
     const handleCreateCategoria = async () => {
         try {
-            await createCategoria({ nombre: newCategoria });
-            alert('Categoría creada con éxito');
+            const response = await createCategoria({ nombre: newCategoria });
+            if (response.status === 'Success') {
+                showSuccessAlert('Categoría creada con éxito');
+            } else {
+                showErrorAlert('Error al crear la categoría',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
             setCategoriaModalOpen(false);
             setNewCategoria('');
             fetchCategorias();
@@ -212,8 +374,14 @@ const Inventario = () => {
     };
     const handleUpdateCategoria = async (id, nombre) => {
         try {
-            await updateCategoria(id, { nombre });
-            alert('Categoría actualizada con éxito');
+            const response = await updateCategoria(id, { nombre });
+            if (response.status === 'Success') {
+                showSuccessAlert('Categoría actualizada con éxito');
+            } else {
+                showErrorAlert('Error al actualizar la categoría',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
             setEditCategoria(null);
             fetchCategorias();
         } catch (error) {
@@ -222,8 +390,15 @@ const Inventario = () => {
     };
     const handleDeleteCategoria = async (id) => {
         try {
-            await deleteCategoria(id);
-            alert('Categoría eliminada con éxito');
+            const response = await deleteCategoria(id);
+            if (response.status === 'Success') {
+                showSuccessAlert('Categoría eliminada con éxito');
+            }
+            else {
+                showErrorAlert('Error al eliminar la categoría',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
             fetchCategorias();
         } catch (error) {
             console.error('Error al eliminar la categoría:', error);
@@ -233,8 +408,15 @@ const Inventario = () => {
 
     const handleCreateTipo = async () => {
         try {
-            await createTipo({ nombre: newTipo });
-            alert('Tipo creado con éxito');
+            const response = await createTipo({ nombre: newTipo });
+            if (response.status === 'Success') {
+                showSuccessAlert('Tipo creado con éxito');
+            }
+            else {
+                showErrorAlert('Error al crear el tipo',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
             setTipoModalOpen(false);
             setNewTipo('');
             fetchTipos();
@@ -244,8 +426,14 @@ const Inventario = () => {
     };
     const handleUpdateTipo = async (id, nombre) => {
         try {
-            await updateTipo(id, { nombre });
-            alert('Tipo actualizado con éxito');
+            const response = await updateTipo(id, { nombre });
+            if (response.status === 'Success') {
+                showSuccessAlert('Tipo actualizado con éxito');
+            } else {
+                showErrorAlert('Error al actualizar el tipo',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
             setEditTipo(null);
             fetchTipos();
         } catch (error) {
@@ -254,8 +442,14 @@ const Inventario = () => {
     };
     const handleDeleteTipo = async (id) => {
         try {
-            await deleteTipo(id);
-            alert('Tipo eliminado con éxito');
+            const response = await deleteTipo(id);
+            if (response.status === 'Success') {
+                showSuccessAlert('Tipo eliminado con éxito');
+            } else {
+                showErrorAlert('Error al eliminar el tipo',
+                    `${response.message || "Mensaje no disponible"}\n${response.details || "Detalles no disponibles"}`
+                );
+            }
             fetchTipos();
         } catch (error) {
             console.error('Error al eliminar el tipo:', error);
@@ -263,13 +457,71 @@ const Inventario = () => {
     };
 
     return (
+        
         <div className="inv-container">
+            
             <h2 className="inv-title">Inventario</h2>
+            
+            {/* Filtros de búsqueda */}
+            <div className="inv-filters">
+                {/* Barra de búsqueda */}
+                <input
+                    type="text"
+                    className="inv-input-search"
+                    placeholder="Buscar por nombre"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {/* Filtro por marca */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedMarca}
+                    onChange={(e) => setSelectedMarca(e.target.value)}
+                    >
+                    <option value="">Todas las Marcas</option>
+                    {marcas.map((marca) => (
+                        <option key={marca.id_marca} value={marca.id_marca}>{marca.nombre}</option>
+                    ))}
+                </select>
+                {/* Filtro por categoría */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedCategoria}
+                    onChange={(e) => setSelectedCategoria(e.target.value)}
+                    >
+                    <option value="">Todas las Categorías</option>
+                    {categorias.map((categoria) => (
+                        <option key={categoria.id_categoria} value={categoria.id_categoria}>{categoria.nombre}</option>
+                    ))}
+                </select>
+                {/* Filtro por tipo */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedTipo}
+                    onChange={(e) => setSelectedTipo(e.target.value)}
+                    >
+                    <option value="">Todos los Tipos</option>
+                    {tipos.map((tipo) => (
+                        <option key={tipo.id_tipo} value={tipo.id_tipo}>{tipo.nombre}</option>
+                    ))}
+                </select>
+                {/* Filtro por estado */}
+                <select
+                    className="inv-select-filter"
+                    value={selectedEstado}
+                    onChange={(e) => setSelectedEstado(e.target.value)}
+                    >
+                    <option value="">Todos los Estados</option>
+                    <option value="Sin Stock">Sin Stock</option>
+                    <option value="Bajo">Bajo</option>
+                    <option value="Disponible">Disponible</option>
+                </select>
+            </div>
 
             {/* Tabla de inventarios */}
             <table className="inv-table">
                 <thead>
-                    <tr>
+                    <tr className='inv-tr-header'>
                         <th className="inv-th">Nombre</th>
                         <th className="inv-th">Marca</th>
                         <th className="inv-th">Categoría</th>
@@ -277,63 +529,132 @@ const Inventario = () => {
                         <th className="inv-th">Cantidad</th>
                         <th className="inv-th">Precio</th>
                         <th className="inv-th">Descripción</th>
+                        <th className="inv-th">Estado de Inventario</th>
                         <th className="inv-th">Acciones</th>
+                        <th className="inv-th">Agregar/Restar</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {inventarios.map((inv) => (
-                        <tr key={inv.id} className="inv-tr">
-                            <td className="inv-td">{inv.nombre}</td>
-                            <td className="inv-td">{marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca'}</td>
-                            <td className="inv-td">{categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría'}</td>
-                            <td className="inv-td">{tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo'}</td>
-                            <td className="inv-td">{inv.cantidad}</td>
-                            <td className="inv-td">{inv.precio}</td>
-                            <td className="inv-td">{inv.descripcion}</td>
-                            <td className="inv-td">
-                                <button
-                                    className="inv-edit-button"
-                                    onClick={() => {
-                                        setEditTarget(inv);
-                                        setInventarioData({
-                                            nombre: inv.nombre,
-                                            cantidad: inv.cantidad,
-                                            precio: inv.precio,
-                                            descripcion: inv.descripcion,
-                                            id_marca: inv.id_marca,
-                                            id_categoria: inv.id_categoria,
-                                            id_tipo: inv.id_tipo,
-                                        });
-                                        setEditModalOpen(true);
-                                    }}
-                                >
-                                    Editar
-                                </button>
-                                <button
-                                    className="inv-delete-button"
-                                    onClick={() => {
-                                        setDeleteTarget(inv);
-                                        setDeleteModalOpen(true);
-                                    }}
-                                >
-                                    Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                    {filteredInventarios.map((inv) => {
+                        // Determinar el estado del inventario basado en la cantidad
+                        let estado = { texto: '', clase: '' };
+                        if (inv.cantidad === 0) {
+                            estado = { texto: 'Sin Stock', clase: 'estado-critico' }; // Negro
+                        } else if (inv.cantidad <= 15) {
+                            estado = { texto: 'Bajo', clase: 'estado-bajo' }; // Amarillo
+                        } else {
+                            estado = { texto: 'Disponible', clase: 'estado-disponible' }; // Verde
+                        }
+
+                        return (
+                            <tr key={inv.id} className="inv-tr">
+                                <td className="inv-td">{inv.nombre}</td>
+                                <td className="inv-td">
+                                    {marcas.find((m) => m.id_marca === inv.id_marca)?.nombre || 'Sin marca'}
+                                </td>
+                                <td className="inv-td">
+                                    {categorias.find((c) => c.id_categoria === inv.id_categoria)?.nombre || 'Sin categoría'}
+                                </td>
+                                <td className="inv-td">
+                                    {tipos.find((t) => t.id_tipo === inv.id_tipo)?.nombre || 'Sin tipo'}
+                                </td>
+                                <td className="inv-td">{inv.cantidad}</td>
+                                <td className="inv-td">{inv.precio}</td>
+                                <td className="inv-td">{inv.descripcion}</td>
+                                <td className={`inv-td estado ${estado.clase}`}>{estado.texto}</td>
+                                <td className="inv-td">
+                                    <button
+                                        className="inv-edit-button"
+                                        onClick={() => {
+                                            setEditTarget(inv);
+                                            setInventarioData({
+                                                nombre: inv.nombre,
+                                                cantidad: inv.cantidad,
+                                                precio: inv.precio,
+                                                descripcion: inv.descripcion,
+                                                id_marca: inv.id_marca,
+                                                id_categoria: inv.id_categoria,
+                                                id_tipo: inv.id_tipo,
+                                            });
+                                            setEditModalOpen(true);
+                                        }}
+                                    >
+                                        Editar
+                                    </button>
+                                    <button
+                                        className="inv-delete-button"
+                                        onClick={() => {
+                                            setDeleteTarget(inv);
+                                            setDeleteModalOpen(true);
+                                        }}
+                                    >
+                                        Eliminar
+                                    </button>
+                                </td>
+                                <td className="inv-td">
+                                    <input style={{ width: '50px', marginRight: '10px' }}
+                                        type="number"
+                                        value={numero}
+                                        onChange={(e) => setNumero(parseInt(e.target.value))}
+                                        className="inv-input"
+                                        min="0"
+                                    />
+                                    <button
+                                        className="inv-edit-button"
+                                        onClick={() => handleCantidadChange(inv.id, inv.cantidad + numero)}
+                                    >
+                                        Agregar
+                                    </button>
+                                    <button
+                                        className="inv-delete-button"
+                                        onClick={() => handleCantidadChange(inv.id, inv.cantidad - numero)}
+                                        disabled={inv.cantidad <= 0}
+                                    >
+                                        Restar
+                                    </button>
+                                </td>
+                                
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
 
-            {/* Botón para mostrar el formulario */}
-            <button className="inv-button" onClick={() => setFormVisible(!isFormVisible)}>
-                {isFormVisible ? 'Ocultar Formulario' : 'Agregar Inventario'}
-            </button>
-            {/* Botón para mostrar el modal Gestor de marcas */}
-            <button className="inv-button-marca" onClick={() => setGestorDeMarcaModalOpen(true)}>Gestionar Marcas</button>
-            {/* Botón para mostrar el modal Gestor de categorías */}
-            <button className="inv-button-categoria" onClick={() => setGestorDeCategoriaModalOpen(true)}>Gestionar Categorías</button>
-            {/* Botón para mostrar el modal Gestor de tipos */}
-            <button className="inv-button-tipo" onClick={() => setGestorDeTipoModalOpen(true)}>Gestionar Tipos</button>
+
+            <div className="inv-botones-container">
+                {/* Botón centralizado para Agregar Inventario */}
+                <div className="inv-boton-central">
+                    <button className="inv-button" onClick={() => setFormVisible(!isFormVisible)}>
+                        {isFormVisible ? 'Ocultar Formulario' : 'Agregar Inventario'}
+                    </button>
+                </div>
+
+                {/* Línea inferior con botones alineados a la izquierda y derecha */}
+                <div className="inv-boton-linea">
+                    {/* Botones alineados a la izquierda */}
+                    <div className="inv-botones-izquierda">
+                        <button className="inv-button" onClick={() => setGestorDeMarcaModalOpen(true)}>
+                            Gestionar Marcas
+                        </button>
+                        <button className="inv-button" onClick={() => setGestorDeCategoriaModalOpen(true)}>
+                            Gestionar Categorías
+                        </button>
+                        <button className="inv-button" onClick={() => setGestorDeTipoModalOpen(true)}>
+                            Gestionar Tipos
+                        </button>
+                    </div>
+
+                    {/* Botones alineados a la derecha */}
+                    <div className="inv-botones-derecha">
+                        <button className="inv-button" onClick={generarReporte}>
+                            Crear Reporte CSV
+                        </button>
+                        <button className="inv-button" onClick={generarReportePDF}>
+                            Crear Reporte PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             {/* Formulario para agregar inventario */}
             {isFormVisible && (

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import "tabulator-tables/dist/css/tabulator.min.css";
-import '@styles/table.css';
+import '@styles/forTable.css';
 
 function useNoSelectable({ data, columns, filter, dataToFilter, initialSortName }) {
     const tableRef = useRef(null);
@@ -11,13 +11,12 @@ function useNoSelectable({ data, columns, filter, dataToFilter, initialSortName 
     useEffect(() => {
         if (tableRef.current) {
             const tabulatorTable = new Tabulator(tableRef.current, {
-                data: [], // Data inicial vacía
-                columns: columns, // Usamos las columnas directamente sin la columna seleccionable
-                layout: "fitColumns",
-                responsiveLayout: "collapse",
+                data: [], 
+                columns: columns,
+                layout: "fitData",
+                responsiveLayout: "hide",
                 pagination: true,
-                paginationSize: 5,
-
+                paginationSize: 6,
                 rowHeight: 46,
                 langs: {
                     "default": {
@@ -29,34 +28,32 @@ function useNoSelectable({ data, columns, filter, dataToFilter, initialSortName 
                         }
                     }
                 },
-                initialSort: [
-                    { column: initialSortName, dir: "asc" }
-                ],
+                initialSort: [{ column: initialSortName, dir: "asc" }],
             });
 
-            tabulatorTable.on("tableBuilt", function () {
+            tabulatorTable.on("tableBuilt", () => {
                 setIsTableBuilt(true);
-                tabulatorTable.redraw(true); // Ajusta las columnas al contenido
+                
             });
 
             setTable(tabulatorTable);
 
             return () => {
                 tabulatorTable.destroy();
-                setIsTableBuilt(false);
                 setTable(null);
+                setIsTableBuilt(false);
             };
         }
     }, []);
 
-    // Reemplazar datos al cambiar
+    
     useEffect(() => {
         if (table && isTableBuilt) {
             table.replaceData(data);
         }
     }, [data, table, isTableBuilt]);
 
-    // Filtros dinámicos
+    // Aplica filtros
     useEffect(() => {
         if (table && isTableBuilt) {
             if (filter) {
@@ -64,7 +61,6 @@ function useNoSelectable({ data, columns, filter, dataToFilter, initialSortName 
             } else {
                 table.clearFilter();
             }
-            table.redraw();
         }
     }, [filter, table, dataToFilter, isTableBuilt]);
 

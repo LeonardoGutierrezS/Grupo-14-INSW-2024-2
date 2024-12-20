@@ -1,51 +1,49 @@
 .navbar {
-	position: fixed;
+	position: relative;
 	width: 100%;
 	top: 0;
 	left: 0;
 	display: block;
-	background-color: #003366; /*Color de la navbar*/
+	background-color: #003366; /* Color de la navbar */
 	height: 9vh;
 	z-index: 1000;
+
 	ul {
 		display: flex;
-		justify-content:end;
+		justify-content: end;
 		align-items: center;
 		padding: 0 5vw;
 		margin: 0;
 		height: 100%;
+
 		li {
 			display: flex;
 			align-items: center;
 			padding: 0 60px;
 			position: relative;
 			height: 100%;
+
 			a {
 				color: white;
 				font-size: 0.9em;
 				text-decoration: none;
 				position: relative;
 				border-bottom: transparent 3px solid;
-				transition: border-color 0.3s ease;
-				padding: 0 10px 3px 10px;
+				transition: all 0.3s ease, box-shadow 0.2s ease;
+				padding: 8px 20px; /* Más padding para un efecto de botón */
 				box-sizing: border-box;
+				border-radius: 10px; /* Bordes redondeados */
+				
 			}
-			:not(.active)::before {
-				content: "";
-				position: absolute;
-				bottom: 0;
-				left: 0;
-				width: 100%;
-				height: 3px;
-				background-color: #006edf;
-				transform: scaleX(0);
-				transform-origin: bottom;
-				transition: transform 0.3s ease;
+
+			/* Efecto hover: levanta el botón y cambia el color */
+			a:hover {
+				
+				box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+				transform: translateY(-3px); /* Efecto de levantamiento */
 			}
-			:not(.active):hover::before {
-				animation: heartbeat 5s ease-in-out infinite;
-				transform: scaleX(1);
-			}
+
+			/* Enlaces activos */
 			.active {
 				font-weight: bold;
 				background-color: #eef7ff;
@@ -55,10 +53,12 @@
 				border: 0;
 				height: 100%;
 				line-height: 9.1vh;
+				border-radius: 10px; /* Bordes redondeados también */
 			}
 		}
 	}
 }
+
 
 .hamburger {
 	display: none;
@@ -156,4 +156,23 @@
 			box-sizing: border-box;
         }
 	}
+}
+
+.nav-menu ul li .change-password-button {
+    background-color: transparent;
+    color: white;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-menu ul li .change-password-button:hover {
+    background-color: #003366;
+    color: #ffffff;
+	transition: all 0.3s ease, box-shadow 0.2s ease;
+	box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+	transform: translateY(-3px); /* Efecto de levantamiento */
 }

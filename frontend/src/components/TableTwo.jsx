@@ -1,11 +1,14 @@
-import useNoSelectable from '../hooks/table/noSelectable';
+//import React from 'react';
+import useNoSelectable from '@hooks/table/noSelectable'; 
 
-export default function Table({ data, columns, filter, dataToFilter, initialSortName }) {
-  const { tableRef } = useNoSelectable({ data, columns, filter, dataToFilter, initialSortName });
+const TableNoSelectable = ({ data, columns }) => {
+    const { tableRef } = useNoSelectable({ data, columns });
 
-  return (
-    <div className='table-container'>
-      <div ref={tableRef}></div>
-    </div>
-  );
-}
+    return (
+        <div className="table-container">
+            <div ref={tableRef}></div>
+        </div>
+    );
+};
+
+export default TableNoSelectable;

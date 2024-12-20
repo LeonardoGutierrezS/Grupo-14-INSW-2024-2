@@ -4,9 +4,9 @@ import CloseIcon from '@assets/XIcon.svg';
 
 export default function StatusPopup({ show, setShow, user, onSave }) {
     const handleSubmit = (formData) => {
-        const { status } = formData; // Extrae solo el `status`
+        const { status } = formData; 
         console.log('Estado extraído del formulario:', status);
-        onSave(status); // Envía solo el estado como string (activo o inactivo)
+        onSave(status); 
     };
 
     return (
@@ -26,7 +26,7 @@ export default function StatusPopup({ show, setShow, user, onSave }) {
                                     defaultValue: user.nombreCompleto || "",
                                     fieldType: 'input',
                                     type: "text",
-                                    disabled: true, // Campo deshabilitado
+                                    disabled: true, 
                                 },
                                 {
                                     label: "Correo electrónico",
@@ -34,7 +34,7 @@ export default function StatusPopup({ show, setShow, user, onSave }) {
                                     defaultValue: user.email || "",
                                     fieldType: 'input',
                                     type: "email",
-                                    disabled: true, // Campo deshabilitado
+                                    disabled: true, 
                                 },
                                 {
                                     label: "Rut",
@@ -42,7 +42,7 @@ export default function StatusPopup({ show, setShow, user, onSave }) {
                                     defaultValue: user.rut || "",
                                     fieldType: 'input',
                                     type: "text",
-                                    disabled: true, // Campo deshabilitado
+                                    disabled: true, 
                                 },
                                 {
                                     label: "Estado",
@@ -52,7 +52,7 @@ export default function StatusPopup({ show, setShow, user, onSave }) {
                                         { value: 'activo', label: 'Activo' },
                                         { value: 'inactivo', label: 'Inactivo' },
                                     ],
-                                    defaultValue: user.estado || "activo", // Estado por defecto
+                                    defaultValue: user.estado || "activo", 
                                     required: true,
                                 },
                             ]}

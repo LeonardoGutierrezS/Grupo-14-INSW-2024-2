@@ -12,6 +12,19 @@ export async function getUsers() {
     }
 }
 
+export async function getMechanics() {
+    try {
+        const { data } = await axios.get('/user/');
+        // Filtrar usuarios con rol 'mecánico'
+        const mechanics = data.data.filter(user => user.rol === 'mecanico');
+        console.log("MECÁNICOS", mechanics);
+        return mechanics;
+    } catch (error) {
+        console.error("Error al obtener mecánicos:", error.response.data);
+        return [];
+    }
+}
+
 export async function updateUser(data, rut) {
     try {
         const response = await axios.patch(`/user/detail/?rut=${rut}`, {data, estado: data.estado});
@@ -85,7 +98,7 @@ export async function approvePayment(userId, paymentType) {
         const response = await axios.patch(`/user/approve-payment/${userId}`, {
             paymentType,
         });
-        return response.data; // Retorna la respuesta del backend
+        return response.data; 
     } catch (error) {
         console.error('Error al aprobar el pago:', error.response?.data || error.message);
         return error.response?.data || { status: 'Error', message: 'Error al aprobar el pago.' };
@@ -94,7 +107,7 @@ export async function approvePayment(userId, paymentType) {
 export async function getPaymentHistory(userId) {
     try {
         const response = await axios.get(`/user/payment-history/${userId}`);
-        return response.data; // Retorna los datos del backend
+        return response.data; 
     } catch (error) {
         console.error('Error al obtener el historial de pagos:', error.response?.data || error.message);
         return error.response?.data || { status: 'Error', message: 'Error al obtener el historial de pagos.' };
@@ -110,4 +123,27 @@ export const getWorkHoursEmployee = async () => {
         return error.response?.data || { status: 'Error', message: 'Error al obtener los turnos.' };
     }
 };
+
+export async function getUsersWithHours() {
+    try {
+        const response = await axios.get('/user/users-with-hours');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener usuarios con horas trabajadas:', error.response?.data || error.message);
+        return error.response?.data || { status: 'Error', message: 'Error al obtener usuarios con horas trabajadas.' };
+    }
+}
+
+export async function changePassword({ currentPassword, newPassword }) {
+    try {
+        const response = await axios.patch('/user/change-password', {
+            currentPassword,
+            newPassword,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al cambiar la contraseña:', error.response?.data || error.message);
+        return error.response?.data || { status: 'Error', message: 'Error al cambiar la contraseña.' };
+    }
+}
 

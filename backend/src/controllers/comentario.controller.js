@@ -10,8 +10,9 @@ export const crearComentario = async (req, res) => {
   if (errors) {
     return res.status(400).json({ message: "Datos inválidos", errors });
   }
-  const { comentario, id_tarea } = req.body;
-  const user_id = 1; 
+  const { comentario } = req.body;
+  const { id_tarea } = req.params;
+  const user_id = req.user?.id; 
 
   try {
     const comentarioRepository = AppDataSource.getRepository(ComentarioSchema);

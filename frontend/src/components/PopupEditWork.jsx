@@ -3,10 +3,10 @@ import '@styles/popupWork.css';
 import CloseIcon from '@assets/XIcon.svg';
 
 export default function PopupEditWork({ show, setShow, data, action }) {
-    // Obtener los datos de la reparación seleccionada
+    
     const workData = data && data.length > 0 ? data[0] : {};
 
-    // Manejo del envío del formulario
+    
     const handleSubmit = (formData) => {
         action({ ...formData, id_reparacion: data[0]?.id_reparacion });
 

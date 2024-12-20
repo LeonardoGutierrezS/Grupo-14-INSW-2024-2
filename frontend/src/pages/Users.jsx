@@ -80,7 +80,7 @@ const handleSaveStatus = async (userId, status) => {
     {
       title: "Estado",
       field: "estado",
-      width: 120,
+      width: 135,
       formatter: (cell) => {
         const user = cell.getData();
         return `
@@ -89,8 +89,8 @@ const handleSaveStatus = async (userId, status) => {
         `;
       },
       cellClick: function (e, cell) {
-        const rowData = cell.getRow().getData(); // Datos de la fila seleccionada
-        handleEditStatusClick(rowData); // Abre el popup con los datos del usuario
+        const rowData = cell.getRow().getData(); 
+        handleEditStatusClick(rowData); 
       },
     },
     {
@@ -99,7 +99,7 @@ const handleSaveStatus = async (userId, status) => {
       width: 120,
       formatter: () => '<button class="button button-secondary">Ver Turnos</button>',
       cellClick: (e, cell) => {
-        const userId = cell.getRow().getData().id; // Obtiene el ID del usuario
+        const userId = cell.getRow().getData().id; 
         navigate(`/work-hours/${userId}`);
       }
     },
@@ -109,7 +109,7 @@ const handleSaveStatus = async (userId, status) => {
     <div className='main-container'>
       <div className='table-container'>
         <div className='top-table'>
-          <h1 className='title-table'>Todo el personal</h1>
+        <h1 style={{ color: "white" }}>Todo el personal</h1>
           <button className="button button-primary" onClick={() => navigate('/add-mechanic')}>
             Agregar Mecánico
           </button>

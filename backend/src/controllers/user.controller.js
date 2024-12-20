@@ -19,6 +19,10 @@ import {
   handleSuccess,
 } from "../handlers/responseHandlers.js";
 import { getPaymentHistoryService, registerPaidHoursService } from "../services/paid_hours.service.js";
+import { AppDataSource } from "../config/configDb.js";
+import WorkHours from "../entity/work_hours.entity.js"; 
+import { changePasswordService } from "../services/user.service.js";
+
 
 export async function getUser(req, res) {
   try {
@@ -248,3 +252,41 @@ export const getPaymentHistoryController = async (req, res) => {
     });
   }
 };
+export async function getUsersWithHours(req, res) {
+  try {
+      const workHoursRepository = AppDataSource.getRepository(WorkHours);
+
+      const usersWithHours = await workHoursRepository
+          .createQueryBuilder("workHours")
+          .innerJoin("workHours.user", "user")
+          .select("user.id", "userId")
+          .addSelect("user.nombreCompleto", "nombreCompleto")
+          .addSelect("user.rol", "rol")
+          .addSelect("SUM(workHours.total_hours)", "totalHours")
+          .groupBy("user.id")
+          .having("SUM(workHours.total_hours) > 0")
+          .getRawMany();
+
+      return res.status(200).json({ status: "Success", data: usersWithHours });
+  } catch (error) {
+      console.error("Error al obtener usuarios con horas trabajadas:", error);
+      res.status(500).json({ status: "Error", message: "Error interno del servidor" });
+  }
+}
+
+
+
+export async function changePassword(req, res) {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.user.id; 
+
+        const result = await changePasswordService(userId, currentPassword, newPassword);
+
+        res.status(200).json({ status: "Success", message: result.message });
+    } catch (error) {
+        console.error("Error al cambiar la contraseña:", error.message);
+        res.status(400).json({ status: "Error", message: error.message });
+    }
+}
+

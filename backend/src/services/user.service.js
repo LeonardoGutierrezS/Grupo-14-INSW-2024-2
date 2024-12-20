@@ -2,6 +2,8 @@
 import User from "../entity/user.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import { comparePassword, encryptPassword } from "../helpers/bcrypt.helper.js";
+import bcrypt from "bcryptjs";
+import { changePasswordValidation } from "../validations/user.validation.js";
 
 export async function getUserService(query) {
   try {
@@ -225,18 +227,18 @@ export async function updateEmployeeStatusService(userId, newStatus) {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
-    // Verificar que el empleado exista
+    
     const employee = await userRepository.findOneBy({ id: userId });
     if (!employee) {
       return [null, "Empleado no encontrado"];
     }
 
-    // Validar el nuevo estado
+    
     if (!["activo", "inactivo"].includes(newStatus)) {
       return [null, "Estado inválido. Debe ser 'activo' o 'inactivo'"];
     }
 
-    // Actualizar el estado del empleado
+    
     employee.estado = newStatus;
     await userRepository.save(employee);
 
@@ -245,4 +247,39 @@ export async function updateEmployeeStatusService(userId, newStatus) {
     console.error("Error al actualizar el estado del empleado:", error);
     return [null, "Error interno del servidor"];
   }
+}
+
+
+
+
+export async function changePasswordService(userId, currentPassword, newPassword) {
+  const userRepository = AppDataSource.getRepository(User);
+
+  // Paso 1: Validar la nueva contraseña con Joi
+  const { error } = changePasswordValidation.validate({ newPassword });
+  if (error) {
+      // Si hay un error en la validación, lanzamos un error con el mensaje de Joi
+      throw new Error(error.details[0].message);
+  }
+
+  // Paso 2: Buscar al usuario por su ID
+  const user = await userRepository.findOne({ where: { id: userId } });
+  if (!user) {
+      throw new Error("Usuario no encontrado");
+  }
+
+  // Paso 3: Verificar que la contraseña actual sea correcta
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+      throw new Error("La contraseña actual es incorrecta");
+  }
+
+  // Paso 4: Hashear la nueva contraseña
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // Paso 5: Actualizar la contraseña del usuario
+  user.password = hashedPassword;
+  await userRepository.save(user);
+
+  return { message: "Contraseña actualizada correctamente" };
 }

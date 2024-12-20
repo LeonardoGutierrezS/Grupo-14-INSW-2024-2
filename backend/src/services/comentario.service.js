@@ -7,6 +7,10 @@ export const createComentarioService = async (comentarioData) => {
   const comentarioRepository = AppDataSource.getRepository(ComentarioSchema);
 
   try {
+    if (!comentarioData.tarea || !comentarioData.tarea.id_tarea){
+      throw new Error("La tarea a la que se intenta asociar el comentario no existe o no ha sido proporcionada.");
+    }
+
     const newComentario = comentarioRepository.create(comentarioData);
     await comentarioRepository.save(newComentario);
     return newComentario;
@@ -23,11 +27,25 @@ export const getAllComentariosService = async (id_tarea) => {
     const comentarios = await comentarioRepository.find({
     where: { tarea: { id_tarea } },
     relations: ["tarea", "usuario"],
+    select: ["id_com", "comentario", "fecha_creacion", "usuario.id", "usuario.nombreCompleto"],
     order: { fecha_creacion: "ASC" },
     });
     return comentarios;
   } catch (error) {
     throw new Error("Error obteniendo comentarios: ${error.message}");
+  }
+};
+
+export const getComentarioByIdService = async (id) => {
+  const comentarioRepository = AppDataSource.getRepository(ComentarioSchema);
+  try {
+    const comentario = await comentarioRepository.findOneBy({ relations: ["tarea", "usuario"] });
+    if (!comentario) {
+      throw new Error("Comentario no encontrado");
+    }
+    return comentario;
+  } catch (error) {
+    throw new Error(`Error obteniendo el comentario: ${error.message}`);
   }
 };
 
