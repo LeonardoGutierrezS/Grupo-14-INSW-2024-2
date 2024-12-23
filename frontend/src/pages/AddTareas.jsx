@@ -1,27 +1,35 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { crearTarea } from '@services/tareas.service.js';
-import { getMechanics } from '@services/user.service.js'; 
+import { getMechanics } from '@services/user.service.js';
+import { getBicicletas } from '@services/ingresoBicicletas.service.js';
 import Form from '@components/Form';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
 
 const CrearTarea = () => {
   const navigate = useNavigate();
-  const [mecanicos, setMecanicos] = useState([]); 
+  const [mecanicos, setMecanicos] = useState([]);
+  const [bicicletas, setBicicletas] = useState([]); // Nuevo estado para bicicletas
 
   useEffect(() => {
-    const cargarMecanicos = async () => {
+    const cargarDatos = async () => {
       try {
-        const data = await getMechanics(); 
-        console.log("Mecánicos cargados:", data);
-        setMecanicos(data); 
+        // Cargar mecánicos
+        const mecanicosData = await getMechanics();
+        console.log("Mecánicos cargados:", mecanicosData);
+        setMecanicos(mecanicosData);
+
+        // Cargar bicicletas
+        const bicicletasData = await getBicicletas();
+        console.log("Bicicletas cargadas:", bicicletasData);
+        setBicicletas(bicicletasData);
       } catch (error) {
-        console.error('Error al obtener mecánicos:', error);
-        showErrorAlert('Error', 'No se pudieron cargar los mecánicos.');
+        console.error('Error al cargar datos:', error);
+        showErrorAlert('Error', 'No se pudieron cargar los datos.');
       }
     };
 
-    cargarMecanicos();
+    cargarDatos();
   }, []);
 
   const handleBack = () => {
@@ -30,7 +38,16 @@ const CrearTarea = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await crearTarea(data);
+      const payload = {
+        detalle: data.detalle,
+        prioridad: data.prioridad,
+        id: data.id, // ID del mecánico seleccionado
+        id_bici: data.id_bici, // ID de la bicicleta seleccionada
+      };
+
+      console.log("Datos enviados al backend:", payload);
+
+      const response = await crearTarea(payload);
       if (response) {
         showSuccessAlert('¡Creada!', 'La tarea se ha agregado correctamente.');
         navigate('/tareas');
@@ -72,9 +89,16 @@ const CrearTarea = () => {
             name: 'id', 
             fieldType: 'select',
             options: mecanicos.map((mecanico) => ({
-              value: mecanico.id,  
-              label: mecanico.nombreCompleto 
+              value: mecanico.id,
+              label: mecanico.nombreCompleto,
             })),
+            required: true,
+          },
+          {
+            label: 'Bicicleta', // Nuevo campo para bicicletas
+            name: 'id_bici',
+            fieldType: 'select',
+            options: bicicletas, // Opciones cargadas desde el estado
             required: true,
           },
         ]}

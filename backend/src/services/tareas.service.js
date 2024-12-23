@@ -2,17 +2,24 @@
 import { AppDataSource } from "../config/configDb.js";
 import TareaSchema from "../entity/tareas.entity.js";
 import User from "../entity/user.entity.js";
+import Bicicleta from "../entity/bicicleta.entity.js";
 
 const MAX_TAREAS_MECANICO = 3;
 
 export const createTareaService = async (tareaData) => {
   const tareaRepository = AppDataSource.getRepository(TareaSchema);
   const userRepository = AppDataSource.getRepository(User);
+  const bicicletaRepository = AppDataSource.getRepository(Bicicleta);
 
   try {
     const usuario = await userRepository.findOneBy({ id: tareaData.id });
     if (!usuario) {
       throw new Error("Usuario no encontrado");
+    }
+
+    const bicicleta = await bicicletaRepository.findOneBy({ id_bici: tareaData.id_bici });
+    if (!bicicleta) {
+      throw new Error("Bicicleta no encontrada");
     }
 
     const tareasActivas = await tareaRepository.count({
@@ -29,6 +36,7 @@ export const createTareaService = async (tareaData) => {
     const newTarea = tareaRepository.create({
       ...tareaData,
       usuario: usuario,
+      bicicleta: bicicleta,
     });
 
     // Guardar la nueva tarea en la base de datos
@@ -44,7 +52,7 @@ export const getAllTareasService = async () => {
 
   try {
     const tareas = await tareaRepository.find({ 
-      relations: ["usuario"],
+      relations: ["usuario", "bicicleta"],
       select: {
         id_tarea: true,
         detalle: true,
@@ -54,6 +62,11 @@ export const getAllTareasService = async () => {
           id: true,
           nombreCompleto: true,
         },
+        bicicleta: {
+          id_bici: true,
+          marca: true,
+          modelo: true,
+        }
       },
     }); // Incluir relación con el usuario
     return tareas;

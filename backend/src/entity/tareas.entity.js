@@ -2,6 +2,7 @@
 import { EntitySchema } from "typeorm";
 import UserSchema from "./user.entity.js";
 import ComentarioSchema from "./comentario.entity.js";
+import BicicletaSchema from "./bicicleta.entity.js";
 
 const TareaSchema = new EntitySchema({
   name: "Tarea",
@@ -42,6 +43,12 @@ const TareaSchema = new EntitySchema({
       target: "User",
       joinColumn: { name: "usuario_id" }, // FK, nombre del campo en 'Tarea' que almacena el id de 'User'
       nullable: false, // Usuario es obligatorio, debe ser un mecánico
+    },
+    bicicleta: {
+      type: "many-to-one",
+      target: "Bicicleta",
+      joinColumn: { name: "id_bici" },
+      nullable: false,
     },
     comentarios: {
       type: "one-to-many",

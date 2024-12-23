@@ -40,15 +40,12 @@ const AddComentario = () => {
         comentario: data.comentario,
         id_tarea: tareaSeleccionada,
       };
-      console.log("enviando datos backend:", comentarioData);
 
-      console.log("ID de tarea seleccionado:", tareaSeleccionada); 
-      console.log("Comentario enviado:", data.comentario); 
       const response = await crearComentario(tareaSeleccionada,  comentarioData);
       
       if (response) {
         showSuccessAlert('¡Comentario Creado!', 'El comentario se ha agregado correctamente.');
-        navigate('/tareas'); 
+        navigate('/comentario'); 
       } else {
         throw new Error(response.message || 'Ocurrió un error al crear el comentario.');
       }

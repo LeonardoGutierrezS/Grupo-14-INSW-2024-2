@@ -3,6 +3,7 @@ import { Router } from "express";
 import {
   createIngresoBicicleta,
   deleteIngresoBicicleta,
+  getAllBicicletas,
   getAllIngresos,
   updateIngresoBicicleta,
 } from "../controllers/ingresoBicicleta.controller.js";
@@ -19,6 +20,9 @@ router.post("/", createIngresoBicicleta);
 
 // Ruta para obtener todos los ingresos (GET)
 router.get("/", getAllIngresos);
+
+//Ruta para obtener todas las bicicletas, modificación Maria Paz
+router.get("/bicicletas", getAllBicicletas);
 
 // Ruta para actualizar un ingreso de bicicleta (PUT)
 router.put("/:id", updateIngresoBicicleta);

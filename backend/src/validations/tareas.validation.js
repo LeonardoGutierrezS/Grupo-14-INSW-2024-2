@@ -18,6 +18,10 @@ const tareaValidationSchema = Joi.object({
     "number.base": "El ID del usuario debe ser un número entero",
     "any.required": "El ID del usuario es obligatorio",
   }),
+  id_bici: Joi.number().integer().required().messages({
+    "number.base": "El ID de la bicicleta debe ser un número entero",
+    "any.required": "El ID de la bicicleta es obligatorio",
+  }),
   estado: Joi.string().valid("pendiente", "en proceso", "terminado").optional().messages({
     "string.base": "El estado debe ser un texto",
     "any.only": "El estado debe ser 'pendiente', 'en proceso' o 'terminado'",

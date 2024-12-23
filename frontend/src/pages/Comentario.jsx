@@ -6,59 +6,84 @@ import UpdateIcon from '../assets/updateIcon.svg';
 import UpdateIconDisable from '../assets/updateIconDisabled.svg';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { obtenerComentarios, actualizarComentario, eliminarComentario } from '@services/comentario.service.js';
+import { obtenerComentarios, eliminarComentario, actualizarComentario } from '@services/comentario.service.js';
+import { obtenerTodasTareas } from '@services/tareas.service.js';
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert.js';
+import Form from '@components/Form';
 
 const Comentarios = () => {
-  const [comentarios, setComentarios] = useState([]); 
-  const [filterDetail, setFilterDetail] = useState(''); 
-  const [selectedComentarios, setSelectedComentarios] = useState([]); 
+  const [comentarios, setComentarios] = useState([]);
+  const [filterDetail, setFilterDetail] = useState('');
+  const [selectedComentarios, setSelectedComentarios] = useState([]);
+  const [tareas, setTareas] = useState([]);
+  const [tareaSeleccionada, setTareaSeleccionada] = useState('');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [comentarioToEdit, setComentarioToEdit] = useState(null);
   const navigate = useNavigate();
 
   const fetchComentarios = useCallback(async (id_tarea = null) => {
     try {
       const data = await obtenerComentarios();
-      console.log('Cometarios recibidos del backend:', data)
       const comentariosFiltrados = id_tarea
         ? data.filter((comentario) => comentario.tarea.id_tarea === id_tarea)
         : data;
       setComentarios(comentariosFiltrados || []);
     } catch (error) {
       console.error('Error al obtener los comentarios:', error);
+      showErrorAlert('Error', 'No se pudieron cargar los comentarios.');
     }
   }, []);
 
+  const fetchTareas = async () => {
+    try {
+      const data = await obtenerTodasTareas();
+      setTareas(data || []);
+    } catch (error) {
+      console.error('Error al obtener las tareas:', error);
+      showErrorAlert('Error', 'No se pudieron cargar las tareas.');
+    }
+  };
+
   useEffect(() => {
     fetchComentarios();
+    fetchTareas();
   }, [fetchComentarios]);
 
-  const handleEditComment = async (id_comentario, nuevoTexto) => {
+  const handleDelete = async () => {
     try {
-      const response = await actualizarComentario(id_comentario, { texto: nuevoTexto });
+      selectedComentarios.forEach(async (comentario) => {
+        await eliminarComentario(comentario.id_com);
+      });
+      showSuccessAlert('Eliminado', 'El comentario se ha eliminado correctamente.');
+      await fetchComentarios();
+      setSelectedComentarios([]);
+    } catch (error) {
+      console.error('Error al eliminar los comentarios:', error);
+      showErrorAlert('Error', 'No se pudieron eliminar los comentarios.');
+    }
+  };
+
+  const handleOpenEditModal = () => {
+    const comentario = selectedComentarios[0];
+    if (!comentario) return showErrorAlert('Error', 'Selecciona un comentario para editar.');
+    setComentarioToEdit(comentario);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdate = async (data) => {
+    try {
+      const response = await actualizarComentario(comentarioToEdit.id_com, { comentario: data.comentario });
       if (response) {
-        showSuccessAlert('Comentario actualizado', 'El texto del comentario se ha actualizado correctamente.');
-        fetchComentarios(); 
+        showSuccessAlert('Actualizado', 'El comentario se actualizó correctamente.');
+        fetchComentarios();
+        setIsEditModalOpen(false);
+        setComentarioToEdit(null);
       } else {
         showErrorAlert('Error', 'No se pudo actualizar el comentario.');
       }
     } catch (error) {
       console.error('Error al actualizar el comentario:', error);
       showErrorAlert('Error', 'No se pudo actualizar el comentario.');
-    }
-  };
-
-  const handleDelete = async (id_comentario) => {
-    try {
-      const response = await eliminarComentario(id_comentario);
-      if (response) {
-        showSuccessAlert('Eliminado', 'El comentario se ha eliminado correctamente.');
-        fetchComentarios(); 
-      } else {
-        showErrorAlert('Error', 'No se pudo eliminar el comentario.');
-      }
-    } catch (error) {
-      console.error('Error al eliminar el comentario:', error);
-      showErrorAlert('Error', 'No se pudo eliminar el comentario.');
     }
   };
 
@@ -70,57 +95,19 @@ const Comentarios = () => {
       width: 300,
       formatter: (cell) => {
         const comentario = cell.getRow().getData();
-        return comentario.tarea?.detalle || 'No asignado';
+        return comentario.tarea?.detalle || 'No asignada';
       },
     },
     {
-        title: 'Mecánico',
-        field: 'usuario.nombreCompleto',
-        width: 200,
-        formatter: (cell) => {
-          const comentario = cell.getRow().getData();
-          return comentario.usuario?.nombreCompleto || 'No especificado'; // Nombre del usuario que hizo el comentario
-        },
-    },
-    {
-      title: 'Acciones',
-      field: 'actions',
+      title: 'Mecánico',
+      field: 'usuario.nombreCompleto',
       width: 200,
       formatter: (cell) => {
         const comentario = cell.getRow().getData();
-        return `
-          <button class="action-button" ${!comentario.texto ? 'disabled' : ''}>
-            <img src="${comentario.texto ? UpdateIcon : UpdateIconDisable}" alt="edit" class="action-icon" />
-          </button>
-          <button class="action-button">
-            <img src="${comentario.texto ? DeleteIcon : DeleteIconDisable}" alt="delete" class="action-icon" />
-          </button>
-        `;
-      },
-      cellClick: (e, cell) => {
-        const comentario = cell.getRow().getData();
-        if (e.target.alt === 'edit') {
-          const nuevoTexto = prompt('Editar comentario:', comentario.texto);
-          if (nuevoTexto) {
-            handleEditComment(comentario.id_comentario, nuevoTexto);
-          }
-        } else if (e.target.alt === 'delete') {
-          handleDelete(comentario.id_comentario);
-        }
+        return comentario.usuario?.nombreCompleto || 'No especificado';
       },
     },
   ];
-
-  const handleDetailFilterChange = (e) => {
-    setFilterDetail(e.target.value);
-  };
-
-  const handleSelectionChange = useCallback(
-    (selectedRows) => {
-      setSelectedComentarios(selectedRows);
-    },
-    [setSelectedComentarios]
-  );
 
   return (
     <div className="main-container">
@@ -133,17 +120,42 @@ const Comentarios = () => {
           >
             Agregar Comentario
           </button>
+          <select
+            value={tareaSeleccionada}
+            onChange={(e) => {
+              const id_tarea = e.target.value;
+              setTareaSeleccionada(id_tarea);
+              fetchComentarios(id_tarea ? Number(id_tarea) : null);
+            }}
+            className="task-filter"
+          >
+            <option value="">Todas las tareas</option>
+            {tareas.map((tarea) => (
+              <option key={tarea.id_tarea} value={tarea.id_tarea}>
+                {tarea.detalle}
+              </option>
+            ))}
+          </select>
           <div className="filter-actions">
             <Search
               value={filterDetail}
-              onChange={handleDetailFilterChange}
+              onChange={(e) => setFilterDetail(e.target.value)}
               placeholder="Filtrar por comentario"
             />
             <button
+              className="edit-comment-button"
+              onClick={handleOpenEditModal}
+              disabled={selectedComentarios.length !== 1}
+            >
+              {selectedComentarios.length !== 1 ? (
+                <img src={UpdateIconDisable} alt="edit-disabled" />
+              ) : (
+                <img src={UpdateIcon} alt="edit" />
+              )}
+            </button>
+            <button
               className="delete-comment-button"
-              onClick={() =>
-                selectedComentarios.forEach((comentario) => handleDelete(comentario.id_comentario))
-              }
+              onClick={handleDelete}
               disabled={selectedComentarios.length === 0}
             >
               {selectedComentarios.length === 0 ? (
@@ -154,16 +166,49 @@ const Comentarios = () => {
             </button>
           </div>
         </div>
-
         <Table
           data={comentarios}
           columns={columns}
           filter={filterDetail}
-          dataToFilter="texto"
-          initialSortName="id_comentario"
-          onSelectionChange={handleSelectionChange}
+          dataToFilter="comentario"
+          initialSortName="comentario"
+          onSelectionChange={(selectedRows) => setSelectedComentarios(selectedRows)}
         />
       </div>
+      {isEditModalOpen && (
+        <Form
+          title="Editar Comentario"
+          fields={[
+            {
+              label: 'Comentario',
+              name: 'comentario',
+              placeholder: 'Escribe tu comentario aquí...',
+              fieldType: 'textarea',
+              rows: 3,
+              defaultValue: comentarioToEdit.comentario,
+              required: true,
+            },
+          ]}
+          onSubmit={handleUpdate}
+          footerContent={
+            <div className="button-container">
+              <button type="submit" className="save-button">
+                Guardar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditModalOpen(false);
+                  setComentarioToEdit(null);
+                }}
+                className="cancel-button"
+              >
+                Cancelar
+              </button>
+            </div>
+          }
+        />
+      )}
     </div>
   );
 };

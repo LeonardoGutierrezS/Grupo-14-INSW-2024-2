@@ -90,6 +90,27 @@ export const getAllIngresos = async (req, res) => {
   }
 };
 
+// Obtener todas las bicicletas, modificación Maria Paz
+export const getAllBicicletas = async (req, res) => {
+  try {
+    const bicicletaRepository = AppDataSource.getRepository(BicicletaSchema);
+    const bicicletas = await bicicletaRepository.find();
+
+    // Log para verificar los datos enviados al frontend
+    console.log("Bicicletas obtenidas desde el backend:", bicicletas);
+
+    // Si no hay bicicletas, responde con un mensaje adecuado
+    if (!bicicletas || bicicletas.length === 0) {
+      return res.status(404).json({ message: "No se encontraron bicicletas" });
+    }
+
+    return res.status(200).json(bicicletas);
+  } catch (error) {
+    console.error("Error al obtener bicicletas:", error.message);
+    return res.status(500).json({ message: "Error al obtener bicicletas", error });
+  }
+};
+
 // Editar un ingreso
 // Editar un ingreso de bicicleta, cliente, y reparación
 export const updateIngresoBicicleta = async (req, res) => {
