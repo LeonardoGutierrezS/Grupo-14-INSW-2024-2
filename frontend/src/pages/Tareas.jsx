@@ -61,6 +61,18 @@ const Tareas = () => {
   const columns = [
     { title: 'Detalle', field: 'detalle', width: 300 },
     { title: 'Prioridad', field: 'prioridad', width: 150 },
+    { 
+      title: "Bicicleta",
+      field: "bicicleta",
+      width: 150,
+      formatter: (cell) => {
+        const tarea = cell.getRow().getData();
+        const bicicleta = tarea.bicicleta;
+        return bicicleta
+        ? `${bicicleta.marca} ${bicicleta.modelo}`
+        : "Sin bicicleta asignada";
+      },
+    },
     {
       title: 'Mecánico',
       field: 'usuario.nombreCompleto',

@@ -26,6 +26,22 @@ export async function createIngresoBicicleta(bicicletaData, clienteData, reparac
   }
 }
 
+// Obtener bicicletas para asignar tareas
+export async function getBicicletas() {
+  try {
+    const { data } = await axios.get('/bicicleta/bicicletas'); // Endpoint para obtener bicicletas
+    const bicicletas = data.map((bicicleta) => ({
+      value: bicicleta.id_bici,
+      label: `${bicicleta.marca || 'Sin marca'} ${bicicleta.modelo || 'Sin modelo'}`,
+    }));
+    console.log("BICICLETAS", bicicletas);
+    return bicicletas;
+  } catch (error) {
+    console.error("Error al obtener bicicletas:", error.response?.data || error);
+    return [];
+  }
+}
+
 // Actualizar un ingreso existente (bicicleta, cliente y reparación)
 export async function updateIngresoBicicleta(id, bicicletaData, clienteData, reparacionData) {
   try {

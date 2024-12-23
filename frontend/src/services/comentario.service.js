@@ -26,7 +26,7 @@ export async function crearComentario(id_tarea, comentarioData) {
 
 export async function actualizarComentario(id_com, comentarioData) {
   try {
-    const { data } = await axios.patch(`/comentario/${id_com}`, comentarioData);
+    const { data } = await axios.put(`/comentario/${id_com}`, comentarioData);
     return data;
   } catch (error) {
     console.error('Error al actualizar el comentario:', error);
