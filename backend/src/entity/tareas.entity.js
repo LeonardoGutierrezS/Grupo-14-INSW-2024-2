@@ -32,10 +32,6 @@ const TareaSchema = new EntitySchema({
       length: 50,
       default: "media", // Prioridades posibles: 'baja', 'media', 'alta'
     },
-    notificacion_administrador: {
-      type: "boolean",
-      default: false,
-    },
   },
   relations: {
     usuario: { 
